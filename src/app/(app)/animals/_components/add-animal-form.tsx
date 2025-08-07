@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
+import * as React from 'react';
 
 const formSchema = z.object({
   id: z.string().min(1, 'El ID es obligatorio.'),
@@ -47,6 +48,16 @@ export function AddAnimalForm({ onFinished }: AddAnimalFormProps) {
   });
 
   const isLoading = form.formState.isSubmitting;
+  const sex = form.watch('sex');
+
+  React.useEffect(() => {
+    if (sex === 'Macho') {
+      form.setValue('lastCalvingDate', '');
+      form.setValue('heatDate', '');
+      form.setValue('pregnancyDate', '');
+    }
+  }, [sex, form]);
+
 
   async function onSubmit(values: FormValues) {
     // En una aplicación real, aquí enviarías los datos al backend.
@@ -157,7 +168,7 @@ export function AddAnimalForm({ onFinished }: AddAnimalFormProps) {
         </div>
         
         <Separator className="my-2" />
-        <p className="text-sm font-medium text-muted-foreground">Información Reproductiva (Opcional)</p>
+        <p className="text-sm font-medium text-muted-foreground">Información Reproductiva (Solo Hembras)</p>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <FormField
@@ -167,7 +178,7 @@ export function AddAnimalForm({ onFinished }: AddAnimalFormProps) {
               <FormItem>
                 <FormLabel>Último Parto</FormLabel>
                 <FormControl>
-                   <Input type="date" {...field} />
+                   <Input type="date" {...field} disabled={sex !== 'Hembra'} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -180,7 +191,7 @@ export function AddAnimalForm({ onFinished }: AddAnimalFormProps) {
               <FormItem>
                 <FormLabel>Fecha de Celo</FormLabel>
                 <FormControl>
-                   <Input type="date" {...field} />
+                   <Input type="date" {...field} disabled={sex !== 'Hembra'} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -193,7 +204,7 @@ export function AddAnimalForm({ onFinished }: AddAnimalFormProps) {
               <FormItem>
                 <FormLabel>Fecha de Preñez</FormLabel>
                 <FormControl>
-                   <Input type="date" {...field} />
+                   <Input type="date" {...field} disabled={sex !== 'Hembra'} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
