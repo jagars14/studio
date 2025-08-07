@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useForm } from 'react-hook-form';
@@ -9,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
 
 const formSchema = z.object({
   id: z.string().min(1, 'El ID es obligatorio.'),
@@ -17,6 +19,9 @@ const formSchema = z.object({
   sex: z.enum(['Macho', 'Hembra'], { required_error: 'Por favor, seleccione un sexo.' }),
   weight: z.coerce.number().min(1, 'El peso debe ser mayor que 0.'),
   birthDate: z.string().refine((val) => !isNaN(Date.parse(val)), { message: "Fecha inválida" }),
+  lastCalvingDate: z.string().optional(),
+  heatDate: z.string().optional(),
+  pregnancyDate: z.string().optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -31,6 +36,9 @@ export function AddAnimalForm() {
       breed: '',
       weight: 0,
       birthDate: '',
+      lastCalvingDate: '',
+      heatDate: '',
+      pregnancyDate: '',
     },
   });
 
@@ -143,6 +151,52 @@ export function AddAnimalForm() {
             )}
           />
         </div>
+        
+        <Separator className="my-2" />
+        <p className="text-sm font-medium text-muted-foreground">Información Reproductiva (Opcional)</p>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <FormField
+            control={form.control}
+            name="lastCalvingDate"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Último Parto</FormLabel>
+                <FormControl>
+                   <Input type="date" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="heatDate"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Fecha de Celo</FormLabel>
+                <FormControl>
+                   <Input type="date" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="pregnancyDate"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Fecha de Preñez</FormLabel>
+                <FormControl>
+                   <Input type="date" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+        
         <Button type="submit" className="w-full" disabled={isLoading}>
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Registrar Animal

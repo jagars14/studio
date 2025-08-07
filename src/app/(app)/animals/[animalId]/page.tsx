@@ -1,8 +1,9 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { animals } from "@/lib/mock-data";
 import { calculateAge } from "@/lib/utils";
-import { CakeSlice, Dna, Weight, Heart } from "lucide-react";
+import { CakeSlice, Dna, Weight, Heart, CalendarHeart, Flame, Baby } from "lucide-react";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -15,6 +16,12 @@ export default function AnimalProfilePage({ params }: { params: { animalId: stri
   if (!animal) {
     notFound();
   }
+
+  const reproductiveInfo = [
+    { label: "Último Parto", value: animal.lastCalvingDate, icon: Baby },
+    { label: "Fecha de Celo", value: animal.heatDate, icon: Flame },
+    { label: "Fecha de Preñez", value: animal.pregnancyDate, icon: CalendarHeart },
+  ].filter(info => info.value);
 
   return (
     <div className="mx-auto max-w-4xl space-y-6">
@@ -69,7 +76,27 @@ export default function AnimalProfilePage({ params }: { params: { animalId: stri
           </div>
         </CardContent>
       </Card>
-      {/* Otras pestañas como Historial de Salud irían aquí como tarjetas/componentes separados */}
+
+      {animal.sex === 'Hembra' && reproductiveInfo.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Información Reproductiva</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 gap-4 text-sm md:grid-cols-3">
+              {reproductiveInfo.map(({ label, value, icon: Icon }) => (
+                <div key={label} className="flex items-center gap-2 rounded-lg bg-secondary/50 p-3">
+                  <Icon className="h-5 w-5 text-accent" />
+                  <div>
+                    <p className="font-semibold">{label}</p>
+                    <p className="text-muted-foreground">{value ? new Date(value).toLocaleDateString('es-ES') : 'N/A'}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

@@ -1,3 +1,4 @@
+
 export type Animal = {
   id: string;
   name: string;
@@ -9,6 +10,9 @@ export type Animal = {
   weight: number;
   status: 'Activo' | 'Vendido' | 'Fallecido';
   category: 'Ternero' | 'Novilla' | 'Toro' | 'Vaca' | 'Novillo';
+  lastCalvingDate?: string;
+  heatDate?: string;
+  pregnancyDate?: string;
 };
 
 export type Kpi = {
