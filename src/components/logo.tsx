@@ -11,7 +11,7 @@ export function Logo({ className, ...props }: React.SVGProps<SVGSVGElement>) {
       strokeWidth="1.5"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className={cn("text-white", className)}
+      className={cn("h-12 w-12 text-white", className)}
       {...props}
     >
       <path d="M15.182 12.318A4.5 4.5 0 0 1 12 16.5a4.5 4.5 0 0 1-3.182-1.318" />
