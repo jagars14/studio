@@ -7,7 +7,6 @@ export type Animal = {
   fatherId: string | null;
   motherId: string | null;
   weight: number;
-  photoUrl: string;
   status: 'Activo' | 'Vendido' | 'Fallecido';
   category: 'Ternero' | 'Novilla' | 'Toro' | 'Vaca' | 'Novillo';
 };

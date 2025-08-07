@@ -3,11 +3,11 @@ import { Separator } from "@/components/ui/separator";
 import { animals } from "@/lib/mock-data";
 import { calculateAge } from "@/lib/utils";
 import { CakeSlice, Dna, Weight, Heart } from "lucide-react";
-import Image from "next/image";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
+import { Logo } from "@/components/logo";
 
 export default function AnimalProfilePage({ params }: { params: { animalId: string } }) {
   const animal = animals.find(a => a.id === params.animalId);
@@ -24,14 +24,9 @@ export default function AnimalProfilePage({ params }: { params: { animalId: stri
       </Link>
       <Card>
         <CardHeader className="flex flex-col items-center gap-4 text-center md:flex-row md:text-left">
-          <Image
-            src={animal.photoUrl}
-            alt={animal.name}
-            width={150}
-            height={150}
-            className="rounded-full border-4 border-primary object-cover aspect-square"
-            data-ai-hint={`${animal.breed.toLowerCase()} cow portrait`}
-          />
+           <div className="flex h-24 w-24 items-center justify-center rounded-full bg-secondary">
+            <Logo className="h-16 w-16 text-muted-foreground" />
+          </div>
           <div className="flex-1">
             <p className="text-sm font-medium text-primary">{animal.id}</p>
             <h1 className="font-headline text-4xl font-bold">{animal.name}</h1>

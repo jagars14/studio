@@ -20,8 +20,8 @@ import {
 import { ListFilter, PlusCircle, Search } from "lucide-react";
 import { animals } from "@/lib/mock-data";
 import Link from "next/link";
-import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
+import { Logo } from "@/components/logo";
 
 export default function AnimalsPage() {
   return (
@@ -63,7 +63,6 @@ export default function AnimalsPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[80px]">Imagen</TableHead>
                   <TableHead className="w-[100px]">ID</TableHead>
                   <TableHead>Nombre</TableHead>
                   <TableHead>Sexo</TableHead>
@@ -75,18 +74,6 @@ export default function AnimalsPage() {
               <TableBody>
                 {animals.map((animal) => (
                   <TableRow key={animal.id}>
-                    <TableCell>
-                      <Link href={`/animals/${animal.id}`}>
-                        <Image
-                          src={animal.photoUrl}
-                          alt={animal.name}
-                          width={64}
-                          height={64}
-                          className="rounded-md object-cover"
-                          data-ai-hint={`${animal.breed.toLowerCase()} cow`}
-                        />
-                      </Link>
-                    </TableCell>
                     <TableCell>
                       <Link href={`/animals/${animal.id}`} className="font-medium hover:underline text-primary">
                         {animal.id}
