@@ -36,26 +36,26 @@ export default function DashboardPage() {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 grid gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="font-headline">Evolución del Hato (12 meses)</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <HerdEvolutionChart />
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle className="font-headline">Distribución del Hato</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <HerdDistributionChart />
-              </CardContent>
-            </Card>
-        </div>
-        <Card className="flex flex-col">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="font-headline">Evolución del Hato (12 meses)</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <HerdEvolutionChart />
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle className="font-headline">Distribución del Hato</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <HerdDistributionChart />
+            </CardContent>
+          </Card>
+      </div>
+
+       <Card className="flex flex-col">
             <CardHeader>
                 <CardTitle className="font-headline flex items-center gap-2">
                     <CalendarClock className="h-6 w-6" />
@@ -95,7 +95,6 @@ export default function DashboardPage() {
                 </Button>
             </div>
         </Card>
-      </div>
     </div>
   );
 }
