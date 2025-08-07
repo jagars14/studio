@@ -46,8 +46,8 @@ export default function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-secondary">
       <Card className="mx-auto max-w-sm w-full">
         <CardHeader className="text-center">
-          <div className="inline-block mx-auto p-3 bg-transparent text-primary rounded-full mb-4">
-            <Logo className="h-8 w-8" />
+          <div className="inline-block mx-auto p-3 bg-primary text-primary-foreground rounded-full mb-4">
+            <Logo className="h-8 w-8 text-white" />
           </div>
           <CardTitle className="text-2xl font-headline">Bienvenido a BovinoPro Lite</CardTitle>
           <CardDescription>Ingrese sus credenciales para acceder a su finca.</CardDescription>

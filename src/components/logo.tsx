@@ -6,7 +6,7 @@ export function Logo({ className, ...props }: React.SVGProps<SVGSVGElement>) {
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 256 161"
-      className={cn("text-foreground", className)}
+      className={cn("text-white", className)}
       {...props}
     >
         <path
