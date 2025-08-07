@@ -22,6 +22,8 @@ const formSchema = z.object({
   sex: z.enum(['Macho', 'Hembra'], { required_error: 'Por favor, seleccione un sexo.' }),
   weight: z.coerce.number().min(1, 'El peso debe ser mayor que 0.'),
   birthDate: z.string().refine((val) => !isNaN(Date.parse(val)), { message: "Fecha inválida" }),
+  category: z.enum(['Vaca', 'Novilla', 'Toro', 'Ternero', 'Ternera', 'Novillo'], { required_error: 'Por favor, seleccione una categoría.' }),
+  productionStatus: z.enum(['En Producción', 'Seca']).optional(),
   lastCalvingDate: z.string().optional(),
   heatDate: z.string().optional(),
   pregnancyDate: z.string().optional(),
@@ -54,6 +56,8 @@ export function EditAnimalForm({ animal, onFinished }: EditAnimalFormProps) {
       sex: animal.sex,
       weight: animal.weight,
       birthDate: formatDateForInput(animal.birthDate),
+      category: animal.category,
+      productionStatus: animal.productionStatus,
       lastCalvingDate: formatDateForInput(animal.lastCalvingDate),
       heatDate: formatDateForInput(animal.heatDate),
       pregnancyDate: formatDateForInput(animal.pregnancyDate),
@@ -62,6 +66,7 @@ export function EditAnimalForm({ animal, onFinished }: EditAnimalFormProps) {
 
   const isLoading = form.formState.isSubmitting;
   const sex = form.watch('sex');
+  const category = form.watch('category');
 
   React.useEffect(() => {
     if (sex === 'Macho') {
@@ -70,6 +75,13 @@ export function EditAnimalForm({ animal, onFinished }: EditAnimalFormProps) {
       form.setValue('pregnancyDate', '');
     }
   }, [sex, form]);
+
+  React.useEffect(() => {
+    if (category !== 'Vaca') {
+      form.setValue('productionStatus', undefined);
+    }
+  }, [category, form]);
+
 
   async function onSubmit(values: FormValues) {
     // En una aplicación real, aquí enviarías los datos al backend para actualizar.
@@ -177,6 +189,57 @@ export function EditAnimalForm({ animal, onFinished }: EditAnimalFormProps) {
           />
         </div>
         
+        <div className="grid grid-cols-2 gap-4">
+           <FormField
+            control={form.control}
+            name="category"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Categoría</FormLabel>
+                 <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Seleccione una categoría" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="Vaca">Vaca</SelectItem>
+                    <SelectItem value="Novilla">Novilla</SelectItem>
+                    <SelectItem value="Toro">Toro</SelectItem>
+                    <SelectItem value="Ternero">Ternero</SelectItem>
+                    <SelectItem value="Ternera">Ternera</SelectItem>
+                    <SelectItem value="Novillo">Novillo</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          {category === 'Vaca' && (
+            <FormField
+              control={form.control}
+              name="productionStatus"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Estado de Producción</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Seleccione estado" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="En Producción">En Producción</SelectItem>
+                      <SelectItem value="Seca">Seca</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
+        </div>
+
         <Separator className="my-2" />
         <p className="text-sm font-medium text-muted-foreground">Información Reproductiva (Solo Hembras)</p>
         

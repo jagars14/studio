@@ -3,12 +3,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Separator } from "@/components/ui/separator";
 import { animals } from "@/lib/mock-data";
 import { calculateAge } from "@/lib/utils";
-import { CakeSlice, Dna, Weight, Heart, CalendarHeart, Flame, Baby } from "lucide-react";
+import { CakeSlice, Dna, Weight, Heart, CalendarHeart, Flame, Baby, Milk } from "lucide-react";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
 import { Logo } from "@/components/logo";
+import { Badge } from "@/components/ui/badge";
 
 export default function AnimalProfilePage({ params }: { params: { animalId: string } }) {
   const animal = animals.find(a => a.id === params.animalId);
@@ -37,7 +38,17 @@ export default function AnimalProfilePage({ params }: { params: { animalId: stri
           <div className="flex-1">
             <p className="text-sm font-medium text-primary">{animal.id}</p>
             <h1 className="font-headline text-4xl font-bold">{animal.name}</h1>
-            <p className="text-muted-foreground">{animal.breed} &bull; {animal.sex}</p>
+            <div className="flex flex-wrap gap-2 items-center justify-center md:justify-start">
+              <Badge variant="secondary">{animal.breed}</Badge>
+              <Badge variant="secondary">{animal.sex}</Badge>
+              <Badge variant="outline">{animal.category}</Badge>
+              {animal.category === 'Vaca' && animal.productionStatus && (
+                <Badge variant={animal.productionStatus === 'En Producción' ? 'default' : 'destructive'} className="gap-1">
+                  <Milk className="h-3 w-3" />
+                  {animal.productionStatus}
+                </Badge>
+              )}
+            </div>
           </div>
         </CardHeader>
         <CardContent>
