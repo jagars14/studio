@@ -39,7 +39,7 @@ export default function AppLayout({
         <SidebarHeader>
           <div className="flex items-center gap-2 p-2">
             <Button variant="ghost" size="icon" className="hover:bg-sidebar-accent rounded-lg">
-                <Logo className="h-10 w-10 text-white" />
+                <Logo className="h-10 w-10" />
             </Button>
             <h1 className="text-xl font-headline font-semibold">BovinoPro Lite</h1>
           </div>
@@ -50,7 +50,7 @@ export default function AppLayout({
               <SidebarMenuItem key={item.href}>
                 <SidebarMenuButton asChild>
                   <Link href={item.href}>
-                    <item.icon />
+                    {item.href === '/animals' ? <Logo className="h-6 w-6 text-sidebar-foreground" /> : <item.icon />}
                     <span>{item.label}</span>
                   </Link>
                 </SidebarMenuButton>

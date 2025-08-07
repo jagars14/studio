@@ -59,7 +59,7 @@ export default function RegisterPage() {
       <Card className="mx-auto max-w-sm w-full">
         <CardHeader className="text-center">
            <div className="inline-block mx-auto mb-4">
-            <Logo className="h-12 w-12 text-primary" />
+            <Logo className="h-16 w-16" />
           </div>
           <CardTitle className="text-2xl font-headline">Crear una Cuenta</CardTitle>
           <CardDescription>Complete sus datos para registrar una nueva finca.</CardDescription>

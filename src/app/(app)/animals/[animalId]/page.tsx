@@ -33,7 +33,7 @@ export default function AnimalProfilePage({ params }: { params: { animalId: stri
       <Card>
         <CardHeader className="flex flex-col items-center gap-4 text-center md:flex-row md:text-left">
            <div className="flex h-24 w-24 items-center justify-center rounded-full bg-secondary">
-            <Logo className="h-16 w-16 text-muted-foreground" />
+            <Logo className="h-20 w-20 text-muted-foreground" />
           </div>
           <div className="flex-1">
             <p className="text-sm font-medium text-primary">{animal.id}</p>
