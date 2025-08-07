@@ -14,7 +14,8 @@ import {z} from 'genkit';
 
 const SuggestMatingHealthcareInputSchema = z.object({
   animalData: z.string().describe('Datos completos de cada animal en la granja, incluyendo raza, edad, historial reproductivo y registros de salud.'),
-  environmentalConditions: z.string().describe('Condiciones ambientales actuales de la granja, incluyendo temperatura, humedad y datos meteorológicos históricos.'),
+  department: z.string().describe('El departamento de Colombia donde se encuentra la granja.'),
+  city: z.string().describe('La ciudad o municipio de Colombia donde se encuentra la granja.'),
 });
 export type SuggestMatingHealthcareInput = z.infer<typeof SuggestMatingHealthcareInputSchema>;
 
@@ -32,15 +33,16 @@ const suggestMatingHealthcarePrompt = ai.definePrompt({
   name: 'suggestMatingHealthcarePrompt',
   input: {schema: SuggestMatingHealthcareInputSchema},
   output: {schema: SuggestMatingHealthcareOutputSchema},
-  prompt: `Eres un asistente de IA que proporciona sugerencias para calendarios de apareamiento y cuidado de la salud para una granja de ganado, considerando datos de los animales y condiciones ambientales.
+  prompt: `Eres un asistente de IA experto en ganadería y veterinaria, que proporciona sugerencias para calendarios de apareamiento y cuidado de la salud para una granja de ganado.
+
+La granja está ubicada en la ciudad de {{{city}}}, en el departamento de {{{department}}}, Colombia. Utiliza esta ubicación para inferir las condiciones ambientales típicas (temperatura, humedad, estacionalidad) de la región.
 
 Analiza los siguientes datos de los animales:
 {{{animalData}}}
 
-Y considera estas condiciones ambientales:
-{{{environmentalConditions}}}
-
-Proporciona calendarios de apareamiento óptimos y recomendaciones de cuidado de la salud, incluyendo alertas de estrés por calor para minimizar los riesgos durante las olas de calor, considerando las tolerancias específicas de cada raza. Sé conciso.
+Basándote en los datos de los animales y las condiciones ambientales inferidas de la ubicación, proporciona:
+1.  **Calendarios de apareamiento óptimos:** Considera ciclos de celo, salud, y especialmente las condiciones ambientales para maximizar la fertilidad.
+2.  **Recomendaciones de cuidado de la salud:** Incluye alertas de estrés por calor, recomendaciones de vacunación y desparasitación pertinentes para la región, y otros chequeos necesarios. Sé conciso y práctico.
 `,
 });
 

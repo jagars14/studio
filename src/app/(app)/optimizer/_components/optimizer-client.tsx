@@ -9,15 +9,21 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
-import { BrainCircuit, HeartPulse, Sparkles, Loader2, ClipboardCheck } from 'lucide-react';
+import { BrainCircuit, HeartPulse, Sparkles, Loader2, ClipboardCheck, MapPin } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import Link from 'next/link';
 
 const formSchema = z.object({
   animalData: z.string().min(50, "Por favor, proporcione datos más detallados de los animales para obtener mejores sugerencias."),
-  environmentalConditions: z.string().min(20, "Por favor, proporcione condiciones ambientales más detalladas."),
 });
 
 type FormValues = z.infer<typeof formSchema>;
+
+// Simulación de la configuración de la finca. En una app real, esto vendría de una API o del estado global.
+const farmSettings = {
+  department: 'Antioquia',
+  city: 'Medellín'
+}
 
 export default function OptimizerClient() {
   const [result, setResult] = useState<SuggestMatingHealthcareOutput | null>(null);
@@ -28,7 +34,6 @@ export default function OptimizerClient() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       animalData: "ID Animal: 101, Raza: Holstein, Edad: 3 años, Último Parto: 2023-01-15, Salud: Buena, Producción Leche: 25L/día. \nID Animal: 102, Raza: Angus, Edad: 2 años, Salud: Excelente, Peso: 580kg, Aún no ha parido.",
-      environmentalConditions: "Ubicación: Valle Central, Temp: 28-35°C, Humedad: 75%, Pronóstico: Ola de calor esperada los próximos 5 días.",
     },
   });
 
@@ -36,7 +41,11 @@ export default function OptimizerClient() {
     setIsLoading(true);
     setResult(null);
     try {
-      const suggestions = await suggestMatingHealthcare(values);
+      const suggestions = await suggestMatingHealthcare({
+        animalData: values.animalData,
+        department: farmSettings.department,
+        city: farmSettings.city,
+      });
       setResult(suggestions);
     } catch (error) {
       console.error("Falló la sugerencia de IA:", error);
@@ -58,18 +67,24 @@ export default function OptimizerClient() {
             <Sparkles className="h-6 w-6 text-primary" />
             <CardTitle className="font-headline text-2xl">Optimización con IA</CardTitle>
           </div>
+           <CardDescription className="flex items-center gap-2 pt-2">
+            <MapPin className="h-4 w-4" />
+            <span>
+              Generando sugerencias para la finca en <strong>{farmSettings.city}, {farmSettings.department}</strong>. 
+              <Link href="/settings" className="ml-1 text-primary hover:underline">Cambiar ubicación</Link>
+            </span>
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <CardDescription>
-            Proporcione datos completos sobre sus animales y las condiciones de la granja para recibir recomendaciones de apareamiento y cuidado de la salud impulsadas por IA. La IA considera factores como la raza, la salud y el estrés por calor para ofrecer consejos prácticos.
+            Proporcione datos completos sobre sus animales para recibir recomendaciones de apareamiento y cuidado de la salud impulsadas por IA. La IA considera factores como la raza, la salud y las condiciones climáticas de su ubicación para ofrecer consejos prácticos.
           </CardDescription>
         </CardContent>
       </Card>
       
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <div className="grid md:grid-cols-2 gap-8">
-            <FormField
+           <FormField
               control={form.control}
               name="animalData"
               render={({ field }) => (
@@ -86,24 +101,6 @@ export default function OptimizerClient() {
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="environmentalConditions"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-lg">Condiciones Ambientales</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="ej., Temperatura, humedad, calidad del pasto, pronóstico del tiempo..."
-                      className="min-h-[150px] resize-y"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
           <Button type="submit" disabled={isLoading} size="lg">
             {isLoading ? (
               <>

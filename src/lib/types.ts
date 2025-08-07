@@ -27,3 +27,7 @@ export type ReproductiveEvent = {
   eventType: 'Celo' | 'Chequeo Preñez' | 'Fecha de Parto';
   date: Date;
 };
+
+export interface ColombiaData {
+  [departamento: string]: string[];
+}
