@@ -2,14 +2,14 @@ export type Animal = {
   id: string;
   name: string;
   breed: string;
-  sex: 'Male' | 'Female';
+  sex: 'Macho' | 'Hembra';
   birthDate: string;
   fatherId: string | null;
   motherId: string | null;
   weight: number;
   photoUrl: string;
-  status: 'Active' | 'Sold' | 'Deceased';
-  category: 'Calf' | 'Heifer' | 'Bull' | 'Cow' | 'Steer';
+  status: 'Activo' | 'Vendido' | 'Fallecido';
+  category: 'Ternero' | 'Novilla' | 'Toro' | 'Vaca' | 'Novillo';
 };
 
 export type Kpi = {
@@ -23,6 +23,6 @@ export type ReproductiveEvent = {
   id: string;
   animalName: string;
   animalId: string;
-  eventType: 'Heat' | 'Pregnancy Check' | 'Due Date';
+  eventType: 'Celo' | 'Chequeo Preñez' | 'Fecha de Parto';
   date: Date;
 };

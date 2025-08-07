@@ -13,13 +13,13 @@ import { herdDistributionData } from '@/lib/mock-data'
 
 const chartConfig = {
   count: {
-    label: 'Count',
+    label: 'Cantidad',
   },
-  Calves: { label: 'Calves', color: 'hsl(var(--chart-1))' },
-  Heifers: { label: 'Heifers', color: 'hsl(var(--chart-2))' },
-  Cows: { label: 'Cows', color: 'hsl(var(--chart-3))' },
-  Steers: { label: 'Steers', color: 'hsl(var(--chart-4))' },
-  Bulls: { label: 'Bulls', color: 'hsl(var(--chart-5))' },
+  Terneros: { label: 'Terneros', color: 'hsl(var(--chart-1))' },
+  Novillas: { label: 'Novillas', color: 'hsl(var(--chart-2))' },
+  Vacas: { label: 'Vacas', color: 'hsl(var(--chart-3))' },
+  Novillos: { label: 'Novillos', color: 'hsl(var(--chart-4))' },
+  Toros: { label: 'Toros', color: 'hsl(var(--chart-5))' },
 } satisfies ChartConfig
 
 export default function HerdDistributionChart() {

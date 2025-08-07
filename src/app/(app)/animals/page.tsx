@@ -27,11 +27,11 @@ export default function AnimalsPage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-4">
-        <h1 className="text-3xl font-headline font-bold">Animal Inventory</h1>
+        <h1 className="text-3xl font-headline font-bold">Inventario de Animales</h1>
         <div className="flex items-center gap-2">
           <Button size="sm" className="gap-1">
             <PlusCircle className="h-3.5 w-3.5" />
-            <span>Add Animal</span>
+            <span>Añadir Animal</span>
           </Button>
         </div>
       </div>
@@ -41,21 +41,21 @@ export default function AnimalsPage() {
           <div className="flex items-center justify-between gap-4 mb-4">
             <div className="relative w-full max-w-sm">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input placeholder="Search by ID or name..." className="pl-8" />
+              <Input placeholder="Buscar por ID o nombre..." className="pl-8" />
             </div>
              <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm" className="gap-1">
                   <ListFilter className="h-3.5 w-3.5" />
-                  <span>Filter</span>
+                  <span>Filtrar</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Filter by Status</DropdownMenuLabel>
+                <DropdownMenuLabel>Filtrar por Estado</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuCheckboxItem checked>Active</DropdownMenuCheckboxItem>
-                <DropdownMenuCheckboxItem>Sold</DropdownMenuCheckboxItem>
-                <DropdownMenuCheckboxItem>Deceased</DropdownMenuCheckboxItem>
+                <DropdownMenuCheckboxItem checked>Activo</DropdownMenuCheckboxItem>
+                <DropdownMenuCheckboxItem>Vendido</DropdownMenuCheckboxItem>
+                <DropdownMenuCheckboxItem>Fallecido</DropdownMenuCheckboxItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -63,13 +63,13 @@ export default function AnimalsPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[80px]">Image</TableHead>
+                  <TableHead className="w-[80px]">Imagen</TableHead>
                   <TableHead className="w-[100px]">ID</TableHead>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Sex</TableHead>
-                  <TableHead>Breed</TableHead>
-                  <TableHead>Category</TableHead>
-                  <TableHead className="text-right">Weight (kg)</TableHead>
+                  <TableHead>Nombre</TableHead>
+                  <TableHead>Sexo</TableHead>
+                  <TableHead>Raza</TableHead>
+                  <TableHead>Categoría</TableHead>
+                  <TableHead className="text-right">Peso (kg)</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

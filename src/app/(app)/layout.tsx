@@ -16,15 +16,15 @@ import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
   title: "BovinoPro Lite",
-  description: "Integral management for cattle farms.",
+  description: "Gestión integral para fincas ganaderas.",
 };
 
 const navItems = [
-  { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-  { href: "/animals", icon: Beef, label: "Animals" },
-  { href: "/reproduction", icon: CalendarHeart, label: "Reproduction" },
-  { href: "/optimizer", icon: BrainCircuit, label: "AI Optimizer" },
-  { href: "/settings", icon: Settings, label: "Settings" },
+  { href: "/dashboard", icon: LayoutDashboard, label: "Panel" },
+  { href: "/animals", icon: Beef, label: "Animales" },
+  { href: "/reproduction", icon: CalendarHeart, label: "Reproducción" },
+  { href: "/optimizer", icon: BrainCircuit, label: "Optimizador IA" },
+  { href: "/settings", icon: Settings, label: "Configuración" },
 ];
 
 export default function AppLayout({
@@ -62,7 +62,7 @@ export default function AppLayout({
         <header className="flex h-14 items-center gap-4 border-b bg-card px-6 sticky top-0 z-30">
           <SidebarTrigger className="md:hidden" />
           <div className="w-full flex-1">
-             {/* Future page-specific header content can go here */}
+             {/* El contenido futuro del encabezado específico de la página puede ir aquí */}
           </div>
         </header>
         <main className="flex-1 overflow-auto p-4 md:p-6">

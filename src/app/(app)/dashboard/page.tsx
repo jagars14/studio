@@ -6,7 +6,7 @@ import HerdDistributionChart from "./_components/herd-distribution-chart";
 export default function DashboardPage() {
   return (
     <div className="space-y-6">
-       <h1 className="text-3xl font-headline font-bold">Dashboard</h1>
+       <h1 className="text-3xl font-headline font-bold">Panel</h1>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {kpis.map((kpi) => (
           <Card key={kpi.title}>
@@ -29,7 +29,7 @@ export default function DashboardPage() {
       <div className="grid gap-6 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle className="font-headline">Herd Evolution (12 months)</CardTitle>
+            <CardTitle className="font-headline">Evolución del Hato (12 meses)</CardTitle>
           </CardHeader>
           <CardContent>
             <HerdEvolutionChart />
@@ -37,7 +37,7 @@ export default function DashboardPage() {
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle className="font-headline">Herd Distribution</CardTitle>
+            <CardTitle className="font-headline">Distribución del Hato</CardTitle>
           </CardHeader>
           <CardContent>
             <HerdDistributionChart />

@@ -20,7 +20,7 @@ export default function AnimalProfilePage({ params }: { params: { animalId: stri
     <div className="mx-auto max-w-4xl space-y-6">
       <Link href="/animals" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
         <ChevronLeft className="h-4 w-4" />
-        Back to Animal List
+        Volver a la Lista de Animales
       </Link>
       <Card>
         <CardHeader className="flex flex-col items-center gap-4 text-center md:flex-row md:text-left">
@@ -44,37 +44,37 @@ export default function AnimalProfilePage({ params }: { params: { animalId: stri
             <div className="flex items-center gap-2 rounded-lg bg-secondary/50 p-3">
               <CakeSlice className="h-5 w-5 text-accent" />
               <div>
-                <p className="font-semibold">Born</p>
-                <p className="text-muted-foreground">{new Date(animal.birthDate).toLocaleDateString()}</p>
+                <p className="font-semibold">Nacimiento</p>
+                <p className="text-muted-foreground">{new Date(animal.birthDate).toLocaleDateString('es-ES')}</p>
               </div>
             </div>
             <div className="flex items-center gap-2 rounded-lg bg-secondary/50 p-3">
               <Heart className="h-5 w-5 text-accent" />
               <div>
-                <p className="font-semibold">Age</p>
+                <p className="font-semibold">Edad</p>
                 <p className="text-muted-foreground">{calculateAge(animal.birthDate)}</p>
               </div>
             </div>
             <div className="flex items-center gap-2 rounded-lg bg-secondary/50 p-3">
               <Weight className="h-5 w-5 text-accent" />
               <div>
-                <p className="font-semibold">Weight</p>
+                <p className="font-semibold">Peso</p>
                 <p className="text-muted-foreground">{animal.weight} kg</p>
               </div>
             </div>
              <div className="flex items-center gap-2 rounded-lg bg-secondary/50 p-3">
               <Dna className="h-5 w-5 text-accent" />
               <div>
-                <p className="font-semibold">Parents</p>
+                <p className="font-semibold">Padres</p>
                 <p className="text-muted-foreground truncate">
-                  S: {animal.fatherId || 'N/A'} | D: {animal.motherId || 'N/A'}
+                  P: {animal.fatherId || 'N/A'} | M: {animal.motherId || 'N/A'}
                 </p>
               </div>
             </div>
           </div>
         </CardContent>
       </Card>
-      {/* Other tabs like Health History would go here as separate cards/components */}
+      {/* Otras pestañas como Historial de Salud irían aquí como tarjetas/componentes separados */}
     </div>
   );
 }

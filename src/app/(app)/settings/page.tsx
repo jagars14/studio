@@ -6,25 +6,25 @@ import { Label } from "@/components/ui/label";
 export default function SettingsPage() {
   return (
     <div className="mx-auto max-w-2xl space-y-6">
-      <h1 className="text-3xl font-headline font-bold">Settings</h1>
+      <h1 className="text-3xl font-headline font-bold">Configuración</h1>
       
       <Card>
         <CardHeader>
-          <CardTitle>Farm Details</CardTitle>
-          <CardDescription>Update your farm's name and location.</CardDescription>
+          <CardTitle>Detalles de la Finca</CardTitle>
+          <CardDescription>Actualiza el nombre y la ubicación de tu finca.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="farm-name">Farm Name</Label>
-            <Input id="farm-name" defaultValue="BovinoPro Demo Farm" />
+            <Label htmlFor="farm-name">Nombre de la Finca</Label>
+            <Input id="farm-name" defaultValue="Finca Demo BovinoPro" />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="location">Location</Label>
-            <Input id="location" defaultValue="Green Valley, California" />
+            <Label htmlFor="location">Ubicación</Label>
+            <Input id="location" defaultValue="Valle Verde, California" />
           </div>
         </CardContent>
         <CardFooter className="border-t pt-6">
-          <Button>Save Changes</Button>
+          <Button>Guardar Cambios</Button>
         </CardFooter>
       </Card>
     </div>

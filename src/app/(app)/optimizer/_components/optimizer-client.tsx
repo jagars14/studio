@@ -13,8 +13,8 @@ import { BrainCircuit, HeartPulse, Sparkles, Loader2, ClipboardCheck } from 'luc
 import { useToast } from '@/hooks/use-toast';
 
 const formSchema = z.object({
-  animalData: z.string().min(50, "Please provide more detailed animal data for better suggestions."),
-  environmentalConditions: z.string().min(20, "Please provide more detailed environmental conditions."),
+  animalData: z.string().min(50, "Por favor, proporcione datos más detallados de los animales para obtener mejores sugerencias."),
+  environmentalConditions: z.string().min(20, "Por favor, proporcione condiciones ambientales más detalladas."),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -27,8 +27,8 @@ export default function OptimizerClient() {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      animalData: "Animal ID: 101, Breed: Holstein, Age: 3 years, Last Calving: 2023-01-15, Health: Good, Milk Yield: 25L/day. \nAnimal ID: 102, Breed: Angus, Age: 2 years, Health: Excellent, Weight: 580kg, Not yet bred.",
-      environmentalConditions: "Location: Central Valley, Temp: 28-35°C, Humidity: 75%, Forecast: Heatwave expected next 5 days.",
+      animalData: "ID Animal: 101, Raza: Holstein, Edad: 3 años, Último Parto: 2023-01-15, Salud: Buena, Producción Leche: 25L/día. \nID Animal: 102, Raza: Angus, Edad: 2 años, Salud: Excelente, Peso: 580kg, Aún no ha parido.",
+      environmentalConditions: "Ubicación: Valle Central, Temp: 28-35°C, Humedad: 75%, Pronóstico: Ola de calor esperada los próximos 5 días.",
     },
   });
 
@@ -39,11 +39,11 @@ export default function OptimizerClient() {
       const suggestions = await suggestMatingHealthcare(values);
       setResult(suggestions);
     } catch (error) {
-      console.error("AI suggestion failed:", error);
+      console.error("Falló la sugerencia de IA:", error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to generate AI suggestions. Please try again.",
+        description: "No se pudieron generar las sugerencias de IA. Por favor, inténtelo de nuevo.",
       });
     } finally {
       setIsLoading(false);
@@ -56,12 +56,12 @@ export default function OptimizerClient() {
         <CardHeader>
           <div className="flex items-center gap-2">
             <Sparkles className="h-6 w-6 text-primary" />
-            <CardTitle className="font-headline text-2xl">AI-Powered Optimization</CardTitle>
+            <CardTitle className="font-headline text-2xl">Optimización con IA</CardTitle>
           </div>
         </CardHeader>
         <CardContent>
           <CardDescription>
-            Provide comprehensive data about your animals and farm conditions to receive AI-powered recommendations for mating and healthcare. The AI considers factors like breed, health, and heat stress to provide actionable advice.
+            Proporcione datos completos sobre sus animales y las condiciones de la granja para recibir recomendaciones de apareamiento y cuidado de la salud impulsadas por IA. La IA considera factores como la raza, la salud y el estrés por calor para ofrecer consejos prácticos.
           </CardDescription>
         </CardContent>
       </Card>
@@ -74,10 +74,10 @@ export default function OptimizerClient() {
               name="animalData"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-lg">Animal Data</FormLabel>
+                  <FormLabel className="text-lg">Datos de los Animales</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="e.g., Animal ID, breed, age, health records, reproductive history..."
+                      placeholder="ej., ID del animal, raza, edad, registros de salud, historial reproductivo..."
                       className="min-h-[150px] resize-y"
                       {...field}
                     />
@@ -91,10 +91,10 @@ export default function OptimizerClient() {
               name="environmentalConditions"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-lg">Environmental Conditions</FormLabel>
+                  <FormLabel className="text-lg">Condiciones Ambientales</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="e.g., Temperature, humidity, pasture quality, weather forecast..."
+                      placeholder="ej., Temperatura, humedad, calidad del pasto, pronóstico del tiempo..."
                       className="min-h-[150px] resize-y"
                       {...field}
                     />
@@ -108,12 +108,12 @@ export default function OptimizerClient() {
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Generating...
+                Generando...
               </>
             ) : (
               <>
                 <BrainCircuit className="mr-2 h-4 w-4" />
-                Generate Suggestions
+                Generar Sugerencias
               </>
             )}
           </Button>
@@ -132,7 +132,7 @@ export default function OptimizerClient() {
             <CardHeader>
               <div className="flex items-center gap-2">
                 <HeartPulse className="h-6 w-6 text-primary" />
-                <CardTitle className="font-headline">Mating Suggestions</CardTitle>
+                <CardTitle className="font-headline">Sugerencias de Apareamiento</CardTitle>
               </div>
             </CardHeader>
             <CardContent>
@@ -143,7 +143,7 @@ export default function OptimizerClient() {
             <CardHeader>
               <div className="flex items-center gap-2">
                  <ClipboardCheck className="h-6 w-6 text-accent" />
-                <CardTitle className="font-headline">Healthcare Suggestions</CardTitle>
+                <CardTitle className="font-headline">Sugerencias de Cuidado</CardTitle>
               </div>
             </CardHeader>
             <CardContent>

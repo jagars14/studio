@@ -11,7 +11,7 @@ import { herdEvolutionData } from '@/lib/mock-data'
 
 const chartConfig = {
   count: {
-    label: 'Animals',
+    label: 'Animales',
     color: 'hsl(var(--primary))',
   },
 } satisfies ChartConfig
@@ -26,7 +26,7 @@ export default function HerdEvolutionChart() {
                     tickLine={false}
                     axisLine={false}
                     tickMargin={8}
-                    tickFormatter={(value) => new Date(value+"-02").toLocaleString('default', { month: 'short' })}
+                    tickFormatter={(value) => new Date(value+"-02").toLocaleString('es-ES', { month: 'short' }).replace('.', '')}
                 />
                 <YAxis
                   tickLine={false}
