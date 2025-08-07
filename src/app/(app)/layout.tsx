@@ -39,7 +39,7 @@ export default function AppLayout({
         <SidebarHeader>
           <div className="flex items-center gap-2 p-2">
             <Button variant="ghost" size="icon" className="hover:bg-sidebar-accent rounded-lg">
-                <Logo className="h-6 w-6 text-white" />
+                <Logo className="h-8 w-8 text-white" />
             </Button>
             <h1 className="text-xl font-headline font-semibold">BovinoPro Lite</h1>
           </div>
