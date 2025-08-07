@@ -8,23 +8,27 @@ export const kpis: Kpi[] = [
     value: '342',
     change: '+5 desde el mes pasado',
     icon: Users,
+    href: '/animals',
   },
   {
     title: 'Tasa de Natalidad (12m)',
     value: '88%',
     change: '+2%',
     icon: TrendingUp,
+    href: '/reproduction',
   },
   {
     title: 'Tasa de Mortalidad (12m)',
     value: '2.1%',
     change: '-0.5%',
     icon: TrendingDown,
+    href: '/animals', // Assuming this would also go to animals list
   },
   {
     title: 'Animales que Necesitan Atención',
     value: '12',
     icon: AlertCircle,
+    href: '/animals?filter=attention', // Example filter query
   },
 ];
 

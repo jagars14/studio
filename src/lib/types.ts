@@ -17,6 +17,7 @@ export type Kpi = {
   value: string;
   change?: string;
   icon: React.ElementType;
+  href: string;
 };
 
 export type ReproductiveEvent = {
