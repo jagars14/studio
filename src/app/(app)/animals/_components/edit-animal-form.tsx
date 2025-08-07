@@ -11,6 +11,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
+import type { Animal } from '@/lib/types';
+import { format } from 'date-fns';
 
 const formSchema = z.object({
   id: z.string().min(1, 'El ID es obligatorio.'),
@@ -26,39 +28,48 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-interface AddAnimalFormProps {
+interface EditAnimalFormProps {
+  animal: Animal;
   onFinished?: () => void;
 }
 
-export function AddAnimalForm({ onFinished }: AddAnimalFormProps) {
+const formatDateForInput = (dateString?: string) => {
+  if (!dateString) return '';
+  try {
+    return format(new Date(dateString), 'yyyy-MM-dd');
+  } catch {
+    return '';
+  }
+};
+
+export function EditAnimalForm({ animal, onFinished }: EditAnimalFormProps) {
   const { toast } = useToast();
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      id: '',
-      name: '',
-      breed: '',
-      weight: 0,
-      birthDate: '',
-      lastCalvingDate: '',
-      heatDate: '',
-      pregnancyDate: '',
+      id: animal.id,
+      name: animal.name,
+      breed: animal.breed,
+      sex: animal.sex,
+      weight: animal.weight,
+      birthDate: formatDateForInput(animal.birthDate),
+      lastCalvingDate: formatDateForInput(animal.lastCalvingDate),
+      heatDate: formatDateForInput(animal.heatDate),
+      pregnancyDate: formatDateForInput(animal.pregnancyDate),
     },
   });
 
   const isLoading = form.formState.isSubmitting;
 
   async function onSubmit(values: FormValues) {
-    // En una aplicación real, aquí enviarías los datos al backend.
-    // Por ahora, solo mostramos una notificación y reseteamos el formulario.
-    console.log('Nuevos datos de animal:', values);
+    // En una aplicación real, aquí enviarías los datos al backend para actualizar.
+    console.log('Datos actualizados del animal:', values);
     await new Promise(resolve => setTimeout(resolve, 1000));
     
     toast({
-      title: '¡Animal Registrado!',
-      description: `El animal ${values.name} (${values.id}) ha sido añadido con éxito.`,
+      title: '¡Animal Actualizado!',
+      description: `El animal ${values.name} (${values.id}) ha sido modificado con éxito.`,
     });
-    form.reset();
     onFinished?.();
   }
 
@@ -72,7 +83,7 @@ export function AddAnimalForm({ onFinished }: AddAnimalFormProps) {
             <FormItem>
               <FormLabel>ID del Animal</FormLabel>
               <FormControl>
-                <Input placeholder="Ej: 107" {...field} />
+                <Input placeholder="Ej: 107" {...field} disabled />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -203,7 +214,7 @@ export function AddAnimalForm({ onFinished }: AddAnimalFormProps) {
         
         <Button type="submit" className="w-full" disabled={isLoading}>
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Registrar Animal
+          Guardar Cambios
         </Button>
       </form>
     </Form>

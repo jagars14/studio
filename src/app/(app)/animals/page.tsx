@@ -1,3 +1,7 @@
+
+'use client';
+
+import { useState } from "react";
 import {
   Table,
   TableBody,
@@ -24,14 +28,26 @@ import { animals } from "@/lib/mock-data";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { AddAnimalForm } from "./_components/add-animal-form";
+import { EditAnimalForm } from "./_components/edit-animal-form";
+import type { Animal } from "@/lib/types";
+
 
 export default function AnimalsPage() {
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [selectedAnimal, setSelectedAnimal] = useState<Animal | null>(null);
+
+  const handleEditClick = (animal: Animal) => {
+    setSelectedAnimal(animal);
+    setIsEditDialogOpen(true);
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-4">
         <h1 className="text-3xl font-headline font-bold">Inventario de Animales</h1>
         <div className="flex items-center gap-2">
-           <Dialog>
+           <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
             <DialogTrigger asChild>
               <Button size="sm" className="gap-1">
                 <PlusCircle className="h-3.5 w-3.5" />
@@ -45,7 +61,7 @@ export default function AnimalsPage() {
                   Complete la información para añadir un nuevo animal al inventario.
                 </DialogDescription>
               </DialogHeader>
-              <AddAnimalForm />
+              <AddAnimalForm onFinished={() => setIsAddDialogOpen(false)} />
             </DialogContent>
           </Dialog>
         </div>
@@ -113,7 +129,7 @@ export default function AnimalsPage() {
                         <DropdownMenuContent align="end">
                           <DropdownMenuLabel>Acciones</DropdownMenuLabel>
                            <DropdownMenuSeparator />
-                          <DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleEditClick(animal)}>
                             <FilePenLine className="mr-2 h-4 w-4" />
                             <span>Editar</span>
                           </DropdownMenuItem>
@@ -131,6 +147,24 @@ export default function AnimalsPage() {
           </div>
         </CardContent>
       </Card>
+      
+      {selectedAnimal && (
+        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="font-headline">Editar Animal</DialogTitle>
+              <DialogDescription>
+                Modifique la información del animal.
+              </DialogDescription>
+            </DialogHeader>
+            <EditAnimalForm
+              animal={selectedAnimal}
+              onFinished={() => setIsEditDialogOpen(false)}
+            />
+          </DialogContent>
+        </Dialog>
+      )}
+
     </div>
   );
 }
