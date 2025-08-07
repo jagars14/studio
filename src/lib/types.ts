@@ -2,7 +2,7 @@
 export type Animal = {
   id: string;
   name: string;
-  breed: string;
+  breed: 'Holstein' | 'Angus' | 'Brahman' | 'Jersey' | 'Gyr' | 'Normando';
   sex: 'Macho' | 'Hembra';
   birthDate: string;
   fatherId: string | null;

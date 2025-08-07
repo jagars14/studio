@@ -16,7 +16,7 @@ import * as React from 'react';
 const formSchema = z.object({
   id: z.string().min(1, 'El ID es obligatorio.'),
   name: z.string().min(2, 'El nombre debe tener al menos 2 caracteres.'),
-  breed: z.string().min(2, 'La raza es obligatoria.'),
+  breed: z.enum(['Holstein', 'Angus', 'Brahman', 'Jersey', 'Gyr', 'Normando'], { required_error: 'Por favor, seleccione una raza.' }),
   sex: z.enum(['Macho', 'Hembra'], { required_error: 'Por favor, seleccione un sexo.' }),
   weight: z.coerce.number().min(1, 'El peso debe ser mayor que 0.'),
   birthDate: z.string().refine((val) => !isNaN(Date.parse(val)), { message: "Fecha inválida" }),
@@ -40,7 +40,6 @@ export function AddAnimalForm({ onFinished }: AddAnimalFormProps) {
     defaultValues: {
       id: '',
       name: '',
-      breed: '',
       weight: 0,
       birthDate: '',
       lastCalvingDate: '',
@@ -139,9 +138,21 @@ export function AddAnimalForm({ onFinished }: AddAnimalFormProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Raza</FormLabel>
-                <FormControl>
-                  <Input placeholder="Ej: Angus" {...field} />
-                </FormControl>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Seleccione una raza" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="Holstein">Holstein</SelectItem>
+                    <SelectItem value="Angus">Angus</SelectItem>
+                    <SelectItem value="Brahman">Brahman</SelectItem>
+                    <SelectItem value="Jersey">Jersey</SelectItem>
+                    <SelectItem value="Gyr">Gyr</SelectItem>
+                    <SelectItem value="Normando">Normando</SelectItem>
+                  </SelectContent>
+                </Select>
                 <FormMessage />
               </FormItem>
             )}
