@@ -35,3 +35,17 @@ export type ReproductiveEvent = {
 export interface ColombiaData {
   [departamento: string]: string[];
 }
+
+export type User = {
+    uid: string;
+    email: string | null;
+    name: string | null;
+};
+
+export type Farm = {
+    id?: string;
+    name: string;
+    ownerId: string;
+    department: string;
+    city: string;
+}

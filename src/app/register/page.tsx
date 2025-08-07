@@ -13,9 +13,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Logo } from '@/components/logo';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { auth, db } from '@/lib/firebase';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { doc, setDoc, collection, addDoc } from 'firebase/firestore';
+
 
 const formSchema = z.object({
   name: z.string().min(3, 'El nombre debe tener al menos 3 caracteres.'),
+  farmName: z.string().min(3, 'El nombre de la finca debe tener al menos 3 caracteres.'),
   email: z.string().email('Por favor, ingrese un email válido.'),
   password: z.string().min(8, 'La contraseña debe tener al menos 8 caracteres.'),
   confirmPassword: z.string(),
@@ -33,6 +38,7 @@ export default function RegisterPage() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: '',
+      farmName: '',
       email: '',
       password: '',
       confirmPassword: '',
@@ -42,16 +48,43 @@ export default function RegisterPage() {
   const isLoading = form.formState.isSubmitting;
 
   async function onSubmit(values: FormValues) {
-    // Simulación de registro de usuario
-    console.log('Datos de registro:', { name: values.name, email: values.email });
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    toast({
-      title: '¡Registro Exitoso!',
-      description: `Bienvenido, ${values.name}. Ahora puedes iniciar sesión.`,
-    });
-    
-    router.push('/login');
+    try {
+      // 1. Create user in Firebase Auth
+      const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
+      const user = userCredential.user;
+
+      // 2. Create user document in Firestore
+      const userDocRef = doc(db, 'users', user.uid);
+      await setDoc(userDocRef, {
+        uid: user.uid,
+        name: values.name,
+        email: values.email,
+      });
+
+      // 3. Create farm document in Firestore
+      const farmsCollectionRef = collection(db, 'farms');
+      await addDoc(farmsCollectionRef, {
+          name: values.farmName,
+          ownerId: user.uid,
+          department: '', // Dejar en blanco para que el usuario lo configure después
+          city: '',
+      });
+
+      toast({
+        title: '¡Registro Exitoso!',
+        description: `Bienvenido, ${values.name}. Ahora puedes iniciar sesión.`,
+      });
+      
+      router.push('/login');
+
+    } catch (error: any) {
+       console.error("Error en el registro:", error);
+       toast({
+        variant: "destructive",
+        title: "Error en el registro",
+        description: error.message || "No se pudo completar el registro. Inténtelo de nuevo.",
+      });
+    }
   }
 
   return (
@@ -75,6 +108,19 @@ export default function RegisterPage() {
                     <FormLabel>Nombre del Propietario</FormLabel>
                     <FormControl>
                       <Input placeholder="Ej: Juan Pérez" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+               <FormField
+                control={form.control}
+                name="farmName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nombre de la Finca</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Ej: Finca La Esperanza" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

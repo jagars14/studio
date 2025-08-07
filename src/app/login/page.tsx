@@ -12,6 +12,8 @@ import { useToast } from '@/hooks/use-toast';
 import { Logo } from '@/components/logo';
 import Link from 'next/link';
 import { Separator } from '@/components/ui/separator';
+import { auth } from '@/lib/firebase';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -20,28 +22,27 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simulación de autenticación
-    setTimeout(() => {
-      if (email === 'demo@bovinopro.com' && password === 'password') {
-        // En una aplicación real, aquí se establecería una sesión/token
-        toast({
-          title: "Inicio de Sesión Exitoso",
-          description: "Bienvenido a BovinoPro Lite.",
-        });
-        router.push('/dashboard');
-      } else {
-        toast({
-          variant: "destructive",
-          title: "Error de Autenticación",
-          description: "Credenciales incorrectas. Por favor, inténtelo de nuevo.",
-        });
-        setIsLoading(false);
-      }
-    }, 1000);
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      toast({
+        title: "Inicio de Sesión Exitoso",
+        description: "Bienvenido a BovinoPro Lite.",
+      });
+      router.push('/dashboard');
+    } catch (error: any) {
+      console.error("Error de Autenticación:", error);
+      toast({
+        variant: "destructive",
+        title: "Error de Autenticación",
+        description: error.message || "Credenciales incorrectas. Por favor, inténtelo de nuevo.",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -79,9 +80,6 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={isLoading}
               />
-               <p className="text-xs text-muted-foreground pt-1">
-                Use <strong>demo@bovinopro.com</strong> y <strong>password</strong> para ingresar.
-              </p>
             </div>
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
