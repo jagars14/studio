@@ -13,12 +13,13 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { ListFilter, PlusCircle, Search } from "lucide-react";
+import { ListFilter, PlusCircle, Search, MoreHorizontal, FilePenLine, Trash2 } from "lucide-react";
 import { animals } from "@/lib/mock-data";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
@@ -83,6 +84,7 @@ export default function AnimalsPage() {
                   <TableHead>Raza</TableHead>
                   <TableHead>Categoría</TableHead>
                   <TableHead className="text-right">Peso (kg)</TableHead>
+                  <TableHead className="w-[50px] text-right">Acciones</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -100,6 +102,28 @@ export default function AnimalsPage() {
                       <Badge variant="secondary">{animal.category}</Badge>
                     </TableCell>
                     <TableCell className="text-right">{animal.weight}</TableCell>
+                    <TableCell className="text-right">
+                       <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon" className="h-8 w-8">
+                            <MoreHorizontal className="h-4 w-4" />
+                             <span className="sr-only">Abrir menú</span>
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+                           <DropdownMenuSeparator />
+                          <DropdownMenuItem>
+                            <FilePenLine className="mr-2 h-4 w-4" />
+                            <span>Editar</span>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem className="text-destructive focus:text-destructive">
+                            <Trash2 className="mr-2 h-4 w-4" />
+                             <span>Eliminar</span>
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
