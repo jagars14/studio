@@ -17,11 +17,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ListFilter, PlusCircle, Search } from "lucide-react";
 import { animals } from "@/lib/mock-data";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
-import { Logo } from "@/components/logo";
+import { AddAnimalForm } from "./_components/add-animal-form";
 
 export default function AnimalsPage() {
   return (
@@ -29,10 +30,23 @@ export default function AnimalsPage() {
       <div className="flex items-center justify-between gap-4">
         <h1 className="text-3xl font-headline font-bold">Inventario de Animales</h1>
         <div className="flex items-center gap-2">
-          <Button size="sm" className="gap-1">
-            <PlusCircle className="h-3.5 w-3.5" />
-            <span>Añadir Animal</span>
-          </Button>
+           <Dialog>
+            <DialogTrigger asChild>
+              <Button size="sm" className="gap-1">
+                <PlusCircle className="h-3.5 w-3.5" />
+                <span>Añadir Animal</span>
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle className="font-headline">Registrar Nuevo Animal</DialogTitle>
+                <DialogDescription>
+                  Complete la información para añadir un nuevo animal al inventario.
+                </DialogDescription>
+              </DialogHeader>
+              <AddAnimalForm />
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
       
