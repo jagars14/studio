@@ -10,9 +10,10 @@ import {
   SidebarInset,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { Beef, LayoutDashboard, CalendarHeart, BrainCircuit, Settings } from "lucide-react";
+import { LayoutDashboard, CalendarHeart, BrainCircuit, Settings } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { Logo } from "@/components/logo";
 
 export const metadata: Metadata = {
   title: "BovinoPro Lite",
@@ -21,7 +22,7 @@ export const metadata: Metadata = {
 
 const navItems = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Panel" },
-  { href: "/animals", icon: Beef, label: "Animales" },
+  { href: "/animals", icon: Logo, label: "Animales" },
   { href: "/reproduction", icon: CalendarHeart, label: "Reproducción" },
   { href: "/optimizer", icon: BrainCircuit, label: "Optimizador IA" },
   { href: "/settings", icon: Settings, label: "Configuración" },
@@ -38,7 +39,7 @@ export default function AppLayout({
         <SidebarHeader>
           <div className="flex items-center gap-2 p-2">
             <Button variant="ghost" size="icon" className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg">
-                <Beef className="h-6 w-6" />
+                <Logo className="h-6 w-6" />
             </Button>
             <h1 className="text-xl font-headline font-semibold">BovinoPro Lite</h1>
           </div>

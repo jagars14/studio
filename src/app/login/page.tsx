@@ -7,8 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Beef, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { Logo } from '@/components/logo';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -46,7 +47,7 @@ export default function LoginPage() {
       <Card className="mx-auto max-w-sm w-full">
         <CardHeader className="text-center">
           <div className="inline-block mx-auto p-3 bg-primary text-primary-foreground rounded-full mb-4">
-            <Beef className="h-8 w-8" />
+            <Logo className="h-8 w-8" />
           </div>
           <CardTitle className="text-2xl font-headline">Bienvenido a BovinoPro Lite</CardTitle>
           <CardDescription>Ingrese sus credenciales para acceder a su finca.</CardDescription>
