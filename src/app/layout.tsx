@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster"
 export const metadata: Metadata = {
   title: 'BovinoPro Lite',
   description: 'Gestión integral para fincas ganaderas.',
+  manifest: '/manifest.json',
 };
 
 export default function RootLayout({
