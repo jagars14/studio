@@ -4,12 +4,14 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Logo } from '@/components/logo';
+import Link from 'next/link';
+import { Separator } from '@/components/ui/separator';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -87,6 +89,15 @@ export default function LoginPage() {
             </Button>
           </form>
         </CardContent>
+        <CardFooter className="flex-col gap-4">
+            <Separator />
+            <p className="text-sm text-muted-foreground">
+                ¿No tienes una cuenta?{' '}
+                <Link href="/register" className="font-semibold text-primary hover:underline">
+                Regístrate
+                </Link>
+            </p>
+        </CardFooter>
       </Card>
     </div>
   );
