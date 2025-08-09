@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { animals } from "@/lib/mock-data"; 
 import HerdEvolutionChart from "./_components/herd-evolution-chart";
@@ -13,28 +13,35 @@ import { format, isSameMonth, startOfToday, addDays, isWithinInterval } from "da
 import { es } from "date-fns/locale";
 import { Badge } from "@/components/ui/badge";
 import { generateReproductiveEvents } from "@/lib/utils";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import type { ReproductiveEvent } from '@/lib/types';
 
 
 export default function DashboardPage() {
+  const [isClient, setIsClient] = useState(false);
   const [isNeedsAttentionOpen, setIsNeedsAttentionOpen] = useState(false);
   
-  const today = useMemo(() => startOfToday(), []);
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  const today = useMemo(() => isClient ? startOfToday() : new Date(), [isClient]);
 
   const upcomingEvents = useMemo(() => {
+    if (!isClient) return [];
     const currentMonth = new Date();
     return generateReproductiveEvents(animals)
       .filter(event => isSameMonth(event.date, currentMonth) && event.date >= today)
       .slice(0, 4);
-  }, [today]);
+  }, [isClient, today]);
 
   const needsAttentionEvents = useMemo(() => {
+    if (!isClient) return [];
     const next30Days = addDays(today, 30);
     return generateReproductiveEvents(animals, { includeBirthdays: false })
       .filter(event => isWithinInterval(event.date, { start: today, end: next30Days }));
-  }, [today]);
+  }, [isClient, today]);
 
   const kpiCards = [
     { title: 'Total de Animales', value: '342', change: '+5 desde el mes pasado', icon: Users, href: '/animals' },
