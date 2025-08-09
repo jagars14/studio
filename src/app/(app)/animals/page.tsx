@@ -30,6 +30,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { AddAnimalForm } from "./_components/add-animal-form";
 import { EditAnimalForm } from "./_components/edit-animal-form";
 import type { Animal } from "@/lib/types";
+import { Logo } from "@/components/logo";
 
 export default function AnimalsPage() {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -58,7 +59,10 @@ export default function AnimalsPage() {
             </DialogTrigger>
             <DialogContent className="sm:max-w-md">
               <DialogHeader>
-                <DialogTitle className="font-headline">Registrar Nuevo Animal</DialogTitle>
+                <div className="flex items-center gap-3">
+                  <Logo className="h-8 w-8" />
+                  <DialogTitle className="font-headline">Registrar Nuevo Animal</DialogTitle>
+                </div>
                 <DialogDescription>
                   Complete la información para añadir un nuevo animal al inventario.
                 </DialogDescription>
