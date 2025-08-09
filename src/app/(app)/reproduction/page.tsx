@@ -52,54 +52,53 @@ export default function ReproductionPage() {
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-headline font-bold">Calendario y Calculadora</h1>
-      <Card>
-        <div className="grid gap-px lg:grid-cols-2">
-            <div className="flex flex-col">
-              <CardHeader>
+      <div className="grid gap-6 lg:grid-cols-5">
+        <Card className="lg:col-span-3">
+            <CardHeader>
                 <CardTitle className="font-headline">Calendario de Eventos</CardTitle>
-              </CardHeader>
-              <CardContent className="flex justify-center">
-                <Calendar
-                  mode="single"
-                  selected={date}
-                  onSelect={setDate}
-                  locale={es}
-                  modifiers={{
-                    events: allEvents.map(e => e.date),
-                  }}
-                  modifiersClassNames={{
-                    events: 'bg-accent/50 rounded-full',
-                  }}
-                  className="w-auto"
-                />
-              </CardContent>
-            </div>
-            <div className="flex flex-col border-l">
-                 <CardHeader>
-                    <CardTitle className="font-headline">
-                        {date ? `Eventos para ${format(date, 'd MMMM yyyy', {locale: es})}` : 'Próximos Eventos'}
-                    </CardTitle>
-                 </CardHeader>
-                 <CardContent className="flex-1">
-                    <ScrollArea className="h-96">
-                        {selectedDayEvents.length > 0 ? (
-                             <ul className="space-y-4 pr-4">
-                                {selectedDayEvents.map(renderEvent)}
-                            </ul>
-                        ) : upcomingEvents.length > 0 ? (
-                             <ul className="space-y-4 pr-4">
-                                {upcomingEvents.slice(0, 5).map(renderEvent)}
-                             </ul>
-                        ) : (
-                            <p className="text-muted-foreground">No hay eventos próximos.</p>
-                        )}
-                    </ScrollArea>
-                 </CardContent>
-            </div>
-        </div>
-      </Card>
+            </CardHeader>
+            <CardContent className="flex justify-center">
+            <Calendar
+                mode="single"
+                selected={date}
+                onSelect={setDate}
+                locale={es}
+                modifiers={{
+                events: allEvents.map(e => e.date),
+                }}
+                modifiersClassNames={{
+                events: 'bg-accent/50 rounded-full',
+                }}
+                className="w-auto"
+            />
+            </CardContent>
+        </Card>
+        <Card className="lg:col-span-2 flex flex-col">
+            <CardHeader>
+                <CardTitle className="font-headline">
+                    {date ? `Eventos para ${format(date, 'd MMMM yyyy', {locale: es})}` : 'Próximos Eventos'}
+                </CardTitle>
+            </CardHeader>
+            <CardContent className="flex-1">
+            <ScrollArea className="h-96">
+                {selectedDayEvents.length > 0 ? (
+                        <ul className="space-y-4 pr-4">
+                        {selectedDayEvents.map(renderEvent)}
+                    </ul>
+                ) : upcomingEvents.length > 0 ? (
+                        <ul className="space-y-4 pr-4">
+                        {upcomingEvents.slice(0, 10).map(renderEvent)}
+                        </ul>
+                ) : (
+                    <p className="text-muted-foreground">No hay eventos próximos.</p>
+                )}
+            </ScrollArea>
+            </CardContent>
+        </Card>
+      </div>
 
       <ReproductiveCalculator />
     </div>
   );
 }
+
