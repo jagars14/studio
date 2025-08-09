@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -12,6 +13,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { BrainCircuit, HeartPulse, Sparkles, Loader2, ClipboardCheck, MapPin } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
+import { auth, db } from '@/lib/firebase';
+import { collection, query, where, getDocs } from 'firebase/firestore';
+import type { Farm } from '@/lib/types';
+import { useAuthState } from 'react-firebase-hooks/auth';
 
 const formSchema = z.object({
   animalData: z.string().min(50, "Por favor, proporcione datos más detallados de los animales para obtener mejores sugerencias."),
@@ -19,16 +24,26 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-// Simulación de la configuración de la finca. En una app real, esto vendría de una API o del estado global.
-const farmSettings = {
-  department: 'Antioquia',
-  city: 'Medellín'
-}
-
 export default function OptimizerClient() {
   const [result, setResult] = useState<SuggestMatingHealthcareOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const [user, loadingAuth] = useAuthState(auth);
+  const [farm, setFarm] = useState<Farm | null>(null);
+
+  useEffect(() => {
+    async function fetchFarmData() {
+      if (user) {
+        const q = query(collection(db, 'farms'), where('ownerId', '==', user.uid));
+        const querySnapshot = await getDocs(q);
+        if (!querySnapshot.empty) {
+          const farmDoc = querySnapshot.docs[0];
+          setFarm(farmDoc.data() as Farm);
+        }
+      }
+    }
+    fetchFarmData();
+  }, [user]);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -38,13 +53,22 @@ export default function OptimizerClient() {
   });
 
   async function onSubmit(values: FormValues) {
+    if (!farm) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "No se ha configurado la ubicación de la finca. Por favor, configúrela en los ajustes.",
+      });
+      return;
+    }
+    
     setIsLoading(true);
     setResult(null);
     try {
       const suggestions = await suggestMatingHealthcare({
         animalData: values.animalData,
-        department: farmSettings.department,
-        city: farmSettings.city,
+        department: farm.department,
+        city: farm.city,
       });
       setResult(suggestions);
     } catch (error) {
@@ -59,6 +83,8 @@ export default function OptimizerClient() {
     }
   }
 
+  const farmLocation = farm ? `${farm.city}, ${farm.department}` : 'Ubicación no configurada';
+
   return (
     <div className="space-y-6">
       <Card>
@@ -70,7 +96,7 @@ export default function OptimizerClient() {
            <CardDescription className="flex items-center gap-2 pt-2">
             <MapPin className="h-4 w-4" />
             <span>
-              Generando sugerencias para la finca en <strong>{farmSettings.city}, {farmSettings.department}</strong>. 
+              Generando sugerencias para la finca en <strong>{farmLocation}</strong>. 
               <Link href="/settings" className="ml-1 text-primary hover:underline">Cambiar ubicación</Link>
             </span>
           </CardDescription>
@@ -101,7 +127,7 @@ export default function OptimizerClient() {
                 </FormItem>
               )}
             />
-          <Button type="submit" disabled={isLoading} size="lg">
+          <Button type="submit" disabled={isLoading || !farm || loadingAuth} size="lg">
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
