@@ -9,7 +9,7 @@ import { animals } from "@/lib/mock-data";
 import { format, isSameDay } from 'date-fns';
 import { es } from 'date-fns/locale';
 import ReproductiveCalculator from "./_components/reproductive-calculator";
-import { generateReproductiveEvents } from '@/lib/utils';
+import { generateReproductiveEvents, cn } from '@/lib/utils';
 import type { ReproductiveEvent } from '@/lib/types';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
