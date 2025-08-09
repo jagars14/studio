@@ -1,7 +1,8 @@
 
 'use client';
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import { useSearchParams } from 'next/navigation';
 import {
   Table,
   TableBody,
@@ -30,17 +31,39 @@ import { Card, CardContent } from "@/components/ui/card";
 import { AddAnimalForm } from "./_components/add-animal-form";
 import { EditAnimalForm } from "./_components/edit-animal-form";
 import type { Animal } from "@/lib/types";
+import { generateReproductiveEvents } from '@/lib/utils';
+import { addDays, isWithinInterval } from 'date-fns';
 
 
 export default function AnimalsPage() {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [selectedAnimal, setSelectedAnimal] = useState<Animal | null>(null);
+  const searchParams = useSearchParams();
 
   const handleEditClick = (animal: Animal) => {
     setSelectedAnimal(animal);
     setIsEditDialogOpen(true);
   };
+  
+  const filteredAnimals = useMemo(() => {
+    const view = searchParams.get('view');
+    if (view !== 'needs_attention') {
+      return animals;
+    }
+
+    const today = new Date();
+    const next30Days = addDays(today, 30);
+    const upcomingEvents = generateReproductiveEvents(animals, { includeBirthdays: false });
+    
+    const animalIdsWithUpcomingEvents = new Set(
+      upcomingEvents
+        .filter(event => isWithinInterval(event.date, { start: today, end: next30Days }))
+        .map(event => event.animalId)
+    );
+
+    return animals.filter(animal => animalIdsWithUpcomingEvents.has(animal.id));
+  }, [searchParams]);
 
   return (
     <div className="space-y-4">
@@ -104,7 +127,7 @@ export default function AnimalsPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {animals.map((animal) => (
+                {filteredAnimals.map((animal) => (
                   <TableRow key={animal.id}>
                     <TableCell>
                       <Link href={`/animals/${animal.id}`} className="font-medium hover:underline text-primary">

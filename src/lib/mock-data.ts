@@ -28,7 +28,7 @@ export const kpis: Kpi[] = [
     title: 'Animales que Necesitan Atención',
     value: '12',
     icon: AlertCircle,
-    href: '/animals?filter=attention', // Example filter query
+    href: '/animals?view=needs_attention',
   },
 ];
 

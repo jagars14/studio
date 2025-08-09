@@ -51,14 +51,15 @@ const subUTCDays = (date: Date, days: number) => {
     return addUTCDays(date, -days);
 };
 
-export function generateReproductiveEvents(animals: Animal[]): ReproductiveEvent[] {
+export function generateReproductiveEvents(animals: Animal[], options?: { includeBirthdays?: boolean }): ReproductiveEvent[] {
   const events: ReproductiveEvent[] = [];
   const now = new Date();
   const currentUTCFullYear = now.getUTCFullYear();
+  const includeBirthdays = options?.includeBirthdays ?? true;
 
   animals.forEach(animal => {
     // --- Evento de Cumpleaños (para todos) ---
-    if (animal.birthDate) {
+    if (includeBirthdays && animal.birthDate) {
         const birthDate = createUTCDate(animal.birthDate);
         let nextBirthday = new Date(Date.UTC(currentUTCFullYear, birthDate.getUTCMonth(), birthDate.getUTCDate()));
         
