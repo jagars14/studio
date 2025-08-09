@@ -2,7 +2,6 @@
 'use client';
 
 import { useState, useMemo } from "react";
-import { useSearchParams } from 'next/navigation';
 import {
   Table,
   TableBody,
@@ -31,39 +30,19 @@ import { Card, CardContent } from "@/components/ui/card";
 import { AddAnimalForm } from "./_components/add-animal-form";
 import { EditAnimalForm } from "./_components/edit-animal-form";
 import type { Animal } from "@/lib/types";
-import { generateReproductiveEvents } from '@/lib/utils';
-import { addDays, isWithinInterval } from 'date-fns';
-
 
 export default function AnimalsPage() {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [selectedAnimal, setSelectedAnimal] = useState<Animal | null>(null);
-  const searchParams = useSearchParams();
 
   const handleEditClick = (animal: Animal) => {
     setSelectedAnimal(animal);
     setIsEditDialogOpen(true);
   };
   
-  const filteredAnimals = useMemo(() => {
-    const view = searchParams.get('view');
-    if (view !== 'needs_attention') {
-      return animals;
-    }
-
-    const today = new Date();
-    const next30Days = addDays(today, 30);
-    const upcomingEvents = generateReproductiveEvents(animals, { includeBirthdays: false });
-    
-    const animalIdsWithUpcomingEvents = new Set(
-      upcomingEvents
-        .filter(event => isWithinInterval(event.date, { start: today, end: next30Days }))
-        .map(event => event.animalId)
-    );
-
-    return animals.filter(animal => animalIdsWithUpcomingEvents.has(animal.id));
-  }, [searchParams]);
+  // The filtering logic for 'needs_attention' has been moved to the dashboard popup.
+  const filteredAnimals = animals;
 
   return (
     <div className="space-y-4">

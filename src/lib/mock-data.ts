@@ -2,7 +2,8 @@ import type { Animal, Kpi, ReproductiveEvent } from '@/lib/types';
 import { Users, TrendingUp, TrendingDown, AlertCircle } from 'lucide-react';
 import { addDays, subMonths } from 'date-fns';
 
-export const kpis: Kpi[] = [
+// This is now a static list. The "Needs Attention" card is handled dynamically in the dashboard component.
+export const kpis: Omit<Kpi, 'href'>[] = [
   {
     title: 'Total de Animales',
     value: '342',
@@ -22,13 +23,13 @@ export const kpis: Kpi[] = [
     value: '2.1%',
     change: '-0.5%',
     icon: TrendingDown,
-    href: '/animals', // Assuming this would also go to animals list
+    href: '/animals',
   },
-  {
+   {
     title: 'Animales que Necesitan Atención',
     value: '12',
     icon: AlertCircle,
-    href: '/animals?view=needs_attention',
+    href: '#', // Href is now handled by a dialog trigger
   },
 ];
 
