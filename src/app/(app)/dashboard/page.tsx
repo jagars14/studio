@@ -1,21 +1,25 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { kpis, animals } from "@/lib/mock-data"; // Import animals instead of reproductiveEvents
+import { kpis, animals } from "@/lib/mock-data"; 
 import HerdEvolutionChart from "./_components/herd-evolution-chart";
 import HerdDistributionChart from "./_components/herd-distribution-chart";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, CalendarClock } from "lucide-react";
-import { format } from "date-fns";
+import { format, isSameMonth, startOfToday } from "date-fns";
 import { es } from "date-fns/locale";
 import { Badge } from "@/components/ui/badge";
-import { generateReproductiveEvents } from "@/lib/utils"; // Import the event generator
+import { generateReproductiveEvents } from "@/lib/utils"; 
 
 export default function DashboardPage() {
-  // Generate events dynamically and get the next 4
+  // Generate events dynamically
   const allEvents = generateReproductiveEvents(animals);
+  const today = startOfToday();
+  const currentMonth = new Date();
+
+  // Filter for upcoming events within the current month, limit to 4
   const upcomingEvents = allEvents
-    .filter(event => event.date >= new Date())
+    .filter(event => isSameMonth(event.date, currentMonth) && event.date >= today)
     .slice(0, 4);
 
   return (
@@ -65,7 +69,7 @@ export default function DashboardPage() {
             <CardHeader>
                 <CardTitle className="font-headline flex items-center gap-2">
                     <CalendarClock className="h-6 w-6" />
-                    <span>Próximos Eventos</span>
+                    <span>Próximos Eventos del Mes</span>
                 </CardTitle>
             </CardHeader>
             <CardContent className="flex-1">
@@ -93,7 +97,7 @@ export default function DashboardPage() {
                         ))}
                     </ul>
                  ) : (
-                    <p className="text-muted-foreground text-sm">No hay eventos próximos en el calendario.</p>
+                    <p className="text-muted-foreground text-sm">No hay eventos próximos para lo que resta del mes.</p>
                  )}
             </CardContent>
             <div className="p-4 mt-auto border-t">
