@@ -252,50 +252,53 @@ export function EditAnimalForm({ animal, onFinished }: EditAnimalFormProps) {
           )}
         </div>
 
-        <Separator className="my-2" />
-        <p className="text-sm font-medium text-muted-foreground">Información Reproductiva (Solo Hembras)</p>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <FormField
-            control={form.control}
-            name="lastCalvingDate"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Último Parto</FormLabel>
-                <FormControl>
-                   <Input type="date" {...field} disabled={sex !== 'Hembra'} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="heatDate"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Fecha de Celo</FormLabel>
-                <FormControl>
-                   <Input type="date" {...field} disabled={sex !== 'Hembra'} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="pregnancyDate"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Fecha de Preñez</FormLabel>
-                <FormControl>
-                   <Input type="date" {...field} disabled={sex !== 'Hembra'} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
+        {sex === 'Hembra' && (
+          <>
+            <Separator className="my-2" />
+            <p className="text-sm font-medium text-muted-foreground">Información Reproductiva</p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <FormField
+                control={form.control}
+                name="lastCalvingDate"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Último Parto</FormLabel>
+                    <FormControl>
+                      <Input type="date" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="heatDate"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Fecha de Celo</FormLabel>
+                    <FormControl>
+                      <Input type="date" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="pregnancyDate"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Fecha de Preñez</FormLabel>
+                    <FormControl>
+                      <Input type="date" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </>
+        )}
         
         <Button type="submit" className="w-full" disabled={isLoading}>
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
