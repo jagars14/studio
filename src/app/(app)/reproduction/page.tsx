@@ -12,12 +12,21 @@ import ReproductiveCalculator from "./_components/reproductive-calculator";
 import { generateReproductiveEvents, cn } from '@/lib/utils';
 import type { ReproductiveEvent } from '@/lib/types';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
 
 export default function ReproductionPage() {
   const [date, setDate] = React.useState<Date | undefined>(new Date());
-  
-  // Generar eventos dinámicamente a partir de los datos de los animales
-  const allEvents = React.useMemo(() => generateReproductiveEvents(animals), []);
+  const [selectedAnimalId, setSelectedAnimalId] = React.useState<string | 'all'>('all');
+
+  const filteredAnimals = React.useMemo(() => {
+    if (selectedAnimalId === 'all') {
+      return animals;
+    }
+    return animals.filter(animal => animal.id === selectedAnimalId);
+  }, [selectedAnimalId]);
+
+  const allEvents = React.useMemo(() => generateReproductiveEvents(filteredAnimals), [filteredAnimals]);
 
   const currentMonthEvents = React.useMemo(() => {
     const today = startOfToday();
@@ -62,6 +71,28 @@ export default function ReproductionPage() {
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-headline font-bold">Calendario y Calculadora</h1>
+      
+      <Card>
+        <CardContent className="pt-6">
+            <div className="max-w-xs">
+                <Label htmlFor="animal-filter" className="font-semibold">Filtrar por Animal</Label>
+                <Select value={selectedAnimalId} onValueChange={(value) => setSelectedAnimalId(value || 'all')}>
+                    <SelectTrigger id="animal-filter" className="mt-2">
+                        <SelectValue placeholder="Seleccionar un animal..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="all">Todos los animales</SelectItem>
+                        {animals.map(animal => (
+                            <SelectItem key={animal.id} value={animal.id}>
+                                {animal.name} ({animal.id})
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+            </div>
+        </CardContent>
+      </Card>
+
       <div className="grid gap-6 lg:grid-cols-5">
         <Card className="lg:col-span-3">
             <CardHeader>
