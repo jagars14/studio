@@ -9,7 +9,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyDavOvy_kKQFYZTQB7WoYPJRDnCOg6Jkjc",
   authDomain: "bovinopro-lite.firebaseapp.com",
   projectId: "bovinopro-lite",
-  storageBucket: "bovinopro-lite.firebasestorage.app",
+  storageBucket: "bovinopro-lite.appspot.com",
   messagingSenderId: "97561048393",
   appId: "1:97561048393:web:08338854a29c40eadb5698"
 };
