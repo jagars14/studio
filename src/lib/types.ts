@@ -1,4 +1,5 @@
 
+
 export type Animal = {
   id: string;
   name: string;
@@ -28,7 +29,12 @@ export type ReproductiveEvent = {
   id: string;
   animalName: string;
   animalId: string;
-  eventType: 'Celo' | 'Chequeo Preñez' | 'Fecha de Parto';
+  eventType: 
+    | 'Próximo Celo' 
+    | 'Vigilar Retorno a Celo'
+    | 'Chequeo de Preñez' 
+    | 'Fecha de Secado'
+    | 'Fecha Probable de Parto';
   date: Date;
 };
 
