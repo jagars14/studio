@@ -1,5 +1,6 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { kpis, reproductiveEvents } from "@/lib/mock-data";
+import { kpis, animals } from "@/lib/mock-data"; // Import animals instead of reproductiveEvents
 import HerdEvolutionChart from "./_components/herd-evolution-chart";
 import HerdDistributionChart from "./_components/herd-distribution-chart";
 import Link from "next/link";
@@ -8,9 +9,14 @@ import { ArrowRight, CalendarClock } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { Badge } from "@/components/ui/badge";
+import { generateReproductiveEvents } from "@/lib/utils"; // Import the event generator
 
 export default function DashboardPage() {
-  const upcomingEvents = reproductiveEvents.slice(0, 4); // Limitar a 4 eventos
+  // Generate events dynamically and get the next 4
+  const allEvents = generateReproductiveEvents(animals);
+  const upcomingEvents = allEvents
+    .filter(event => event.date >= new Date())
+    .slice(0, 4);
 
   return (
     <div className="space-y-6">
@@ -63,30 +69,34 @@ export default function DashboardPage() {
                 </CardTitle>
             </CardHeader>
             <CardContent className="flex-1">
-                <ul className="space-y-4">
-                  {upcomingEvents.map((event) => (
-                    <li key={event.id} className="flex items-center gap-4">
-                      <div className="flex flex-col items-center justify-center rounded-md bg-muted p-2 text-center w-14">
-                        <span className="text-sm font-bold text-muted-foreground capitalize">{format(event.date, 'MMM', { locale: es })}</span>
-                        <span className="text-xl font-bold">{format(event.date, 'dd', { locale: es })}</span>
-                      </div>
-                      <div>
-                        <p className="font-semibold">{event.animalName} <span className="text-xs text-muted-foreground">({event.animalId})</span></p>
-                        <Badge
-                          variant={
-                            event.eventType === 'Celo' ? 'secondary' :
-                            event.eventType === 'Fecha de Parto' ? 'default' :
-                            'outline'
-                          }
-                        >
-                          {event.eventType}
-                        </Badge>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
+                 {upcomingEvents.length > 0 ? (
+                    <ul className="space-y-4">
+                        {upcomingEvents.map((event) => (
+                            <li key={event.id} className="flex items-center gap-4">
+                            <div className="flex flex-col items-center justify-center rounded-md bg-muted p-2 text-center w-14">
+                                <span className="text-sm font-bold text-muted-foreground capitalize">{format(event.date, 'MMM', { locale: es })}</span>
+                                <span className="text-xl font-bold">{format(event.date, 'dd', { locale: es })}</span>
+                            </div>
+                            <div>
+                                <p className="font-semibold">{event.animalName} <span className="text-xs text-muted-foreground">({event.animalId})</span></p>
+                                <Badge
+                                variant={
+                                    event.eventType === 'Próximo Celo' ? 'secondary' :
+                                    event.eventType === 'Fecha Probable de Parto' ? 'default' :
+                                    'outline'
+                                }
+                                >
+                                {event.eventType}
+                                </Badge>
+                            </div>
+                            </li>
+                        ))}
+                    </ul>
+                 ) : (
+                    <p className="text-muted-foreground text-sm">No hay eventos próximos en el calendario.</p>
+                 )}
             </CardContent>
-            <div className="p-4 mt-auto">
+            <div className="p-4 mt-auto border-t">
                 <Button asChild variant="outline" className="w-full">
                     <Link href="/reproduction">
                         Ver Calendario Completo

@@ -34,11 +34,12 @@ export const kpis: Kpi[] = [
 
 export const animals: Animal[] = [
   { id: '101', name: 'Daisy', breed: 'Holstein', sex: 'Hembra', birthDate: '2021-05-15', fatherId: 'B01', motherId: 'C02', weight: 650, status: 'Activo', category: 'Vaca', productionStatus: 'En Producción', lastCalvingDate: '2023-10-01' },
-  { id: '102', name: 'Bessie', breed: 'Angus', sex: 'Hembra', birthDate: '2022-01-20', fatherId: 'B03', motherId: 'C04', weight: 580, status: 'Activo', category: 'Novilla' },
+  { id: '102', name: 'Bessie', breed: 'Angus', sex: 'Hembra', birthDate: '2022-01-20', fatherId: 'B03', motherId: 'C04', weight: 580, status: 'Activo', category: 'Novilla', heatDate: '2024-05-10' },
   { id: '103', name: 'Ferdinand', breed: 'Hereford', sex: 'Macho', birthDate: '2020-11-10', fatherId: null, motherId: 'C05', weight: 900, status: 'Activo', category: 'Toro' },
   { id: '104', name: 'Annabelle', breed: 'Jersey', sex: 'Hembra', birthDate: '2023-03-01', fatherId: 'B01', motherId: '101', weight: 150, status: 'Activo', category: 'Ternera' },
   { id: '105', name: 'Angus Jr.', breed: 'Angus', sex: 'Macho', birthDate: '2023-02-14', fatherId: 'B03', motherId: '102', weight: 180, status: 'Activo', category: 'Ternero' },
   { id: '106', name: 'Brutus', breed: 'Brahman', sex: 'Macho', birthDate: '2021-08-22', fatherId: null, motherId: null, weight: 820, status: 'Activo', category: 'Novillo' },
+  { id: '107', name: 'Clara', breed: 'Gyr', sex: 'Hembra', birthDate: '2020-07-11', fatherId: null, motherId: null, weight: 550, status: 'Activo', category: 'Vaca', pregnancyDate: '2024-01-20' },
 ];
 
 export const herdEvolutionData = [
@@ -62,12 +63,4 @@ export const herdDistributionData = [
     { category: 'Vacas', count: 150, fill: 'hsl(var(--chart-3))' },
     { category: 'Novillos', count: 39, fill: 'hsl(var(--chart-4))' },
     { category: 'Toros', count: 20, fill: 'hsl(var(--chart-5))' },
-];
-
-const today = new Date();
-export const reproductiveEvents: ReproductiveEvent[] = [
-  { id: 'e1', animalName: 'Daisy', animalId: '101', eventType: 'Celo', date: addDays(today, 2) },
-  { id: 'e2', animalName: 'Bessie', animalId: '102', eventType: 'Chequeo Preñez', date: addDays(today, 5) },
-  { id: 'e3', animalName: 'Clara', animalId: '107', eventType: 'Fecha de Parto', date: addDays(today, 10) },
-  { id: 'e4', animalName: 'Bella', animalId: '108', eventType: 'Celo', date: addDays(today, 12) },
 ];
