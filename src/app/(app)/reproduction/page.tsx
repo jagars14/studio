@@ -14,6 +14,7 @@ import type { ReproductiveEvent } from '@/lib/types';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
+import { AnimalSummaryCard } from './_components/animal-summary-card';
 
 export default function ReproductionPage() {
   const [date, setDate] = React.useState<Date | undefined>(undefined);
@@ -26,13 +27,17 @@ export default function ReproductionPage() {
     setDate(new Date());
   }, []);
 
+  const selectedAnimal = React.useMemo(() => {
+      if (selectedAnimalId === 'all') return null;
+      return animals.find(animal => animal.id === selectedAnimalId) || null;
+  }, [selectedAnimalId]);
 
   const filteredAnimals = React.useMemo(() => {
-    if (selectedAnimalId === 'all') {
+    if (!selectedAnimal) {
       return animals;
     }
-    return animals.filter(animal => animal.id === selectedAnimalId);
-  }, [selectedAnimalId]);
+    return [selectedAnimal];
+  }, [selectedAnimal]);
 
   const allEvents = React.useMemo(() => generateReproductiveEvents(filteredAnimals), [filteredAnimals]);
 
@@ -105,6 +110,10 @@ export default function ReproductionPage() {
             </div>
         </CardContent>
       </Card>
+      
+      {selectedAnimal && (
+          <AnimalSummaryCard animal={selectedAnimal} />
+      )}
 
       <div className="grid gap-6 lg:grid-cols-5">
         <Card className="lg:col-span-3">
