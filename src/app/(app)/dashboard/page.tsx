@@ -16,11 +16,14 @@ import { generateReproductiveEvents } from "@/lib/utils";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import type { ReproductiveEvent } from '@/lib/types';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 
 
 export default function DashboardPage() {
   const [isClient, setIsClient] = useState(false);
   const [isNeedsAttentionOpen, setIsNeedsAttentionOpen] = useState(false);
+  const [attentionDays, setAttentionDays] = useState(30);
   
   useEffect(() => {
     setIsClient(true);
@@ -30,18 +33,17 @@ export default function DashboardPage() {
 
   const upcomingEvents = useMemo(() => {
     if (!isClient) return [];
-    const currentMonth = new Date();
     return generateReproductiveEvents(animals)
-      .filter(event => isSameMonth(event.date, currentMonth) && event.date >= today)
+      .filter(event => isSameMonth(event.date, today) && event.date >= today)
       .slice(0, 4);
   }, [isClient, today]);
 
   const needsAttentionEvents = useMemo(() => {
     if (!isClient) return [];
-    const next30Days = addDays(today, 30);
+    const nextDays = addDays(today, attentionDays);
     return generateReproductiveEvents(animals, { includeBirthdays: false })
-      .filter(event => isWithinInterval(event.date, { start: today, end: next30Days }));
-  }, [isClient, today]);
+      .filter(event => isWithinInterval(event.date, { start: today, end: nextDays }));
+  }, [isClient, today, attentionDays]);
 
   const kpiCards = [
     { title: 'Total de Animales', value: '342', change: '+5 desde el mes pasado', icon: Users, href: '/animals' },
@@ -81,7 +83,7 @@ export default function DashboardPage() {
               <CardContent>
                 <div className="text-2xl font-bold">{needsAttentionEvents.length}</div>
                  <p className="text-xs text-muted-foreground">
-                    Eventos en los próximos 30 días
+                    Eventos en los próximos {attentionDays} días
                   </p>
               </CardContent>
             </Card>
@@ -90,9 +92,20 @@ export default function DashboardPage() {
               <DialogHeader>
                 <DialogTitle className="font-headline">Animales que Necesitan Atención</DialogTitle>
                 <DialogDescription>
-                  Estos animales tienen eventos reproductivos importantes en los próximos 30 días.
+                  Estos animales tienen eventos reproductivos importantes en los próximos días.
                 </DialogDescription>
               </DialogHeader>
+              <div className="flex items-center gap-4">
+                  <Label htmlFor="attention-days" className="whitespace-nowrap">Ver eventos en los próximos</Label>
+                  <Input 
+                    id="attention-days"
+                    type="number" 
+                    value={attentionDays}
+                    onChange={(e) => setAttentionDays(Number(e.target.value) || 0)}
+                    className="w-24"
+                  />
+                  <Label htmlFor="attention-days">días</Label>
+              </div>
               <div className="rounded-lg border max-h-[60vh] overflow-auto">
                 <Table>
                   <TableHeader>
@@ -128,7 +141,7 @@ export default function DashboardPage() {
                     ) : (
                       <TableRow>
                         <TableCell colSpan={3} className="text-center text-muted-foreground">
-                          No hay animales que necesiten atención en los próximos 30 días.
+                          No hay animales que necesiten atención en el período seleccionado.
                         </TableCell>
                       </TableRow>
                     )}
