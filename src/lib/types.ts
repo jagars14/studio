@@ -34,7 +34,8 @@ export type ReproductiveEvent = {
     | 'Vigilar Retorno a Celo'
     | 'Chequeo de Preñez' 
     | 'Fecha de Secado'
-    | 'Fecha Probable de Parto';
+    | 'Fecha Probable de Parto'
+    | 'Cumpleaños';
   date: Date;
 };
 

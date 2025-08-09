@@ -39,9 +39,13 @@ export default function ReproductionPage() {
             variant={
               event.eventType === 'Próximo Celo' ? 'secondary' :
               event.eventType === 'Fecha Probable de Parto' ? 'default' :
+              event.eventType === 'Cumpleaños' ? 'outline' :
               'outline'
             }
-            className="mt-1"
+            className={cn(
+                event.eventType === 'Cumpleaños' && 'border-yellow-500 text-yellow-700',
+                "mt-1"
+            )}
           >
             {event.eventType}
           </Badge>
@@ -101,4 +105,3 @@ export default function ReproductionPage() {
     </div>
   );
 }
-
