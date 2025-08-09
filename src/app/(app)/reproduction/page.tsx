@@ -16,8 +16,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Label } from '@/components/ui/label';
 
 export default function ReproductionPage() {
-  const [date, setDate] = React.useState<Date | undefined>(new Date());
+  const [date, setDate] = React.useState<Date | undefined>(undefined);
+  const [currentMonth, setCurrentMonth] = React.useState(new Date());
   const [selectedAnimalId, setSelectedAnimalId] = React.useState<string | 'all'>('all');
+  const [isClient, setIsClient] = React.useState(false);
+
+  React.useEffect(() => {
+    setIsClient(true);
+    setDate(new Date());
+  }, []);
+
 
   const filteredAnimals = React.useMemo(() => {
     if (selectedAnimalId === 'all') {
@@ -29,18 +37,19 @@ export default function ReproductionPage() {
   const allEvents = React.useMemo(() => generateReproductiveEvents(filteredAnimals), [filteredAnimals]);
 
   const currentMonthEvents = React.useMemo(() => {
+    if (!isClient) return [];
     const today = startOfToday();
     return allEvents
-      .filter(event => isSameMonth(event.date, today) && event.date >= today)
+      .filter(event => isSameMonth(event.date, currentMonth) && event.date >= today)
       .sort((a, b) => a.date.getTime() - b.date.getTime());
-  }, [allEvents]);
+  }, [allEvents, currentMonth, isClient]);
 
 
-  const selectedDayEvents = date 
-    ? allEvents.filter(event => isSameDay(event.date, date)) 
+  const selectedDayEvents = date
+    ? allEvents.filter(event => isSameDay(event.date, date))
     : [];
 
-  const eventsToShow = date ? selectedDayEvents : currentMonthEvents;
+  const eventsToShow = date && isClient ? selectedDayEvents : currentMonthEvents;
 
   const renderEvent = (event: ReproductiveEvent) => (
      <li key={event.id} className="flex items-center gap-4">
@@ -68,10 +77,14 @@ export default function ReproductionPage() {
       </li>
   );
 
+  if (!isClient) {
+    return null;
+  }
+
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-headline font-bold">Calendario y Calculadora</h1>
-      
+
       <Card>
         <CardContent className="pt-6">
             <div className="max-w-xs">
@@ -103,6 +116,8 @@ export default function ReproductionPage() {
                 mode="single"
                 selected={date}
                 onSelect={setDate}
+                month={currentMonth}
+                onMonthChange={setCurrentMonth}
                 locale={es}
                 modifiers={{
                 events: allEvents.map(e => e.date),
@@ -117,7 +132,7 @@ export default function ReproductionPage() {
         <Card className="lg:col-span-2 flex flex-col">
             <CardHeader>
                 <CardTitle className="font-headline">
-                    {date ? `Eventos para ${format(date, 'd MMMM yyyy', {locale: es})}` : 'Eventos Próximos del Mes'}
+                    {date && isSameDay(date, new Date()) ? 'Eventos Próximos del Mes' : date ? `Eventos para ${format(date, 'd MMMM yyyy', {locale: es})}` : 'Eventos Próximos del Mes'}
                 </CardTitle>
             </CardHeader>
             <CardContent className="flex-1">
