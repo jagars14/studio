@@ -3,7 +3,7 @@
 
 import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { kpis, animals } from "@/lib/mock-data"; 
+import { animals } from "@/lib/mock-data"; 
 import HerdEvolutionChart from "./_components/herd-evolution-chart";
 import HerdDistributionChart from "./_components/herd-distribution-chart";
 import Link from "next/link";
@@ -21,18 +21,15 @@ import type { ReproductiveEvent } from '@/lib/types';
 export default function DashboardPage() {
   const [isNeedsAttentionOpen, setIsNeedsAttentionOpen] = useState(false);
   
-  // --- Eventos para el calendario del mes ---
-  const allEvents = useMemo(() => generateReproductiveEvents(animals), []);
-  const today = startOfToday();
-  const currentMonth = new Date();
+  const today = useMemo(() => startOfToday(), []);
 
   const upcomingEvents = useMemo(() => {
-    return allEvents
+    const currentMonth = new Date();
+    return generateReproductiveEvents(animals)
       .filter(event => isSameMonth(event.date, currentMonth) && event.date >= today)
       .slice(0, 4);
-  }, [allEvents, currentMonth, today]);
+  }, [today]);
 
-  // --- Lógica para animales que necesitan atención ---
   const needsAttentionEvents = useMemo(() => {
     const next30Days = addDays(today, 30);
     return generateReproductiveEvents(animals, { includeBirthdays: false })
