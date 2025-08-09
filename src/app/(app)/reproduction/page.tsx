@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
 import { Badge } from "@/components/ui/badge";
 import { animals } from "@/lib/mock-data";
-import { format, isSameDay, isSameMonth } from 'date-fns';
+import { format, isSameDay, isSameMonth, startOfToday } from 'date-fns';
 import { es } from 'date-fns/locale';
 import ReproductiveCalculator from "./_components/reproductive-calculator";
 import { generateReproductiveEvents, cn } from '@/lib/utils';
@@ -20,9 +20,9 @@ export default function ReproductionPage() {
   const allEvents = React.useMemo(() => generateReproductiveEvents(animals), []);
 
   const currentMonthEvents = React.useMemo(() => {
-    const today = new Date();
+    const today = startOfToday();
     return allEvents
-      .filter(event => isSameMonth(event.date, today))
+      .filter(event => isSameMonth(event.date, today) && event.date >= today)
       .sort((a, b) => a.date.getTime() - b.date.getTime());
   }, [allEvents]);
 
@@ -86,7 +86,7 @@ export default function ReproductionPage() {
         <Card className="lg:col-span-2 flex flex-col">
             <CardHeader>
                 <CardTitle className="font-headline">
-                    {date ? `Eventos para ${format(date, 'd MMMM yyyy', {locale: es})}` : 'Eventos de este Mes'}
+                    {date ? `Eventos para ${format(date, 'd MMMM yyyy', {locale: es})}` : 'Eventos Próximos del Mes'}
                 </CardTitle>
             </CardHeader>
             <CardContent className="flex-1">
@@ -97,7 +97,7 @@ export default function ReproductionPage() {
                     </ul>
                 ) : (
                     <p className="text-muted-foreground text-sm">
-                      {date ? 'No hay eventos para este día.' : 'No hay eventos programados para el mes actual.'}
+                      {date ? 'No hay eventos para este día.' : 'No hay eventos programados para lo que resta del mes.'}
                     </p>
                 )}
             </ScrollArea>
