@@ -1,18 +1,20 @@
-'use client';
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
 import { Badge } from "@/components/ui/badge";
 import { reproductiveEvents } from "@/lib/mock-data";
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import ReproductiveCalculator from "./_components/reproductive-calculator";
 
 export default function ReproductionPage() {
   return (
     <div className="space-y-6">
-       <h1 className="text-3xl font-headline font-bold">Calendario de Reproducción</h1>
-       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+       <h1 className="text-3xl font-headline font-bold">Calendario y Calculadora</h1>
+       <div className="grid gap-6 lg:grid-cols-3">
         <Card className="lg:col-span-2">
+          <CardHeader>
+            <CardTitle className="font-headline">Calendario de Eventos</CardTitle>
+          </CardHeader>
           <CardContent className="p-0">
             <Calendar
               locale={es}
@@ -56,6 +58,7 @@ export default function ReproductionPage() {
           </CardContent>
         </Card>
       </div>
+      <ReproductiveCalculator />
     </div>
   );
 }
