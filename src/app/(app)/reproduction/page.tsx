@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
 import { Badge } from "@/components/ui/badge";
 import { animals } from "@/lib/mock-data";
-import { format, isSameDay } from 'date-fns';
+import { format, isSameDay, isSameMonth } from 'date-fns';
 import { es } from 'date-fns/locale';
 import ReproductiveCalculator from "./_components/reproductive-calculator";
 import { generateReproductiveEvents, cn } from '@/lib/utils';
@@ -19,13 +19,19 @@ export default function ReproductionPage() {
   // Generar eventos dinámicamente a partir de los datos de los animales
   const allEvents = React.useMemo(() => generateReproductiveEvents(animals), []);
 
-  const upcomingEvents = allEvents
-    .filter(event => event.date >= new Date())
-    .sort((a, b) => a.date.getTime() - b.date.getTime());
+  const currentMonthEvents = React.useMemo(() => {
+    const today = new Date();
+    return allEvents
+      .filter(event => isSameMonth(event.date, today))
+      .sort((a, b) => a.date.getTime() - b.date.getTime());
+  }, [allEvents]);
+
 
   const selectedDayEvents = date 
     ? allEvents.filter(event => isSameDay(event.date, date)) 
     : [];
+
+  const eventsToShow = date ? selectedDayEvents : currentMonthEvents;
 
   const renderEvent = (event: ReproductiveEvent) => (
      <li key={event.id} className="flex items-center gap-4">
@@ -80,21 +86,19 @@ export default function ReproductionPage() {
         <Card className="lg:col-span-2 flex flex-col">
             <CardHeader>
                 <CardTitle className="font-headline">
-                    {date ? `Eventos para ${format(date, 'd MMMM yyyy', {locale: es})}` : 'Próximos Eventos'}
+                    {date ? `Eventos para ${format(date, 'd MMMM yyyy', {locale: es})}` : 'Eventos de este Mes'}
                 </CardTitle>
             </CardHeader>
             <CardContent className="flex-1">
             <ScrollArea className="h-96">
-                {selectedDayEvents.length > 0 ? (
-                        <ul className="space-y-4 pr-4">
-                        {selectedDayEvents.map(renderEvent)}
+                {eventsToShow.length > 0 ? (
+                    <ul className="space-y-4 pr-4">
+                        {eventsToShow.map(renderEvent)}
                     </ul>
-                ) : upcomingEvents.length > 0 ? (
-                        <ul className="space-y-4 pr-4">
-                        {upcomingEvents.slice(0, 10).map(renderEvent)}
-                        </ul>
                 ) : (
-                    <p className="text-muted-foreground">No hay eventos próximos.</p>
+                    <p className="text-muted-foreground text-sm">
+                      {date ? 'No hay eventos para este día.' : 'No hay eventos programados para el mes actual.'}
+                    </p>
                 )}
             </ScrollArea>
             </CardContent>
