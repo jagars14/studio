@@ -21,7 +21,7 @@ const formSchema = z.object({
   weight: z.coerce.number().min(1, 'El peso debe ser mayor que 0.'),
   birthDate: z.string().refine((val) => !isNaN(Date.parse(val)), { message: "Fecha inválida" }),
   category: z.enum(['Vaca', 'Novilla', 'Toro', 'Ternero', 'Ternera', 'Novillo'], { required_error: 'Por favor, seleccione una categoría.' }),
-  productionStatus: z.enum(['En Producción', 'Seca']).optional(),
+  status: z.enum(['En Producción', 'Seca', 'Vendido', 'Fallecido']).optional(),
   lastCalvingDate: z.string().optional(),
   heatDate: z.string().optional(),
   pregnancyDate: z.string().optional(),
@@ -50,8 +50,7 @@ export function AddAnimalForm({ onFinished }: AddAnimalFormProps) {
 
   const isLoading = form.formState.isSubmitting;
   const sex = form.watch('sex');
-  const category = form.watch('category');
-
+  
   React.useEffect(() => {
     if (sex === 'Macho') {
       form.setValue('lastCalvingDate', '');
@@ -59,13 +58,6 @@ export function AddAnimalForm({ onFinished }: AddAnimalFormProps) {
       form.setValue('pregnancyDate', '');
     }
   }, [sex, form]);
-
-  React.useEffect(() => {
-    if (category !== 'Vaca') {
-      form.setValue('productionStatus', undefined);
-    }
-  }, [category, form]);
-
 
   async function onSubmit(values: FormValues) {
     // En una aplicación real, aquí enviarías los datos al backend.
@@ -213,29 +205,29 @@ export function AddAnimalForm({ onFinished }: AddAnimalFormProps) {
               </FormItem>
             )}
           />
-          {category === 'Vaca' && (
-            <FormField
-              control={form.control}
-              name="productionStatus"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Estado de Producción</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Seleccione estado" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="En Producción">En Producción</SelectItem>
-                      <SelectItem value="Seca">Seca</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          )}
+          <FormField
+            control={form.control}
+            name="status"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Estado</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Seleccione estado" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="En Producción">En Producción</SelectItem>
+                    <SelectItem value="Seca">Seca</SelectItem>
+                    <SelectItem value="Vendido">Vendido</SelectItem>
+                    <SelectItem value="Fallecido">Fallecido</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </div>
         
         {sex === 'Hembra' && (

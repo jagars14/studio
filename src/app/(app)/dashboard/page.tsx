@@ -3,7 +3,7 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { animals } from "@/lib/mock-data"; 
+import { animals as mockAnimals } from "@/lib/mock-data"; 
 import HerdEvolutionChart from "./_components/herd-evolution-chart";
 import HerdDistributionChart from "./_components/herd-distribution-chart";
 import Link from "next/link";
@@ -15,18 +15,26 @@ import { Badge } from "@/components/ui/badge";
 import { generateReproductiveEvents } from "@/lib/utils";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import type { ReproductiveEvent } from '@/lib/types';
+import type { Animal, ReproductiveEvent } from '@/lib/types';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-
+import { db } from '@/lib/firebase';
+import { collection, getDocs } from 'firebase/firestore';
 
 export default function DashboardPage() {
   const [isClient, setIsClient] = useState(false);
   const [isNeedsAttentionOpen, setIsNeedsAttentionOpen] = useState(false);
   const [attentionDays, setAttentionDays] = useState(30);
-  
+  const [animals, setAnimals] = useState<Animal[]>([]);
+
   useEffect(() => {
     setIsClient(true);
+    const fetchAnimals = async () => {
+      const querySnapshot = await getDocs(collection(db, "animals"));
+      const animalsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Animal[];
+      setAnimals(animalsData);
+    };
+    fetchAnimals();
   }, []);
 
   const today = useMemo(() => isClient ? startOfToday() : new Date(), [isClient]);
@@ -40,19 +48,25 @@ export default function DashboardPage() {
       event.date.getUTCMonth() === today.getUTCMonth() &&
       event.date.getUTCDate() >= today.getUTCDate()
     ).slice(0, 4);
-  }, [isClient]);
+  }, [isClient, animals]);
 
   const needsAttentionEvents = useMemo(() => {
     if (!isClient) return [];
     const nextDays = addDays(today, attentionDays);
     return generateReproductiveEvents(animals, { includeBirthdays: false })
       .filter(event => isWithinInterval(event.date, { start: today, end: nextDays }));
-  }, [isClient, today, attentionDays]);
+  }, [isClient, today, attentionDays, animals]);
+
+  const calculateMortalityRate = () => {
+    const deceasedAnimals = animals.filter(animal => animal.status === 'Fallecido').length;
+    const totalAnimals = animals.length;
+    return totalAnimals > 0 ? (deceasedAnimals / totalAnimals) * 100 : 0;
+  };
 
   const kpiCards = [
-    { title: 'Total de Animales', value: '342', change: '+5 desde el mes pasado', icon: Users, href: '/animals' },
+    { title: 'Total de Animales', value: animals.length.toString(), change: '+5 desde el mes pasado', icon: Users, href: '/animals' },
     { title: 'Tasa de Natalidad (12m)', value: '88%', change: '+2%', icon: TrendingUp, href: '/reproduction' },
-    { title: 'Tasa de Mortalidad (12m)', value: '2.1%', change: '-0.5%', icon: TrendingDown, href: '/animals' },
+    { title: 'Tasa de Mortalidad (12m)', value: `${calculateMortalityRate().toFixed(1)}%`, change: '-0.5%', icon: TrendingDown, href: '/animals' },
   ];
 
   return (
