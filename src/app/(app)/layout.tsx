@@ -1,3 +1,4 @@
+
 import type { Metadata } from "next";
 import {
   SidebarProvider,
@@ -10,7 +11,7 @@ import {
   SidebarInset,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { LayoutDashboard, CalendarHeart, BrainCircuit, Settings } from "lucide-react";
+import { LayoutDashboard, CalendarHeart, BrainCircuit, Settings, Users } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/logo";
@@ -22,7 +23,7 @@ export const metadata: Metadata = {
 
 const navItems = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Panel" },
-  { href: "/animals", icon: Logo, label: "Animales" },
+  { href: "/animals", icon: Users, label: "Animales" },
   { href: "/reproduction", icon: CalendarHeart, label: "Reproducción" },
   { href: "/optimizer", icon: BrainCircuit, label: "Optimizador IA" },
   { href: "/settings", icon: Settings, label: "Configuración" },
@@ -38,9 +39,9 @@ export default function AppLayout({
       <Sidebar>
         <SidebarHeader>
           <div className="flex items-center gap-2 p-2">
-            <Button variant="ghost" size="icon" className="hover:bg-sidebar-accent rounded-lg">
-                <Logo className="h-10 w-10" />
-            </Button>
+            <Link href="/dashboard">
+              <Logo className="h-10 w-10" />
+            </Link>
             <h1 className="text-xl font-headline font-semibold">BovinoPro Lite</h1>
           </div>
         </SidebarHeader>
@@ -50,7 +51,7 @@ export default function AppLayout({
               <SidebarMenuItem key={item.href}>
                 <SidebarMenuButton asChild>
                   <Link href={item.href}>
-                    {item.href === '/animals' ? <Logo className="h-6 w-6 text-sidebar-foreground" /> : <item.icon />}
+                    <item.icon />
                     <span>{item.label}</span>
                   </Link>
                 </SidebarMenuButton>

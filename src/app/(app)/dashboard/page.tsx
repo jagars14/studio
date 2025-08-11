@@ -9,7 +9,7 @@ import HerdDistributionChart from "./_components/herd-distribution-chart";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, CalendarClock, AlertCircle, Users, TrendingUp, TrendingDown } from "lucide-react";
-import { format, isSameMonth, startOfToday, addDays, isWithinInterval } from "date-fns";
+import { format, startOfToday, addDays, isWithinInterval } from "date-fns";
 import { es } from "date-fns/locale";
 import { Badge } from "@/components/ui/badge";
 import { generateReproductiveEvents } from "@/lib/utils";
@@ -33,10 +33,14 @@ export default function DashboardPage() {
 
   const upcomingEvents = useMemo(() => {
     if (!isClient) return [];
-    return generateReproductiveEvents(animals)
-      .filter(event => isSameMonth(event.date, today) && event.date >= today)
-      .slice(0, 4);
-  }, [isClient, today]);
+    const allEvents = generateReproductiveEvents(animals);
+    const today = new Date();
+    return allEvents.filter(event => 
+      event.date.getUTCFullYear() === today.getUTCFullYear() &&
+      event.date.getUTCMonth() === today.getUTCMonth() &&
+      event.date.getUTCDate() >= today.getUTCDate()
+    ).slice(0, 4);
+  }, [isClient]);
 
   const needsAttentionEvents = useMemo(() => {
     if (!isClient) return [];

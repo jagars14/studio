@@ -3,7 +3,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 
 export const metadata: Metadata = {
-  title: 'BovinoPro Lite',
+  title: 'BovinoPro',
   description: 'Gestión integral para fincas ganaderas.',
   manifest: '/manifest.json',
 };

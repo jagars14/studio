@@ -9,6 +9,9 @@ import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import Image from 'next/image';
 
 type CalculatorMode = 'parto' | 'celo' | 'prenez';
 type TimelineEvent = {
@@ -215,9 +218,39 @@ export default function ReproductiveCalculator() {
                 <CardDescription>Recuerde que esta herramienta es una guía. El éxito reproductivo real depende de un manejo integral.</CardDescription>
             </CardHeader>
             <CardContent className="grid md:grid-cols-2 gap-6">
-                 <div className="bg-secondary/50 p-4 rounded-lg border">
-                    <h3 className="font-bold text-lg mb-2">🎯 Condición Corporal (CC)</h3>
-                    <p className="text-muted-foreground">Una vaca debe parir con una CC de 3.25-3.75 (escala 1-5) y ser inseminada con al menos 3.0. La nutrición es la base de la fertilidad.</p>
+                 <div className="bg-secondary/50 p-4 rounded-lg border flex flex-col">
+                    <h3 className="font-bold text-lg mb-2">🎯 Condición Corporal (CC): El Motor de la Fertilidad</h3>
+                    <p className="text-muted-foreground mb-4">La CC es una medida de las reservas de energía de la vaca, crucial para su capacidad de ciclar y mantener una preñez. Se evalúa visualmente en una escala de 1 (muy flaca) a 5 (obesa).</p>
+                    <Alert>
+                        <AlertTitle className="font-semibold">🏆 Objetivos Clave de CC</AlertTitle>
+                        <AlertDescription>
+                            <ul className="list-disc list-inside mt-2">
+                                <li><strong>Al Parto:</strong> 3.25 - 3.75. Una buena reserva para soportar la lactancia inicial.</li>
+                                <li><strong>Al Servicio (Inseminación):</strong> 3.0 - 3.5. Condición ideal para una ovulación de calidad y concepción.</li>
+                            </ul>
+                        </AlertDescription>
+                    </Alert>
+                    <Dialog>
+                        <DialogTrigger asChild>
+                            <Button variant="outline" className="mt-4 w-full">Ver Guía Visual</Button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-4xl">
+                            <DialogHeader>
+                                <DialogTitle>Guía Visual de Condición Corporal (Escala 1-5)</DialogTitle>
+                                <DialogDescription>
+                                    Observe la base de la cola, las costillas y la columna para asignar un puntaje.
+                                </DialogDescription>
+                            </DialogHeader>
+                            <div className="relative w-full h-[60vh]">
+                                <Image 
+                                    src="/CCC Bovino.jpeg" 
+                                    alt="Guía de Condición Corporal" 
+                                    layout="fill"
+                                    objectFit="contain"
+                                />
+                            </div>
+                        </DialogContent>
+                    </Dialog>
                 </div>
                 <div className="bg-secondary/50 p-4 rounded-lg border">
                     <h3 className="font-bold text-lg mb-2"> uterus Salud Uterina</h3>

@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
 import { Badge } from "@/components/ui/badge";
 import { animals } from "@/lib/mock-data";
-import { format, isSameDay, isSameMonth, startOfToday } from 'date-fns';
+import { format, isSameDay } from 'date-fns';
 import { es } from 'date-fns/locale';
 import ReproductiveCalculator from "./_components/reproductive-calculator";
 import { generateReproductiveEvents, cn } from '@/lib/utils';
@@ -43,11 +43,15 @@ export default function ReproductionPage() {
 
   const currentMonthEvents = React.useMemo(() => {
     if (!isClient) return [];
-    const today = startOfToday();
+    const today = new Date();
     return allEvents
-      .filter(event => isSameMonth(event.date, currentMonth) && event.date >= today)
+      .filter(event => 
+        event.date.getUTCFullYear() === today.getUTCFullYear() &&
+        event.date.getUTCMonth() === today.getUTCMonth() &&
+        event.date.getUTCDate() >= today.getUTCDate()
+      )
       .sort((a, b) => a.date.getTime() - b.date.getTime());
-  }, [allEvents, currentMonth, isClient]);
+  }, [allEvents, isClient]);
 
 
   const selectedDayEvents = date

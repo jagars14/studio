@@ -51,13 +51,23 @@ const subUTCDays = (date: Date, days: number) => {
     return addUTCDays(date, -days);
 };
 
-export function generateReproductiveEvents(animals: Animal[], options?: { includeBirthdays?: boolean }): ReproductiveEvent[] {
+export function generateReproductiveEvents(
+  animals: Animal[], 
+  options?: { 
+    includeBirthdays?: boolean;
+    mode?: 'parto' | 'celo' | 'prenez';
+    animalId?: string;
+  }
+): ReproductiveEvent[] {
   const events: ReproductiveEvent[] = [];
   const now = new Date();
   const currentUTCFullYear = now.getUTCFullYear();
   const includeBirthdays = options?.includeBirthdays ?? true;
+  const { mode, animalId } = options || {};
 
-  animals.forEach(animal => {
+  const targetAnimals = animalId ? animals.filter(a => a.id === animalId) : animals;
+
+  targetAnimals.forEach(animal => {
     // --- Evento de Cumpleaños (para todos) ---
     if (includeBirthdays && animal.birthDate) {
         const birthDate = createUTCDate(animal.birthDate);
@@ -78,82 +88,84 @@ export function generateReproductiveEvents(animals: Animal[], options?: { includ
 
     // --- Eventos Reproductivos (solo hembras) ---
     if (animal.sex === 'Hembra') {
-        // Caso 1: Basado en la fecha del último parto
-        if (animal.lastCalvingDate) {
-            const lastCalving = createUTCDate(animal.lastCalvingDate);
-            const pevEnd = addUTCDays(lastCalving, PEV_DAYS);
-            
-            // Generar 3 fechas probables de celo post-parto
-            for (let i = 0; i < 3; i++) {
-                const heatDate = addUTCDays(pevEnd, i * CYCLE_DAYS);
-                events.push({
-                id: `${animal.id}-heat-${i + 1}`,
-                animalName: animal.name,
-                animalId: animal.id,
-                eventType: 'Próximo Celo',
-                date: heatDate,
-                });
+        if (!mode || mode === 'parto') {
+            if (animal.lastCalvingDate) {
+                const lastCalving = createUTCDate(animal.lastCalvingDate);
+                const pevEnd = addUTCDays(lastCalving, PEV_DAYS);
+                
+                for (let i = 0; i < 3; i++) {
+                    const heatDate = addUTCDays(pevEnd, i * CYCLE_DAYS);
+                    events.push({
+                        id: `${animal.id}-heat-${i + 1}`,
+                        animalName: animal.name,
+                        animalId: animal.id,
+                        eventType: 'Próximo Celo',
+                        date: heatDate,
+                        description: `Oportunidad de inseminación post-parto #${i+1}.`
+                    });
+                }
             }
         }
         
-        // Caso 2: Basado en la fecha del último celo/servicio
-        if (animal.heatDate) {
-            const serviceDate = createUTCDate(animal.heatDate);
-            
-            const returnHeat = addUTCDays(serviceDate, CYCLE_DAYS);
-            events.push({
-                id: `${animal.id}-return-heat`,
-                animalName: animal.name,
-                animalId: animal.id,
-                eventType: 'Vigilar Retorno a Celo',
-                date: returnHeat,
-            });
-
-            const pregCheck = addUTCDays(serviceDate, PREG_CHECK_DAYS);
-            events.push({
-                id: `${animal.id}-preg-check`,
-                animalName: animal.name,
-                animalId: animal.id,
-                eventType: 'Chequeo de Preñez',
-                date: pregCheck,
-            });
-            
-            // Si no hay fecha de preñez, asumimos que puede quedar preñada en esta fecha de servicio
-            if (!animal.pregnancyDate) {
-                const dueDate = addUTCDays(serviceDate, GESTATION_DAYS);
+        if (!mode || mode === 'celo') {
+            if (animal.heatDate) {
+                const serviceDate = createUTCDate(animal.heatDate);
+                
                 events.push({
-                    id: `${animal.id}-due-date-from-heat`,
+                    id: `${animal.id}-return-heat`,
                     animalName: animal.name,
                     animalId: animal.id,
-                    eventType: 'Fecha Probable de Parto',
-                    date: dueDate,
+                    eventType: 'Vigilar Retorno a Celo',
+                    date: addUTCDays(serviceDate, CYCLE_DAYS),
+                    description: 'Si no hay celo, es una buena señal de preñez.'
                 });
+
+                events.push({
+                    id: `${animal.id}-preg-check`,
+                    animalName: animal.name,
+                    animalId: animal.id,
+                    eventType: 'Chequeo de Preñez',
+                    date: addUTCDays(serviceDate, PREG_CHECK_DAYS),
+                    description: 'Confirmar gestación mediante palpación o ecografía.'
+                });
+                
+                if (!animal.pregnancyDate) {
+                    const dueDate = addUTCDays(serviceDate, GESTATION_DAYS);
+                    events.push({
+                        id: `${animal.id}-due-date-from-heat`,
+                        animalName: animal.name,
+                        animalId: animal.id,
+                        eventType: 'Fecha Probable de Parto',
+                        date: dueDate,
+                        description: 'Preparar lote de maternidad y cuidados periparto.'
+                    });
+                }
             }
         }
 
-        // Caso 3: Basado en la fecha de confirmación de preñez
-        if (animal.pregnancyDate) {
-            const pregDate = createUTCDate(animal.pregnancyDate);
-            // Asumimos que la preñez se confirmó ~35 días post-servicio.
-            const serviceDate = subUTCDays(pregDate, PREG_CHECK_DAYS);
-            
-            const dryOffDate = addUTCDays(serviceDate, GESTATION_DAYS - DRY_OFF_DAYS);
-            events.push({
-                id: `${animal.id}-dry-off`,
-                animalName: animal.name,
-                animalId: animal.id,
-                eventType: 'Fecha de Secado',
-                date: dryOffDate,
-            });
+        if (!mode || mode === 'prenez') {
+            if (animal.pregnancyDate) {
+                const pregDate = createUTCDate(animal.pregnancyDate);
+                const serviceDate = subUTCDays(pregDate, PREG_CHECK_DAYS);
+                
+                events.push({
+                    id: `${animal.id}-dry-off`,
+                    animalName: animal.name,
+                    animalId: animal.id,
+                    eventType: 'Fecha de Secado',
+                    date: addUTCDays(serviceDate, GESTATION_DAYS - DRY_OFF_DAYS),
+                    description: 'Iniciar período seco para preparar a la vaca para el parto.'
+                });
 
-            const dueDate = addUTCDays(serviceDate, GESTATION_DAYS);
-            events.push({
-                id: `${animal.id}-due-date-from-preg`,
-                animalName: animal.name,
-                animalId: animal.id,
-                eventType: 'Fecha Probable de Parto',
-                date: dueDate,
-            });
+                events.push({
+                    id: `${animal.id}-due-date-from-preg`,
+                    animalName: animal.name,
+                    animalId: animal.id,
+                    eventType: 'Fecha Probable de Parto',
+                    date: addUTCDays(serviceDate, GESTATION_DAYS),
+                    description: 'Preparar lote de maternidad y cuidados periparto.'
+                });
+            }
         }
     }
   });
