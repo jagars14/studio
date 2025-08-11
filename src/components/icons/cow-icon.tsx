@@ -1,0 +1,30 @@
+
+import { SVGProps } from 'react';
+
+export function CowIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      <path d="M18.8 8.02A6.4 6.4 0 0 0 12 2C9.2 2 6.8 3.6 5.2 5.98" />
+      <path d="M12 11.5A4.5 4.5 0 0 1 7.5 7" />
+      <path d="M12 11.5A4.5 4.5 0 0 0 16.5 7" />
+      <path d="M13 11.5c0 3.04-1.6 5.5-5.5 5.5" />
+      <path d="M11 11.5c0 3.04 1.6 5.5 5.5 5.5" />
+      <path d="M6 17c-1.5-1-1.5-3.03 0-4" />
+      <path d="M18 17c1.5-1 1.5-3.03 0-4" />
+      <path d="M12 22v-2.5" />
+      <path d="M12 2a6.4 6.4 0 0 0-6.8 6.02" />
+      <path d="M12 2a6.4 6.4 0 0 1 6.8 6.02" />
+    </svg>
+  );
+}
