@@ -30,9 +30,8 @@ export default function DashboardPage() {
   useEffect(() => {
     setIsClient(true);
     const fetchAnimals = async () => {
-      const querySnapshot = await getDocs(collection(db, "animals"));
-      const animalsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Animal[];
-      setAnimals(animalsData);
+      // In a real app, this would fetch from Firebase
+      setAnimals(mockAnimals);
     };
     fetchAnimals();
   }, []);
@@ -63,11 +62,13 @@ export default function DashboardPage() {
     return totalAnimals > 0 ? (deceasedAnimals / totalAnimals) * 100 : 0;
   };
 
+  const activeAnimals = useMemo(() => animals.filter(a => a.status === 'Activo' || a.status === 'En Producción' || a.status === 'Seca'), [animals]);
+
   const kpiCards = [
-    { title: 'Total de Animales', value: animals.length.toString(), change: '+5 desde el mes pasado', icon: Users, href: '/animals' },
+    { title: 'Total de Animales Activos', value: activeAnimals.length.toString(), change: '+5 desde el mes pasado', icon: Users, href: '/animals' },
     { title: 'Tasa de Natalidad (12m)', value: '88%', change: '+2%', icon: TrendingUp, href: '/reproduction' },
     { title: 'Producción Promedio/Día', value: '22.5 L', change: '+1.2 L', icon: Milk, href: '/production'},
-    { title: 'Tasa de Mortalidad (12m)', value: `${calculateMortalityRate().toFixed(1)}%`, change: '-0.5%', icon: TrendingDown, href: '/animals' },
+    { title: 'Tasa de Mortalidad (12m)', value: `${calculateMortalityRate().toFixed(1)}%`, change: '-0.5%', icon: TrendingDown, href: '/disposal' },
   ];
 
   return (

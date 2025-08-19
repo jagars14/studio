@@ -43,7 +43,7 @@ export default function AnimalsPage() {
   };
   
   // The filtering logic for 'needs_attention' has been moved to the dashboard popup.
-  const filteredAnimals = animals;
+  const filteredAnimals = animals.filter(a => a.status !== 'Vendido' && a.status !== 'Fallecido');
 
   return (
     <div className="space-y-4">

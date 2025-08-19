@@ -12,6 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import * as React from 'react';
+import { Textarea } from '@/components/ui/textarea';
 
 const formSchema = z.object({
   id: z.string().min(1, 'El ID es obligatorio.'),
@@ -21,10 +22,15 @@ const formSchema = z.object({
   weight: z.coerce.number().min(1, 'El peso debe ser mayor que 0.'),
   birthDate: z.string().refine((val) => !isNaN(Date.parse(val)), { message: "Fecha inválida" }),
   category: z.enum(['Vaca', 'Novilla', 'Toro', 'Ternero', 'Ternera', 'Novillo'], { required_error: 'Por favor, seleccione una categoría.' }),
-  status: z.enum(['En Producción', 'Seca', 'Vendido', 'Fallecido']).optional(),
+  status: z.enum(['Activo', 'En Producción', 'Seca', 'Vendido', 'Fallecido']).optional(),
   lastCalvingDate: z.string().optional(),
   heatDate: z.string().optional(),
   pregnancyDate: z.string().optional(),
+  // Campos de salida
+  exitDate: z.string().optional(),
+  exitCause: z.enum(['Baja producción', 'Infertilidad', 'Venta', 'Muerte', 'Accidente', 'Edad']).optional(),
+  salePrice: z.coerce.number().optional(),
+  exitNotes: z.string().optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -50,7 +56,8 @@ export function AddAnimalForm({ onFinished }: AddAnimalFormProps) {
 
   const isLoading = form.formState.isSubmitting;
   const sex = form.watch('sex');
-  
+  const status = form.watch('status');
+
   React.useEffect(() => {
     if (sex === 'Macho') {
       form.setValue('lastCalvingDate', '');
@@ -60,8 +67,6 @@ export function AddAnimalForm({ onFinished }: AddAnimalFormProps) {
   }, [sex, form]);
 
   async function onSubmit(values: FormValues) {
-    // En una aplicación real, aquí enviarías los datos al backend.
-    // Por ahora, solo mostramos una notificación y reseteamos el formulario.
     console.log('Nuevos datos de animal:', values);
     await new Promise(resolve => setTimeout(resolve, 1000));
     
@@ -218,6 +223,7 @@ export function AddAnimalForm({ onFinished }: AddAnimalFormProps) {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
+                    <SelectItem value="Activo">Activo</SelectItem>
                     <SelectItem value="En Producción">En Producción</SelectItem>
                     <SelectItem value="Seca">Seca</SelectItem>
                     <SelectItem value="Vendido">Vendido</SelectItem>
@@ -278,6 +284,79 @@ export function AddAnimalForm({ onFinished }: AddAnimalFormProps) {
           </>
         )}
         
+        {(status === 'Vendido' || status === 'Fallecido') && (
+          <>
+            <Separator className="my-2" />
+            <p className="text-sm font-medium text-muted-foreground">Información de Salida</p>
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="exitDate"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Fecha de Salida</FormLabel>
+                    <FormControl>
+                      <Input type="date" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+               <FormField
+                control={form.control}
+                name="exitCause"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Causa de Salida</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger><SelectValue placeholder="Seleccione..." /></SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="Baja producción">Baja producción</SelectItem>
+                        <SelectItem value="Infertilidad">Infertilidad</SelectItem>
+                        <SelectItem value="Venta">Venta</SelectItem>
+                        <SelectItem value="Muerte">Muerte</SelectItem>
+                        <SelectItem value="Accidente">Accidente</SelectItem>
+                        <SelectItem value="Edad">Edad</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            {status === 'Vendido' && (
+              <FormField
+                control={form.control}
+                name="salePrice"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Precio de Venta (COP)</FormLabel>
+                    <FormControl>
+                      <Input type="number" placeholder="Ej: 2500000" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+            <FormField
+              control={form.control}
+              name="exitNotes"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Notas Adicionales</FormLabel>
+                  <FormControl>
+                    <Textarea placeholder="Añada notas sobre la salida del animal..." {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </>
+        )}
+
         <Button type="submit" className="w-full" disabled={isLoading}>
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Registrar Animal

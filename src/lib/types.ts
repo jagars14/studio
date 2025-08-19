@@ -17,6 +17,10 @@ export type Animal = {
   pregnancyDate?: string;
   assignedRation?: string;
   rationAmount?: number;
+  exitDate?: string;
+  exitCause?: 'Baja producción' | 'Infertilidad' | 'Venta' | 'Muerte' | 'Accidente' | 'Edad';
+  salePrice?: number;
+  exitNotes?: string;
 };
 
 export type Kpi = {

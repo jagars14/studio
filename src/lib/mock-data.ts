@@ -24,7 +24,7 @@ export const kpis: Omit<Kpi, 'href'>[] = [
     value: '2.1%',
     change: '-0.5%',
     icon: TrendingDown,
-    href: '/animals',
+    href: '/disposal',
   },
    {
     title: 'Animales que Necesitan Atención',
@@ -42,6 +42,9 @@ export const animals: Animal[] = [
   { id: '105', name: 'Angus Jr.', breed: 'Angus', sex: 'Macho', birthDate: '2023-02-14', fatherId: 'B03', motherId: '102', weight: 180, status: 'Activo', category: 'Ternero' },
   { id: '106', name: 'Brutus', breed: 'Brahman', sex: 'Macho', birthDate: '2021-08-22', fatherId: null, motherId: null, weight: 820, status: 'Activo', category: 'Novillo' },
   { id: '107', name: 'Clara', breed: 'Gyr', sex: 'Hembra', birthDate: '2020-07-11', fatherId: null, motherId: null, weight: 550, status: 'Activo', category: 'Vaca', productionStatus: 'Seca', pregnancyDate: '2024-01-20', assignedRation: 'dieta-secado', rationAmount: 10 },
+  { id: '108', name: 'Rosie', breed: 'Holstein', sex: 'Hembra', birthDate: '2019-02-18', fatherId: 'B01', motherId: 'C01', weight: 680, status: 'Vendido', category: 'Vaca', exitDate: '2024-04-15', exitCause: 'Venta', salePrice: 2500000 },
+  { id: '109', name: 'Old Man', breed: 'Brahman', sex: 'Macho', birthDate: '2015-01-01', fatherId: 'N/A', motherId: 'N/A', weight: 850, status: 'Fallecido', category: 'Toro', exitDate: '2024-03-20', exitCause: 'Edad' },
+
 ];
 
 export const herdEvolutionData = [
@@ -100,4 +103,13 @@ export const rations: Ration[] = [
         description: 'Ración para mantener la condición corporal y líbido del toro.',
         suggestionRule: (animal: Animal) => animal.category === 'Toro',
     },
+];
+
+export const disposalCausesData = [
+  { cause: 'Baja producción', count: 5, fill: 'hsl(var(--chart-1))' },
+  { cause: 'Infertilidad', count: 3, fill: 'hsl(var(--chart-2))' },
+  { cause: 'Venta', count: 8, fill: 'hsl(var(--chart-3))' },
+  { cause: 'Muerte', count: 2, fill: 'hsl(var(--chart-4))' },
+  { cause: 'Edad', count: 4, fill: 'hsl(var(--chart-5))' },
+  { cause: 'Accidente', count: 1, fill: 'hsl(var(--chart-1))' },
 ];
