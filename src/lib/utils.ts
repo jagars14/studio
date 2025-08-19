@@ -37,8 +37,8 @@ const DRY_OFF_DAYS = 60; // Días para secado
 
 // Helper para crear fechas en UTC y evitar errores de hidratación
 const createUTCDate = (dateString: string) => {
-    const [year, month, day] = dateString.split('-').map(Number);
-    return new Date(Date.UTC(year, month - 1, day));
+    const date = new Date(dateString);
+    return new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
 };
 
 const addUTCDays = (date: Date, days: number) => {
@@ -173,7 +173,7 @@ export function analyzeLactation(animal: Animal, records: MilkRecord[]): Lactati
   const lastCalvingDate = createUTCDate(animal.lastCalvingDate);
   const animalRecords = records
     .filter(r => r.animalId === animal.id && createUTCDate(r.date) >= lastCalvingDate)
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    .sort((a, b) => createUTCDate(a.date).getTime() - createUTCDate(b.date).getTime());
 
   if (animalRecords.length === 0) return null;
 

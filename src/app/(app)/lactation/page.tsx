@@ -14,15 +14,20 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 export default function LactationPage() {
     const [selectedAnimalId, setSelectedAnimalId] = React.useState<string | undefined>(animals.find(a => a.category === 'Vaca' && a.productionStatus === 'En Producción')?.id);
+    const [isClient, setIsClient] = React.useState(false);
+
+    React.useEffect(() => {
+        setIsClient(true);
+    }, []);
 
     const selectedAnimal = React.useMemo(() => {
         return animals.find(animal => animal.id === selectedAnimalId);
     }, [selectedAnimalId]);
 
     const lactationAnalysis = React.useMemo(() => {
-        if (!selectedAnimal) return null;
+        if (!isClient || !selectedAnimal) return null;
         return analyzeLactation(selectedAnimal, milkRecords);
-    }, [selectedAnimal]);
+    }, [selectedAnimal, isClient]);
     
     const kpiData = lactationAnalysis ? [
         { title: "Producción Pico", value: `${lactationAnalysis.peakProduction.toFixed(1)} L`, icon: TrendingUp },
@@ -61,7 +66,7 @@ export default function LactationPage() {
                 </CardContent>
             </Card>
 
-            {selectedAnimal && lactationAnalysis ? (
+            {isClient && selectedAnimal && lactationAnalysis ? (
                  <div className="space-y-6">
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                         {kpiData.map(kpi => (
@@ -81,7 +86,7 @@ export default function LactationPage() {
                         <CardHeader>
                             <CardTitle className="font-headline">Curva de Lactancia de {selectedAnimal.name}</CardTitle>
                              <CardDescription>
-                                Días en Leche (DEL) desde el último parto el {new Date(selectedAnimal.lastCalvingDate!).toLocaleDateString('es-ES')}.
+                                Días en Leche (DEL) desde el último parto el {new Date(selectedAnimal.lastCalvingDate!).toLocaleDateString('es-ES', { timeZone: 'UTC' })}.
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="h-[400px] w-full">
