@@ -9,7 +9,7 @@ export type Animal = {
   fatherId: string | null;
   motherId: string | null;
   weight: number;
-  status: 'Activo' | 'Vendido' | 'Fallecido';
+  status?: 'Activo' | 'Vendido' | 'Fallecido';
   category: 'Vaca' | 'Novilla' | 'Toro' | 'Ternero' | 'Ternera' | 'Novillo';
   productionStatus?: 'En Producción' | 'Seca';
   lastCalvingDate?: string;

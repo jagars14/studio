@@ -15,8 +15,9 @@ import type { Animal, MilkRecord, Ration } from '@/lib/types';
 import { BarChart, DollarSign, ListFilter, PlusCircle, Search, Trash2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
+import EfficiencyChart from './_components/efficiency-chart';
 
-type AnimalRationAssignment = {
+export type AnimalRationAssignment = {
     animalId: string;
     rationId?: string;
     amount?: number;
@@ -28,7 +29,6 @@ export default function ProductionPage() {
     const [animals, setAnimals] = React.useState<Animal[]>(mockAnimals);
     const [rations, setRations] = React.useState<Ration[]>(mockRations);
     
-    // State to manage ration assignments in the UI
     const [assignedRations, setAssignedRations] = React.useState<AnimalRationAssignment[]>(
         animals.map(a => ({ animalId: a.id, rationId: a.assignedRation, amount: a.rationAmount }))
     );
@@ -59,7 +59,6 @@ export default function ProductionPage() {
     }
     
     const handleRemoveRation = (rationId: string) => {
-        // Prevent assigned rations from being deleted
         if (assignedRations.some(ar => ar.rationId === rationId)) {
             toast({
                 variant: 'destructive',
@@ -119,10 +118,11 @@ export default function ProductionPage() {
             </div>
 
             <Tabs defaultValue="milk">
-                <TabsList className="grid w-full grid-cols-3">
+                <TabsList className="grid w-full grid-cols-4">
                     <TabsTrigger value="milk">Control de Leche</TabsTrigger>
                     <TabsTrigger value="assignment">Asignación de Raciones</TabsTrigger>
                     <TabsTrigger value="rations">Gestionar Raciones</TabsTrigger>
+                    <TabsTrigger value="efficiency">Análisis de Eficiencia</TabsTrigger>
                 </TabsList>
                 <TabsContent value="milk">
                     <Card>
@@ -343,9 +343,22 @@ export default function ProductionPage() {
                         </CardContent>
                     </Card>
                 </TabsContent>
+                <TabsContent value="efficiency">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Análisis de Eficiencia Alimenticia</CardTitle>
+                            <CardDescription>Compare la producción de leche con el consumo de alimento por animal en una fecha específica.</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <EfficiencyChart 
+                                animals={animals}
+                                milkRecords={milkRecords}
+                                assignedRations={assignedRations}
+                            />
+                        </CardContent>
+                    </Card>
+                </TabsContent>
             </Tabs>
         </div>
     );
 }
-
-    
