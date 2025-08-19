@@ -5,7 +5,7 @@ import * as React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { animals, disposalCausesData } from '@/lib/mock-data';
 import type { Animal } from '@/lib/types';
-import { BarChart, PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend, XAxis, YAxis, Bar } from 'recharts';
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { TrendingDown, Percent, Repeat, ChevronsRight } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
@@ -71,7 +71,7 @@ export default function DisposalPage() {
                         <CardTitle className="font-headline">Causas de Descarte</CardTitle>
                         <CardDescription>Distribución de las salidas de animales.</CardDescription>
                     </CardHeader>
-                    <CardContent className="h-[300px]">
+                    <CardContent className="h-[350px]">
                         <ResponsiveContainer width="100%" height="100%">
                             <PieChart>
                                 <Pie
@@ -80,15 +80,22 @@ export default function DisposalPage() {
                                     nameKey="cause"
                                     cx="50%"
                                     cy="50%"
-                                    outerRadius={80}
+                                    outerRadius={90}
                                     fill="#8884d8"
-                                    label={(props) => `${props.name} (${props.percent.toFixed(0)}%)`}
                                 >
                                     {disposalCausesData.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={entry.fill} />
+                                        <Cell key={`cell-${index}`} fill={entry.fill} className="focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2" />
                                     ))}
                                 </Pie>
-                                <Tooltip />
+                                <Tooltip 
+                                    contentStyle={{
+                                        borderRadius: 'var(--radius)',
+                                        background: 'hsl(var(--background))',
+                                        borderColor: 'hsl(var(--border))'
+                                    }}
+                                    formatter={(value: number, name: string, props) => [`${value} animales`, `${(props.payload.percent * 100).toFixed(1)}%`]}
+                                />
+                                <Legend wrapperStyle={{paddingTop: '20px'}}/>
                             </PieChart>
                         </ResponsiveContainer>
                     </CardContent>
