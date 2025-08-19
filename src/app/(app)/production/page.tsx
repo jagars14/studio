@@ -12,9 +12,9 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Label } from '@/components/ui/label';
 import { animals as mockAnimals, milkRecords as mockRecords, rations as mockRations } from '@/lib/mock-data';
 import type { Animal, MilkRecord, Ration } from '@/lib/types';
-import { BarChart, DollarSign, ListFilter, PlusCircle, Search } from 'lucide-react';
+import { BarChart, DollarSign, ListFilter, PlusCircle, Search, Trash2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
+import { useToast } from '@/hooks/use-toast';
 
 type AnimalRationAssignment = {
     animalId: string;
@@ -23,6 +23,7 @@ type AnimalRationAssignment = {
 };
 
 export default function ProductionPage() {
+    const { toast } = useToast();
     const [milkRecords, setMilkRecords] = React.useState<MilkRecord[]>(mockRecords);
     const [animals, setAnimals] = React.useState<Animal[]>(mockAnimals);
     const [rations, setRations] = React.useState<Ration[]>(mockRations);
@@ -39,6 +40,36 @@ export default function ProductionPage() {
     const handleAmountChange = (animalId: string, amount: number) => {
         setAssignedRations(prev => prev.map(ar => ar.animalId === animalId ? { ...ar, amount } : ar));
     };
+    
+    const handleRationDetailChange = (rationId: string, field: keyof Ration, value: string | number) => {
+        setRations(prev => prev.map(r => r.id === rationId ? { ...r, [field]: value } : r));
+    }
+    
+    const handleAddNewRation = () => {
+        const newId = `ration-${Date.now()}`;
+        const newRation: Ration = {
+            id: newId,
+            name: 'Nueva Ración',
+            description: 'Descripción de la nueva ración',
+            costPerKg: 0,
+            supplier: 'Nuevo Proveedor',
+            suggestionRule: () => false,
+        };
+        setRations(prev => [...prev, newRation]);
+    }
+    
+    const handleRemoveRation = (rationId: string) => {
+        // Prevent assigned rations from being deleted
+        if (assignedRations.some(ar => ar.rationId === rationId)) {
+            toast({
+                variant: 'destructive',
+                title: 'Error al eliminar',
+                description: 'No se puede eliminar una ración que está asignada a uno o más animales.',
+            });
+            return;
+        }
+        setRations(prev => prev.filter(r => r.id !== rationId));
+    }
 
     const getSuggestedRation = (animal: Animal) => {
         return rations.find(ration => ration.suggestionRule(animal))?.id || '';
@@ -72,7 +103,7 @@ export default function ProductionPage() {
         <div className="space-y-6">
             <h1 className="text-3xl font-headline font-bold">Control de Producción y Alimentación</h1>
 
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-4 md:grid-cols-2">
                 {kpiData.map(kpi => (
                     <Card key={kpi.title}>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -88,9 +119,10 @@ export default function ProductionPage() {
             </div>
 
             <Tabs defaultValue="milk">
-                <TabsList className="grid w-full grid-cols-2">
+                <TabsList className="grid w-full grid-cols-3">
                     <TabsTrigger value="milk">Control de Leche</TabsTrigger>
-                    <TabsTrigger value="feeding">Gestión de Alimentación</TabsTrigger>
+                    <TabsTrigger value="assignment">Asignación de Raciones</TabsTrigger>
+                    <TabsTrigger value="rations">Gestionar Raciones</TabsTrigger>
                 </TabsList>
                 <TabsContent value="milk">
                     <Card>
@@ -183,7 +215,7 @@ export default function ProductionPage() {
                         </CardContent>
                     </Card>
                 </TabsContent>
-                <TabsContent value="feeding">
+                <TabsContent value="assignment">
                      <Card>
                         <CardHeader>
                             <CardTitle>Asignación de Raciones</CardTitle>
@@ -198,7 +230,7 @@ export default function ProductionPage() {
                                             <TableHead>Categoría</TableHead>
                                             <TableHead>Ración Asignada</TableHead>
                                             <TableHead>Proveedor / Costo</TableHead>
-                                            <TableHead className="text-right">Cantidad (kg/día)</TableHead>
+                                            <TableHead className="w-[150px] text-right">Cantidad (kg/día)</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
@@ -212,12 +244,12 @@ export default function ProductionPage() {
                                                     <TableCell>
                                                         <Badge variant="outline">{animal.category}</Badge>
                                                     </TableCell>
-                                                    <TableCell>
+                                                    <TableCell className="min-w-[200px]">
                                                         <Select 
                                                             value={selectedRation?.id} 
                                                             onValueChange={(value) => handleRationChange(animal.id, value)}
                                                         >
-                                                            <SelectTrigger className="max-w-xs">
+                                                            <SelectTrigger>
                                                                 <SelectValue placeholder="Asignar ración..." />
                                                             </SelectTrigger>
                                                             <SelectContent>
@@ -258,7 +290,62 @@ export default function ProductionPage() {
                         </CardContent>
                     </Card>
                 </TabsContent>
+                 <TabsContent value="rations">
+                    <Card>
+                        <CardHeader>
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <CardTitle>Gestionar Raciones</CardTitle>
+                                    <CardDescription>Añada, edite o elimine los tipos de alimento disponibles.</CardDescription>
+                                </div>
+                                <Button size="sm" onClick={handleAddNewRation}>
+                                    <PlusCircle className="mr-2 h-4 w-4" />
+                                    Añadir Ración
+                                </Button>
+                            </div>
+                        </CardHeader>
+                        <CardContent>
+                             <div className="rounded-lg border">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead>Nombre de la Ración</TableHead>
+                                            <TableHead>Proveedor</TableHead>
+                                            <TableHead className="w-[200px]">Costo por Kg (COP)</TableHead>
+                                            <TableHead className="w-[50px]"></TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {rations.map(ration => (
+                                            <TableRow key={ration.id}>
+                                                <TableCell>
+                                                    <Input value={ration.name} onChange={e => handleRationDetailChange(ration.id, 'name', e.target.value)} />
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Input value={ration.supplier} onChange={e => handleRationDetailChange(ration.id, 'supplier', e.target.value)} />
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Input type="number" value={ration.costPerKg} onChange={e => handleRationDetailChange(ration.id, 'costPerKg', parseFloat(e.target.value) || 0)} />
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Button variant="ghost" size="icon" onClick={() => handleRemoveRation(ration.id)}>
+                                                        <Trash2 className="h-4 w-4 text-destructive" />
+                                                    </Button>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                             </div>
+                             <div className="flex justify-end mt-4">
+                                <Button>Guardar Cambios de Raciones</Button>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
             </Tabs>
         </div>
     );
 }
+
+    
