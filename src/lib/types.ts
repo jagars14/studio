@@ -74,3 +74,16 @@ export type Ration = {
   description: string;
   suggestionRule: (animal: Animal) => boolean;
 };
+
+export type LactationDataPoint = {
+  del: number; // Días en Leche
+  production: number;
+};
+
+export type LactationAnalysis = {
+  data: LactationDataPoint[];
+  peakProduction: number;
+  totalProduction: number;
+  projected305DayProduction: number;
+  persistency: number;
+};

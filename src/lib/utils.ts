@@ -3,7 +3,7 @@ import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 import { differenceInYears, differenceInMonths, differenceInDays } from 'date-fns';
 import { es } from 'date-fns/locale';
-import type { Animal, ReproductiveEvent } from "./types";
+import type { Animal, ReproductiveEvent, MilkRecord, LactationAnalysis } from "./types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -101,7 +101,6 @@ export function generateReproductiveEvents(
                         animalId: animal.id,
                         eventType: 'Próximo Celo',
                         date: heatDate,
-                        description: `Oportunidad de inseminación post-parto #${i+1}.`
                     });
                 }
             }
@@ -117,7 +116,6 @@ export function generateReproductiveEvents(
                     animalId: animal.id,
                     eventType: 'Vigilar Retorno a Celo',
                     date: addUTCDays(serviceDate, CYCLE_DAYS),
-                    description: 'Si no hay celo, es una buena señal de preñez.'
                 });
 
                 events.push({
@@ -126,7 +124,6 @@ export function generateReproductiveEvents(
                     animalId: animal.id,
                     eventType: 'Chequeo de Preñez',
                     date: addUTCDays(serviceDate, PREG_CHECK_DAYS),
-                    description: 'Confirmar gestación mediante palpación o ecografía.'
                 });
                 
                 if (!animal.pregnancyDate) {
@@ -137,7 +134,6 @@ export function generateReproductiveEvents(
                         animalId: animal.id,
                         eventType: 'Fecha Probable de Parto',
                         date: dueDate,
-                        description: 'Preparar lote de maternidad y cuidados periparto.'
                     });
                 }
             }
@@ -154,7 +150,6 @@ export function generateReproductiveEvents(
                     animalId: animal.id,
                     eventType: 'Fecha de Secado',
                     date: addUTCDays(serviceDate, GESTATION_DAYS - DRY_OFF_DAYS),
-                    description: 'Iniciar período seco para preparar a la vaca para el parto.'
                 });
 
                 events.push({
@@ -163,7 +158,6 @@ export function generateReproductiveEvents(
                     animalId: animal.id,
                     eventType: 'Fecha Probable de Parto',
                     date: addUTCDays(serviceDate, GESTATION_DAYS),
-                    description: 'Preparar lote de maternidad y cuidados periparto.'
                 });
             }
         }
@@ -171,4 +165,51 @@ export function generateReproductiveEvents(
   });
 
   return events.sort((a, b) => a.date.getTime() - b.date.getTime());
+}
+
+export function analyzeLactation(animal: Animal, records: MilkRecord[]): LactationAnalysis | null {
+  if (!animal.lastCalvingDate) return null;
+
+  const lastCalvingDate = createUTCDate(animal.lastCalvingDate);
+  const animalRecords = records
+    .filter(r => r.animalId === animal.id && createUTCDate(r.date) >= lastCalvingDate)
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+  if (animalRecords.length === 0) return null;
+
+  const dailyProduction: { [key: number]: number } = {};
+  animalRecords.forEach(record => {
+    const recordDate = createUTCDate(record.date);
+    const del = differenceInDays(recordDate, lastCalvingDate);
+    if (del >= 0) {
+      dailyProduction[del] = (dailyProduction[del] || 0) + record.quantity;
+    }
+  });
+  
+  const data = Object.entries(dailyProduction).map(([del, production]) => ({
+    del: parseInt(del, 10),
+    production,
+  })).sort((a,b) => a.del - b.del);
+
+  if (data.length === 0) return null;
+
+  const peakProduction = Math.max(...data.map(d => d.production));
+  const totalProduction = data.reduce((sum, d) => sum + d.production, 0);
+
+  // Simple projection: average production so far * 305
+  const averageProduction = totalProduction / data.length;
+  const projected305DayProduction = averageProduction * 305;
+  
+  // Simple persistency: (last 10 days avg / peak) * 100
+  const last10DaysData = data.slice(-10);
+  const last10DaysAvg = last10DaysData.reduce((sum, d) => sum + d.production, 0) / last10DaysData.length;
+  const persistency = peakProduction > 0 ? (last10DaysAvg / peakProduction) * 100 : 0;
+
+  return {
+    data,
+    peakProduction,
+    totalProduction,
+    projected305DayProduction,
+    persistency,
+  };
 }
