@@ -12,10 +12,11 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Label } from '@/components/ui/label';
 import { animals as mockAnimals, milkRecords as mockRecords, rations as mockRations } from '@/lib/mock-data';
 import type { Animal, MilkRecord, Ration } from '@/lib/types';
-import { BarChart, DollarSign, ListFilter, PlusCircle, Search, Trash2 } from 'lucide-react';
+import { BarChart, DollarSign, ListFilter, PlusCircle, Search, Trash2, Gauge } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import EfficiencyChart from './_components/efficiency-chart';
+import { format, subDays } from 'date-fns';
 
 export type AnimalRationAssignment = {
     animalId: string;
@@ -74,8 +75,14 @@ export default function ProductionPage() {
         return rations.find(ration => ration.suggestionRule(animal))?.id || '';
     };
 
-    const totalFeedCost = React.useMemo(() => {
-        return assignedRations.reduce((total, assignment) => {
+    const dailyMetrics = React.useMemo(() => {
+        const mostRecentDate = milkRecords.reduce((max, r) => r.date > max ? r.date : max, milkRecords[0]?.date || format(new Date(), 'yyyy-MM-dd'));
+
+        const totalMilkToday = milkRecords
+            .filter(r => r.date === mostRecentDate)
+            .reduce((sum, r) => sum + r.quantity, 0);
+
+        const totalFeedCost = assignedRations.reduce((total, assignment) => {
             if (!assignment.rationId || !assignment.amount || assignment.amount <= 0) {
                 return total;
             }
@@ -85,24 +92,39 @@ export default function ProductionPage() {
             }
             return total + (assignment.amount * ration.costPerKg);
         }, 0);
-    }, [assignedRations, rations]);
+
+        const totalFeedAmount = assignedRations.reduce((total, assignment) => {
+            return total + (assignment.amount || 0);
+        }, 0);
+        
+        const feedEfficiency = totalFeedAmount > 0 ? totalMilkToday / totalFeedAmount : 0;
+
+        return { totalFeedCost, feedEfficiency };
+
+    }, [assignedRations, rations, milkRecords]);
 
 
     const kpiData = [
         { title: "Producción Promedio (Hato, 7d)", value: "22.5 L/día", icon: BarChart, description: "+1.2 L vs semana pasada" },
         { 
             title: "Costo Total Diario de Alimentación", 
-            value: totalFeedCost.toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }), 
+            value: dailyMetrics.totalFeedCost.toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }), 
             icon: DollarSign, 
             description: "Calculado según las raciones asignadas" 
         },
+        {
+            title: "Eficiencia Alimenticia (Leche/Alimento)",
+            value: `${dailyMetrics.feedEfficiency.toFixed(2)} L/kg`,
+            icon: Gauge,
+            description: "Litros de leche por kg de alimento"
+        }
     ];
 
     return (
         <div className="space-y-6">
             <h1 className="text-3xl font-headline font-bold">Control de Producción y Alimentación</h1>
 
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {kpiData.map(kpi => (
                     <Card key={kpi.title}>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -362,3 +384,5 @@ export default function ProductionPage() {
         </div>
     );
 }
+
+    
