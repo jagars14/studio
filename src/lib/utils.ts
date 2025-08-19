@@ -174,8 +174,8 @@ export function generateHealthEvents(animal: Animal, plan: HealthPlan): AnimalHe
   const birthDate = createUTCDate(animal.birthDate);
   
   return plan.events.map(event => {
-    const dueDate = addUTCDays(birthDate, event.daysFromBirth);
-    if (isNaN(dueDate.getTime())) {
+    const eventDate = addUTCDays(birthDate, event.daysFromBirth);
+    if (isNaN(eventDate.getTime())) {
         return null;
     }
     return {
@@ -183,7 +183,7 @@ export function generateHealthEvents(animal: Animal, plan: HealthPlan): AnimalHe
         animalId: animal.id,
         animalName: animal.name,
         eventName: event.name,
-        dueDate: dueDate,
+        date: eventDate,
     }
   }).filter((event): event is AnimalHealthEvent => event !== null);
 }
@@ -235,4 +235,3 @@ export function analyzeLactation(animal: Animal, records: MilkRecord[]): Lactati
     persistency,
   };
 }
-

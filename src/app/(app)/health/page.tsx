@@ -19,10 +19,10 @@ const getEventStatus = (event: AnimalHealthEvent, completedEvents: string[]) => 
     if (isCompleted) {
         return { status: 'Completado', icon: CheckCircle2, color: 'text-green-500' };
     }
-    if (isPast(event.dueDate)) {
+    if (isPast(event.date)) {
         return { status: 'Vencido', icon: AlertCircle, color: 'text-destructive' };
     }
-    const daysUntilDue = differenceInDays(event.dueDate, new Date());
+    const daysUntilDue = differenceInDays(event.date, new Date());
     if (daysUntilDue <= 7) {
         return { status: `Vence en ${daysUntilDue} día(s)`, icon: Clock, color: 'text-yellow-500' };
     }
@@ -105,7 +105,7 @@ export default function HealthPlanPage() {
                                                                 <Icon className={cn("h-4 w-4", color)} />
                                                                 <span>{status}</span>
                                                                 <span className="text-xs">
-                                                                    (Vence: {format(event.dueDate, "dd MMM yyyy", { locale: es })})
+                                                                    (Vence: {format(event.date, "dd MMM yyyy", { locale: es })})
                                                                 </span>
                                                             </div>
                                                         </div>

@@ -109,5 +109,5 @@ export type AnimalHealthEvent = {
   animalId: string;
   animalName: string;
   eventName: string;
-  dueDate: Date;
+  date: Date;
 };
