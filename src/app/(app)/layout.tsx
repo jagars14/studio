@@ -16,7 +16,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/logo";
 import { CowIcon } from "@/components/icons/cow-icon";
-import NotificationHeader from "@/components/notification-header";
+import NotificationPopover from "@/components/notification-popover";
 
 export const metadata: Metadata = {
   title: "BovinoPro Lite",
@@ -67,17 +67,15 @@ export default function AppLayout({
         </SidebarContent>
       </Sidebar>
       <SidebarInset>
-        <header className="flex h-14 items-center gap-4 border-b bg-card px-6 sticky top-0 z-30">
+        <header className="flex h-14 items-center justify-between gap-4 border-b bg-card px-6 sticky top-0 z-30">
           <SidebarTrigger className="md:hidden" />
-          <div className="w-full flex-1">
+          <div className="flex-1">
              {/* El contenido futuro del encabezado específico de la página puede ir aquí */}
           </div>
+          <NotificationPopover />
         </header>
         <main className="flex-1 overflow-auto p-4 md:p-6">
-          <NotificationHeader />
-          <div className="mt-6">
-            {children}
-          </div>
+          {children}
         </main>
       </SidebarInset>
     </SidebarProvider>
