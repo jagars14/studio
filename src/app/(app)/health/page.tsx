@@ -1,4 +1,3 @@
-// src/app/(app)/health/page.tsx
 
 'use client';
 
@@ -7,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge';
+import { Badge } from "@/components/ui/badge";
 import { animals as mockAnimals, healthPlans } from "@/lib/mock-data";
 import { generateHealthEvents, cn } from '@/lib/utils';
 import type { AnimalHealthEvent } from '@/lib/types';
