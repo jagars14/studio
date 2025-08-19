@@ -13,6 +13,7 @@ import { Label } from '@/components/ui/label';
 import { animals, milkRecords as mockRecords, rations } from '@/lib/mock-data';
 import type { Animal, MilkRecord, Ration } from '@/lib/types';
 import { BarChart, DollarSign, ListFilter, PlusCircle, Search } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 const kpiData = [
     { title: "Producción Promedio (Hato, 7d)", value: "22.5 L/día", icon: BarChart, description: "+1.2 L vs semana pasada" },
