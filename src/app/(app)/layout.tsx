@@ -16,6 +16,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/logo";
 import { CowIcon } from "@/components/icons/cow-icon";
+import GlobalNotifications from "@/components/global-notifications";
 
 export const metadata: Metadata = {
   title: "BovinoPro Lite",
@@ -71,6 +72,7 @@ export default function AppLayout({
           <div className="w-full flex-1">
              {/* El contenido futuro del encabezado específico de la página puede ir aquí */}
           </div>
+          <GlobalNotifications />
         </header>
         <main className="flex-1 overflow-auto p-4 md:p-6">
           {children}

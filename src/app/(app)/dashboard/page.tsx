@@ -8,23 +8,15 @@ import HerdEvolutionChart from "./_components/herd-evolution-chart";
 import HerdDistributionChart from "./_components/herd-distribution-chart";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, CalendarClock, AlertCircle, Users, TrendingUp, TrendingDown, Milk } from "lucide-react";
-import { format, startOfToday, addDays, isWithinInterval } from "date-fns";
+import { ArrowRight, CalendarClock, Users, TrendingUp, TrendingDown, Milk } from "lucide-react";
+import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { Badge } from "@/components/ui/badge";
 import { generateReproductiveEvents } from "@/lib/utils";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import type { Animal, ReproductiveEvent } from '@/lib/types';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { db } from '@/lib/firebase';
-import { collection, getDocs } from 'firebase/firestore';
+import type { Animal } from '@/lib/types';
 
 export default function DashboardPage() {
   const [isClient, setIsClient] = useState(false);
-  const [isNeedsAttentionOpen, setIsNeedsAttentionOpen] = useState(false);
-  const [attentionDays, setAttentionDays] = useState(30);
   const [animals, setAnimals] = useState<Animal[]>([]);
 
   useEffect(() => {
@@ -36,7 +28,6 @@ export default function DashboardPage() {
     fetchAnimals();
   }, []);
 
-  const today = useMemo(() => isClient ? startOfToday() : new Date(), [isClient]);
 
   const upcomingEvents = useMemo(() => {
     if (!isClient) return [];
@@ -48,13 +39,6 @@ export default function DashboardPage() {
       event.date.getUTCDate() >= today.getUTCDate()
     ).slice(0, 4);
   }, [isClient, animals]);
-
-  const needsAttentionEvents = useMemo(() => {
-    if (!isClient) return [];
-    const nextDays = addDays(today, attentionDays);
-    return generateReproductiveEvents(animals, { includeBirthdays: false })
-      .filter(event => isWithinInterval(event.date, { start: today, end: nextDays }));
-  }, [isClient, today, attentionDays, animals]);
 
   const calculateMortalityRate = () => {
     const deceasedAnimals = animals.filter(animal => animal.status === 'Fallecido').length;
@@ -93,83 +77,6 @@ export default function DashboardPage() {
             </Card>
           </Link>
         ))}
-         <Dialog open={isNeedsAttentionOpen} onOpenChange={setIsNeedsAttentionOpen}>
-          <DialogTrigger asChild>
-            <Card className="hover:bg-muted/50 transition-colors cursor-pointer">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Animales que Necesitan Atención</CardTitle>
-                <AlertCircle className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{needsAttentionEvents.length}</div>
-                 <p className="text-xs text-muted-foreground">
-                    Eventos en los próximos {attentionDays} días
-                  </p>
-              </CardContent>
-            </Card>
-          </DialogTrigger>
-           <DialogContent className="sm:max-w-2xl">
-              <DialogHeader>
-                <DialogTitle className="font-headline">Animales que Necesitan Atención</DialogTitle>
-                <DialogDescription>
-                  Estos animales tienen eventos reproductivos importantes en los próximos días.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="flex items-center gap-4">
-                  <Label htmlFor="attention-days" className="whitespace-nowrap">Ver eventos en los próximos</Label>
-                  <Input 
-                    id="attention-days"
-                    type="number" 
-                    value={attentionDays}
-                    onChange={(e) => setAttentionDays(Number(e.target.value) || 0)}
-                    className="w-24"
-                  />
-                  <Label htmlFor="attention-days">días</Label>
-              </div>
-              <div className="rounded-lg border max-h-[60vh] overflow-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Animal</TableHead>
-                      <TableHead>Evento Próximo</TableHead>
-                      <TableHead className="text-right">Fecha</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {needsAttentionEvents.length > 0 ? (
-                      needsAttentionEvents.map((event: ReproductiveEvent) => (
-                        <TableRow key={event.id}>
-                          <TableCell>
-                            <Link href={`/animals/${event.animalId}`} className="font-medium hover:underline text-primary" onClick={() => setIsNeedsAttentionOpen(false)}>
-                                {event.animalName} ({event.animalId})
-                            </Link>
-                          </TableCell>
-                          <TableCell>
-                             <Badge
-                                variant={
-                                    event.eventType === 'Próximo Celo' ? 'secondary' :
-                                    event.eventType === 'Fecha Probable de Parto' ? 'default' :
-                                    'outline'
-                                }
-                                >
-                                {event.eventType}
-                                </Badge>
-                          </TableCell>
-                          <TableCell className="text-right">{format(event.date, 'dd MMM yyyy', { locale: es })}</TableCell>
-                        </TableRow>
-                      ))
-                    ) : (
-                      <TableRow>
-                        <TableCell colSpan={3} className="text-center text-muted-foreground">
-                          No hay animales que necesiten atención en el período seleccionado.
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
-            </DialogContent>
-        </Dialog>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
