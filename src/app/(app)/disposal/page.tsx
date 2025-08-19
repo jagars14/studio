@@ -12,10 +12,16 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function DisposalPage() {
     const [disposalRate, setDisposalRate] = React.useState(15); // Tasa de descarte anual en %
     const [herdSize, setHerdSize] = React.useState(342); // Tamaño actual del hato
+    const [isClient, setIsClient] = React.useState(false);
+
+    React.useEffect(() => {
+        setIsClient(true);
+    }, []);
 
     const discardedAnimals = React.useMemo(() => {
         return animals.filter(a => a.status === 'Vendido' || a.status === 'Fallecido');
@@ -117,32 +123,40 @@ export default function DisposalPage() {
                     <CardTitle>Historial de Animales Descartados</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <div className="rounded-lg border">
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>ID</TableHead>
-                                    <TableHead>Nombre</TableHead>
-                                    <TableHead>Fecha de Salida</TableHead>
-                                    <TableHead>Causa</TableHead>
-                                    <TableHead>Estado Final</TableHead>
-                                    <TableHead className="text-right">Precio Venta (COP)</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {discardedAnimals.map(animal => (
-                                    <TableRow key={animal.id}>
-                                        <TableCell className="font-medium">{animal.id}</TableCell>
-                                        <TableCell>{animal.name}</TableCell>
-                                        <TableCell>{animal.exitDate ? new Date(animal.exitDate).toLocaleDateString('es-ES') : 'N/A'}</TableCell>
-                                        <TableCell><Badge variant="outline">{animal.exitCause}</Badge></TableCell>
-                                        <TableCell><Badge variant={animal.status === 'Vendido' ? 'default' : 'destructive'}>{animal.status}</Badge></TableCell>
-                                        <TableCell className="text-right">{animal.salePrice ? animal.salePrice.toLocaleString('es-CO') : 'N/A'}</TableCell>
+                    {isClient ? (
+                        <div className="rounded-lg border">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>ID</TableHead>
+                                        <TableHead>Nombre</TableHead>
+                                        <TableHead>Fecha de Salida</TableHead>
+                                        <TableHead>Causa</TableHead>
+                                        <TableHead>Estado Final</TableHead>
+                                        <TableHead className="text-right">Precio Venta (COP)</TableHead>
                                     </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </div>
+                                </TableHeader>
+                                <TableBody>
+                                    {discardedAnimals.map(animal => (
+                                        <TableRow key={animal.id}>
+                                            <TableCell className="font-medium">{animal.id}</TableCell>
+                                            <TableCell>{animal.name}</TableCell>
+                                            <TableCell>{animal.exitDate ? new Date(animal.exitDate).toLocaleDateString('es-ES') : 'N/A'}</TableCell>
+                                            <TableCell><Badge variant="outline">{animal.exitCause}</Badge></TableCell>
+                                            <TableCell><Badge variant={animal.status === 'Vendido' ? 'default' : 'destructive'}>{animal.status}</Badge></TableCell>
+                                            <TableCell className="text-right">{animal.salePrice ? animal.salePrice.toLocaleString('es-CO') : 'N/A'}</TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </div>
+                    ) : (
+                        <div className="space-y-2">
+                           <Skeleton className="h-10 w-full" />
+                           <Skeleton className="h-10 w-full" />
+                           <Skeleton className="h-10 w-full" />
+                        </div>
+                    )}
                 </CardContent>
             </Card>
         </div>
