@@ -59,7 +59,7 @@ export default function LactationPage() {
                                         <SelectItem key={animal.id} value={animal.id}>
                                             {animal.name} ({animal.id})
                                         </SelectItem>
-                                ))}
+                                    ))}
                             </SelectContent>
                         </Select>
                     </div>
@@ -91,7 +91,7 @@ export default function LactationPage() {
                         </CardHeader>
                         <CardContent className="h-[400px] w-full">
                             <ResponsiveContainer>
-                                <AreaChart data={lactationAnalysis.data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                                <AreaChart data={lactationAnalysis.data} margin={{ top: 10, right: 30, left: 0, bottom: 20 }}>
                                     <defs>
                                         <linearGradient id="colorProduction" x1="0" y1="0" x2="0" y2="1">
                                             <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.8}/>
@@ -104,7 +104,7 @@ export default function LactationPage() {
                                         name="Días en Leche"
                                         type="number"
                                         domain={['dataMin', 'dataMax']}
-                                        label={{ value: 'Días en Leche (DEL)', position: 'insideBottom', offset: -5 }}
+                                        label={{ value: 'Días en Leche (DEL)', position: 'insideBottom', offset: -15 }}
                                     />
                                     <YAxis 
                                         unit=" L"
