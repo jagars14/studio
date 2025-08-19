@@ -1,5 +1,5 @@
 
-import type { Animal, Kpi, ReproductiveEvent, MilkRecord, Ration } from '@/lib/types';
+import type { Animal, Kpi, ReproductiveEvent, MilkRecord, Ration, HealthPlan } from '@/lib/types';
 import { Users, TrendingUp, TrendingDown, AlertCircle } from 'lucide-react';
 import { addDays, subMonths, format, subDays } from 'date-fns';
 
@@ -36,9 +36,9 @@ export const kpis: Omit<Kpi, 'href'>[] = [
 
 export const animals: Animal[] = [
   { id: '101', name: 'Daisy', breed: 'Holstein', sex: 'Hembra', birthDate: '2021-05-15', fatherId: 'B01', motherId: 'C02', weight: 650, status: 'Activo', category: 'Vaca', productionStatus: 'En Producción', lastCalvingDate: '2023-10-01', assignedRation: 'vaca-produccion', rationAmount: 15 },
-  { id: '102', name: 'Bessie', breed: 'Angus', sex: 'Hembra', birthDate: '2022-01-20', fatherId: 'B03', motherId: 'C04', weight: 580, status: 'Activo', category: 'Novilla', heatDate: '2024-05-10', assignedRation: 'levante-novillas', rationAmount: 8 },
+  { id: '102', name: 'Bessie', breed: 'Angus', sex: 'Hembra', birthDate: '2022-01-20', fatherId: 'B03', motherId: 'C04', weight: 580, status: 'Activo', category: 'Novilla', heatDate: '2024-05-10', assignedRation: 'levante-novillas', rationAmount: 8, assignedHealthPlan: 'default-calf-plan' },
   { id: '103', name: 'Ferdinand', breed: 'Hereford', sex: 'Macho', birthDate: '2020-11-10', fatherId: null, motherId: 'C05', weight: 900, status: 'Activo', category: 'Toro' },
-  { id: '104', name: 'Annabelle', breed: 'Jersey', sex: 'Hembra', birthDate: '2023-03-01', fatherId: 'B01', motherId: '101', weight: 150, status: 'Activo', category: 'Ternera' },
+  { id: '104', name: 'Annabelle', breed: 'Jersey', sex: 'Hembra', birthDate: '2023-03-01', fatherId: 'B01', motherId: '101', weight: 150, status: 'Activo', category: 'Ternera', assignedHealthPlan: 'default-calf-plan' },
   { id: '105', name: 'Angus Jr.', breed: 'Angus', sex: 'Macho', birthDate: '2023-02-14', fatherId: 'B03', motherId: '102', weight: 180, status: 'Activo', category: 'Ternero' },
   { id: '106', name: 'Brutus', breed: 'Brahman', sex: 'Macho', birthDate: '2021-08-22', fatherId: null, motherId: null, weight: 820, status: 'Activo', category: 'Novillo' },
   { id: '107', name: 'Clara', breed: 'Gyr', sex: 'Hembra', birthDate: '2020-07-11', fatherId: null, motherId: null, weight: 550, status: 'Activo', category: 'Vaca', productionStatus: 'Seca', pregnancyDate: '2024-01-20', assignedRation: 'dieta-secado', rationAmount: 10 },
@@ -112,4 +112,19 @@ export const disposalCausesData = [
   { cause: 'Muerte', count: 2, fill: 'hsl(var(--chart-4))' },
   { cause: 'Edad', count: 4, fill: 'hsl(var(--chart-5))' },
   { cause: 'Accidente', count: 1, fill: 'hsl(var(--chart-1))' },
+];
+
+export const healthPlans: HealthPlan[] = [
+  {
+    id: 'default-calf-plan',
+    name: 'Plan de Crianza Estándar',
+    events: [
+      { name: 'Desinfección de ombligo', daysFromBirth: 1 },
+      { name: 'Primera Vacuna (Clostridial)', daysFromBirth: 30 },
+      { name: 'Descorne', daysFromBirth: 45 },
+      { name: 'Primer Purgante', daysFromBirth: 60 },
+      { name: 'Destete', daysFromBirth: 90 },
+      { name: 'Vacuna Reproductiva (IBR/DVB)', daysFromBirth: 180 },
+    ],
+  },
 ];

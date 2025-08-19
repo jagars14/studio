@@ -21,6 +21,7 @@ export type Animal = {
   exitCause?: 'Baja producción' | 'Infertilidad' | 'Venta' | 'Muerte' | 'Accidente' | 'Edad';
   salePrice?: number;
   exitNotes?: string;
+  assignedHealthPlan?: string;
 };
 
 export type Kpi = {
@@ -90,4 +91,23 @@ export type LactationAnalysis = {
   totalProduction: number;
   projected305DayProduction: number;
   persistency: number;
+};
+
+export type HealthPlanEvent = {
+  name: string;
+  daysFromBirth: number;
+};
+
+export type HealthPlan = {
+  id: string;
+  name: string;
+  events: HealthPlanEvent[];
+};
+
+export type AnimalHealthEvent = {
+  id: string; // e.g., animalId-eventName
+  animalId: string;
+  animalName: string;
+  eventName: string;
+  dueDate: Date;
 };

@@ -10,11 +10,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { colombiaData } from '@/lib/colombia-data';
 import { useToast } from '@/hooks/use-toast';
 import { auth, db } from '@/lib/firebase';
-import { collection, query, where, getDocs, doc, updateDoc } from 'firebase/firestore';
-import type { Farm } from '@/lib/types';
+import { collection, query, where, getDocs, doc, updateDoc, addDoc } from 'firebase/firestore';
+import type { Farm, HealthPlan } from '@/lib/types';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Loader2 } from 'lucide-react';
+import { Loader2, PlusCircle, Trash2, X } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
 
 export default function SettingsPage() {
   const { toast } = useToast();
@@ -28,6 +29,11 @@ export default function SettingsPage() {
   const [selectedCity, setSelectedCity] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+
+  // State for Health Plans
+  const [healthPlans, setHealthPlans] = useState<HealthPlan[]>([]);
+  const [newPlanName, setNewPlanName] = useState('');
+  const [newPlanEvents, setNewPlanEvents] = useState<{ name: string; daysFromBirth: number; }[]>([{ name: '', daysFromBirth: 0 }]);
 
   useEffect(() => {
     async function fetchFarmData() {
@@ -110,43 +116,72 @@ export default function SettingsPage() {
     }
   };
 
+  const handlePlanEventChange = (index: number, field: 'name' | 'daysFromBirth', value: string) => {
+    const updatedEvents = [...newPlanEvents];
+    if (field === 'daysFromBirth') {
+      updatedEvents[index][field] = parseInt(value, 10) || 0;
+    } else {
+      updatedEvents[index][field] = value;
+    }
+    setNewPlanEvents(updatedEvents);
+  };
+
+  const addPlanEvent = () => {
+    setNewPlanEvents([...newPlanEvents, { name: '', daysFromBirth: 0 }]);
+  };
+
+  const removePlanEvent = (index: number) => {
+    setNewPlanEvents(newPlanEvents.filter((_, i) => i !== index));
+  };
+  
+  const handleSavePlan = async () => {
+     // In a real app, this would save to Firestore. For now, we just log it.
+    console.log("Nuevo Plan a Guardar:", { name: newPlanName, events: newPlanEvents });
+     toast({
+        title: "Plan Guardado (Simulación)",
+        description: `El plan "${newPlanName}" ha sido guardado.`,
+    });
+    setNewPlanName('');
+    setNewPlanEvents([{ name: '', daysFromBirth: 0 }]);
+  }
+
   const departments = Object.keys(colombiaData);
 
   if (isLoading) {
     return (
-      <div className="mx-auto max-w-2xl space-y-6">
-        <Skeleton className="h-9 w-48" />
-        <Card>
-          <CardHeader>
-             <Skeleton className="h-6 w-40" />
-             <Skeleton className="h-4 w-64" />
-          </CardHeader>
-          <CardContent className="space-y-4">
-             <div className="space-y-2">
-                <Skeleton className="h-5 w-24" />
-                <Skeleton className="h-10 w-full" />
-             </div>
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+       <div className="space-y-6">
+            <h1 className="text-3xl font-headline font-bold">Configuración</h1>
+            <Card>
+            <CardHeader>
+                <Skeleton className="h-6 w-40" />
+                <Skeleton className="h-4 w-64" />
+            </CardHeader>
+            <CardContent className="space-y-4">
                 <div className="space-y-2">
                     <Skeleton className="h-5 w-24" />
                     <Skeleton className="h-10 w-full" />
                 </div>
-                 <div className="space-y-2">
-                    <Skeleton className="h-5 w-24" />
-                    <Skeleton className="h-10 w-full" />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                        <Skeleton className="h-5 w-24" />
+                        <Skeleton className="h-10 w-full" />
+                    </div>
+                    <div className="space-y-2">
+                        <Skeleton className="h-5 w-24" />
+                        <Skeleton className="h-10 w-full" />
+                    </div>
                 </div>
-             </div>
-          </CardContent>
-          <CardFooter className="border-t pt-6">
-            <Skeleton className="h-10 w-32" />
-          </CardFooter>
-        </Card>
-      </div>
+            </CardContent>
+            <CardFooter className="border-t pt-6">
+                <Skeleton className="h-10 w-32" />
+            </CardFooter>
+            </Card>
+        </div>
     );
   }
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
+    <div className="space-y-6">
       <h1 className="text-3xl font-headline font-bold">Configuración</h1>
       
       <Card>
@@ -196,7 +231,55 @@ export default function SettingsPage() {
         <CardFooter className="border-t pt-6">
           <Button onClick={handleSaveChanges} disabled={isSaving}>
             {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Guardar Cambios
+            Guardar Cambios de Finca
+          </Button>
+        </CardFooter>
+      </Card>
+
+      <Card>
+        <CardHeader>
+            <CardTitle>Planes de Crianza y Sanidad</CardTitle>
+            <CardDescription>Define plantillas de eventos para estandarizar el manejo de terneras.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+            <div>
+                <h3 className="font-semibold mb-2">Planes Existentes</h3>
+                <p className="text-sm text-muted-foreground">Actualmente esta es una lista estática. La gestión de planes se añadirá en el futuro.</p>
+                {/* List of existing plans would go here */}
+            </div>
+            <Separator />
+            <div>
+                <h3 className="font-semibold mb-4">Crear Nuevo Plan</h3>
+                 <div className="space-y-4 p-4 border rounded-lg">
+                    <div className="space-y-2">
+                        <Label htmlFor="plan-name">Nombre del Plan</Label>
+                        <Input id="plan-name" placeholder="Ej: Plan de Levante Estándar" value={newPlanName} onChange={e => setNewPlanName(e.target.value)} />
+                    </div>
+                    {newPlanEvents.map((event, index) => (
+                        <div key={index} className="flex items-end gap-2">
+                            <div className="grid gap-2 flex-1">
+                                <Label htmlFor={`event-name-${index}`}>Nombre del Evento</Label>
+                                <Input id={`event-name-${index}`} value={event.name} onChange={e => handlePlanEventChange(index, 'name', e.target.value)} placeholder="Ej: Primera Vacuna" />
+                            </div>
+                            <div className="grid gap-2">
+                                <Label htmlFor={`event-days-${index}`}>Días Post-Nacimiento</Label>
+                                <Input id={`event-days-${index}`} type="number" value={event.daysFromBirth} onChange={e => handlePlanEventChange(index, 'daysFromBirth', e.target.value)} className="w-24" />
+                            </div>
+                            <Button variant="ghost" size="icon" onClick={() => removePlanEvent(index)} disabled={newPlanEvents.length <= 1}>
+                                <Trash2 className="h-4 w-4 text-destructive" />
+                            </Button>
+                        </div>
+                    ))}
+                     <Button variant="outline" size="sm" onClick={addPlanEvent}>
+                        <PlusCircle className="mr-2 h-4 w-4" />
+                        Añadir Evento
+                    </Button>
+                 </div>
+            </div>
+        </CardContent>
+         <CardFooter className="border-t pt-6">
+          <Button onClick={handleSavePlan}>
+            Guardar Nuevo Plan
           </Button>
         </CardFooter>
       </Card>

@@ -5,16 +5,18 @@ import * as React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
 import { Badge } from "@/components/ui/badge";
-import { animals } from "@/lib/mock-data";
+import { animals, healthPlans } from "@/lib/mock-data";
 import { format, isSameDay } from 'date-fns';
 import { es } from 'date-fns/locale';
 import ReproductiveCalculator from "./_components/reproductive-calculator";
-import { generateReproductiveEvents, cn } from '@/lib/utils';
-import type { ReproductiveEvent } from '@/lib/types';
+import { generateReproductiveEvents, generateHealthEvents, cn } from '@/lib/utils';
+import type { ReproductiveEvent, AnimalHealthEvent } from '@/lib/types';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { AnimalSummaryCard } from './_components/animal-summary-card';
+
+type CalendarEvent = (ReproductiveEvent | AnimalHealthEvent) & { type: 'reproduction' | 'health' };
 
 export default function ReproductionPage() {
   const [date, setDate] = React.useState<Date | undefined>(undefined);
@@ -39,7 +41,18 @@ export default function ReproductionPage() {
     return [selectedAnimal];
   }, [selectedAnimal]);
 
-  const allEvents = React.useMemo(() => generateReproductiveEvents(filteredAnimals), [filteredAnimals]);
+  const allEvents: CalendarEvent[] = React.useMemo(() => {
+    const reproductiveEvents = generateReproductiveEvents(filteredAnimals).map(e => ({ ...e, type: 'reproduction' as const }));
+    
+    const healthEvents = filteredAnimals.flatMap(animal => {
+        const plan = healthPlans.find(p => p.id === (animal.assignedHealthPlan || 'default-calf-plan'));
+        if (!plan) return [];
+        return generateHealthEvents(animal, plan);
+    }).map(e => ({ ...e, type: 'health' as const, eventType: e.eventName }));
+
+    return [...reproductiveEvents, ...healthEvents].sort((a, b) => a.date.getTime() - b.date.getTime());
+  }, [filteredAnimals]);
+
 
   const currentMonthEvents = React.useMemo(() => {
     if (!isClient) return [];
@@ -60,7 +73,17 @@ export default function ReproductionPage() {
 
   const eventsToShow = date && isClient ? selectedDayEvents : currentMonthEvents;
 
-  const renderEvent = (event: ReproductiveEvent) => (
+  const getBadgeVariant = (event: CalendarEvent) => {
+    if (event.type === 'health') return 'destructive';
+    switch (event.eventType) {
+      case 'Próximo Celo': return 'secondary';
+      case 'Fecha Probable de Parto': return 'default';
+      case 'Cumpleaños': return 'outline';
+      default: return 'outline';
+    }
+  };
+  
+  const renderEvent = (event: CalendarEvent) => (
      <li key={event.id} className="flex items-center gap-4">
         <div className="flex flex-col items-center justify-center rounded-md bg-muted p-2 text-center w-14 shrink-0">
           <span className="text-sm font-bold text-muted-foreground capitalize">{format(event.date, 'MMM', { locale: es })}</span>
@@ -69,12 +92,7 @@ export default function ReproductionPage() {
         <div>
           <p className="font-semibold">{event.animalName} <span className="text-xs text-muted-foreground">({event.animalId})</span></p>
           <Badge
-            variant={
-              event.eventType === 'Próximo Celo' ? 'secondary' :
-              event.eventType === 'Fecha Probable de Parto' ? 'default' :
-              event.eventType === 'Cumpleaños' ? 'outline' :
-              'outline'
-            }
+            variant={getBadgeVariant(event)}
             className={cn(
                 event.eventType === 'Cumpleaños' && 'border-yellow-500 text-yellow-700',
                 "mt-1"
@@ -133,10 +151,10 @@ export default function ReproductionPage() {
                 onMonthChange={setCurrentMonth}
                 locale={es}
                 modifiers={{
-                events: allEvents.map(e => e.date),
+                  events: allEvents.map(e => e.date),
                 }}
                 modifiersClassNames={{
-                events: 'bg-accent/50 rounded-full',
+                  events: 'bg-accent/50 rounded-full',
                 }}
                 className="w-auto"
             />

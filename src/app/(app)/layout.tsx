@@ -11,7 +11,7 @@ import {
   SidebarInset,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { LayoutDashboard, CalendarHeart, BrainCircuit, Settings, Milk, LineChart, ArchiveRestore } from "lucide-react";
+import { LayoutDashboard, CalendarHeart, BrainCircuit, Settings, Milk, LineChart, ArchiveRestore, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/logo";
@@ -29,6 +29,7 @@ const navItems = [
   { href: "/production", icon: Milk, label: "Producción" },
   { href: "/lactation", icon: LineChart, label: "Lactancia" },
   { href: "/disposal", icon: ArchiveRestore, label: "Descarte" },
+  { href: "/health", icon: ShieldCheck, label: "Sanidad" },
   { href: "/optimizer", icon: BrainCircuit, label: "Optimizador IA" },
   { href: "/settings", icon: Settings, label: "Configuración" },
 ];

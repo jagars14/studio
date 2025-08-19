@@ -1,9 +1,9 @@
 
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
-import { differenceInYears, differenceInMonths, differenceInDays } from 'date-fns';
+import { differenceInYears, differenceInMonths, differenceInDays, addDays as dfnsAddDays } from 'date-fns';
 import { es } from 'date-fns/locale';
-import type { Animal, ReproductiveEvent, MilkRecord, LactationAnalysis } from "./types";
+import type { Animal, ReproductiveEvent, MilkRecord, LactationAnalysis, HealthPlan, AnimalHealthEvent } from "./types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -142,7 +142,8 @@ export function generateReproductiveEvents(
         if (!mode || mode === 'prenez') {
             if (animal.pregnancyDate) {
                 const pregDate = createUTCDate(animal.pregnancyDate);
-                const serviceDate = subUTCDays(pregDate, PREG_CHECK_DAYS);
+                // Asumimos que la fecha de preñez es X días después del servicio
+                const serviceDate = subUTCDays(pregDate, PREG_CHECK_DAYS); 
                 
                 events.push({
                     id: `${animal.id}-dry-off`,
@@ -166,6 +167,21 @@ export function generateReproductiveEvents(
 
   return events.sort((a, b) => a.date.getTime() - b.date.getTime());
 }
+
+export function generateHealthEvents(animal: Animal, plan: HealthPlan): AnimalHealthEvent[] {
+  if (!animal.birthDate) return [];
+
+  const birthDate = createUTCDate(animal.birthDate);
+  
+  return plan.events.map(event => ({
+    id: `${animal.id}-${event.name.toLowerCase().replace(/\s/g, '-')}`,
+    animalId: animal.id,
+    animalName: animal.name,
+    eventName: event.name,
+    dueDate: addUTCDays(birthDate, event.daysFromBirth),
+  }));
+}
+
 
 export function analyzeLactation(animal: Animal, records: MilkRecord[]): LactationAnalysis | null {
   if (!animal.lastCalvingDate) return null;
