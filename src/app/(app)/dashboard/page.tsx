@@ -101,8 +101,8 @@ export default function DashboardPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="font-headline">Producción de Leche por Animal (Último Día)</CardTitle>
-          <CardDescription>Producción total registrada en el último día de pesaje para las vacas en lactancia.</CardDescription>
+          <CardTitle className="font-headline">Producción de Leche por Animal</CardTitle>
+          <CardDescription>Producción total registrada para un día específico. Use los filtros para explorar los datos.</CardDescription>
         </CardHeader>
         <CardContent>
           <MilkProductionChart />
