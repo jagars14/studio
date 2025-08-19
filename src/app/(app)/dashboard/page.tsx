@@ -14,6 +14,7 @@ import { es } from "date-fns/locale";
 import { Badge } from "@/components/ui/badge";
 import { generateReproductiveEvents } from "@/lib/utils";
 import type { Animal } from '@/lib/types';
+import MilkProductionChart from './_components/milk-production-chart';
 
 export default function DashboardPage() {
   const [isClient, setIsClient] = useState(false);
@@ -97,6 +98,16 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="font-headline">Producción de Leche por Animal (Último Día)</CardTitle>
+          <CardDescription>Producción total registrada en el último día de pesaje para las vacas en lactancia.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <MilkProductionChart />
+        </CardContent>
+      </Card>
 
        <Card className="flex flex-col">
             <CardHeader>
