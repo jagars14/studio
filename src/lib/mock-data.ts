@@ -37,8 +37,8 @@ export const kpis: Omit<Kpi, 'href'>[] = [
 export const animals: Animal[] = [
   { id: '101', name: 'Daisy', breed: 'Holstein', sex: 'Hembra', birthDate: '2021-05-15', fatherId: 'B01', motherId: 'C02', weight: 650, status: 'Activo', category: 'Vaca', productionStatus: 'En Producción', lastCalvingDate: '2023-10-01', assignedRation: 'vaca-produccion', rationAmount: 15 },
   { id: '102', name: 'Bessie', breed: 'Angus', sex: 'Hembra', birthDate: '2022-01-20', fatherId: 'B03', motherId: 'C04', weight: 580, status: 'Activo', category: 'Novilla', heatDate: '2024-05-10', assignedRation: 'levante-novillas', rationAmount: 8, assignedHealthPlan: 'default-calf-plan' },
-  { id: '103', name: 'Ferdinand', breed: 'Hereford', sex: 'Macho', birthDate: '2020-11-10', fatherId: null, motherId: 'C05', weight: 900, status: 'Activo', category: 'Toro' },
-  { id: '104', name: 'Annabelle', breed: 'Jersey', sex: 'Hembra', birthDate: '2023-03-01', fatherId: 'B01', motherId: '101', weight: 150, status: 'Activo', category: 'Ternera', assignedHealthPlan: 'default-calf-plan' },
+  { id: '103', name: 'Ferdinand', breed: 'Hereford', sex: 'Macho', birthDate: '2020-11-10', fatherId: null, motherId: 'C05', weight: 900, status: 'Activo', category: 'Toro', assignedRation: 'mantenimiento-toro', rationAmount: 12 },
+  { id: '104', name: 'Annabelle', breed: 'Jersey', sex: 'Hembra', birthDate: '2023-03-01', fatherId: 'B01', motherId: '101', weight: 150, status: 'Activo', category: 'Ternera', assignedRation: 'levante-novillas', rationAmount: 4, assignedHealthPlan: 'default-calf-plan' },
   { id: '105', name: 'Angus Jr.', breed: 'Angus', sex: 'Macho', birthDate: '2023-02-14', fatherId: 'B03', motherId: '102', weight: 180, status: 'Activo', category: 'Ternero' },
   { id: '106', name: 'Brutus', breed: 'Brahman', sex: 'Macho', birthDate: '2021-08-22', fatherId: null, motherId: null, weight: 820, status: 'Activo', category: 'Novillo' },
   { id: '107', name: 'Clara', breed: 'Gyr', sex: 'Hembra', birthDate: '2020-07-11', fatherId: null, motherId: null, weight: 550, status: 'Activo', category: 'Vaca', productionStatus: 'Seca', pregnancyDate: '2024-01-20', assignedRation: 'dieta-secado', rationAmount: 10 },
@@ -81,37 +81,45 @@ export const milkRecords: MilkRecord[] = [
 export const rations: Ration[] = [
     { 
         id: 'vaca-produccion', 
-        name: 'Ración Vaca en Producción', 
+        name: 'Concentrado Lechero 18%', 
         description: 'Mezcla alta en energía y proteína para maximizar la producción de leche.',
+        costPerKg: 1800,
+        supplier: 'Finca S.A.S',
         suggestionRule: (animal: Animal) => animal.category === 'Vaca' && animal.productionStatus === 'En Producción',
     },
     { 
         id: 'dieta-secado', 
-        name: 'Dieta de Secado', 
+        name: 'Sal Mineralizada 8%', 
         description: 'Dieta controlada para preparar a la vaca para el parto y prevenir problemas metabólicos.',
+        costPerKg: 2500,
+        supplier: 'NutriCampo',
         suggestionRule: (animal: Animal) => animal.category === 'Vaca' && animal.productionStatus === 'Seca',
     },
     { 
         id: 'levante-novillas', 
-        name: 'Levante de Novillas', 
+        name: 'Concentrado Levante 16%', 
         description: 'Alimento balanceado para un crecimiento óptimo y desarrollo de novillas.',
+        costPerKg: 1650,
+        supplier: 'Agroinsumos del Norte',
         suggestionRule: (animal: Animal) => ['Novilla', 'Ternera'].includes(animal.category),
     },
      { 
         id: 'mantenimiento-toro', 
         name: 'Mantenimiento de Toro', 
         description: 'Ración para mantener la condición corporal y líbido del toro.',
+        costPerKg: 1500,
+        supplier: 'Finca S.A.S',
         suggestionRule: (animal: Animal) => animal.category === 'Toro',
     },
 ];
 
 export const disposalCausesData = [
-  { cause: 'Baja producción', count: 5, fill: 'hsl(var(--chart-1))' },
-  { cause: 'Infertilidad', count: 3, fill: 'hsl(var(--chart-2))' },
-  { cause: 'Venta', count: 8, fill: 'hsl(var(--chart-3))' },
-  { cause: 'Muerte', count: 2, fill: 'hsl(var(--chart-4))' },
-  { cause: 'Edad', count: 4, fill: 'hsl(var(--chart-5))' },
-  { cause: 'Accidente', count: 1, fill: 'hsl(var(--chart-2))' },
+  { cause: 'Baja producción', count: 5, fill: 'var(--color-produccion)' },
+  { cause: 'Infertilidad', count: 3, fill: 'var(--color-infertilidad)' },
+  { cause: 'Venta', count: 8, fill: 'var(--color-venta)' },
+  { cause: 'Muerte', count: 2, fill: 'var(--color-muerte)' },
+  { cause: 'Edad', count: 4, fill: 'var(--color-edad)' },
+  { cause: 'Accidente', count: 1, fill: 'var(--color-accidente)' },
 ];
 
 export const healthPlans: HealthPlan[] = [

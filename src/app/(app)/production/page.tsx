@@ -2,7 +2,7 @@
 'use client';
 
 import * as React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -10,23 +10,63 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
-import { animals, milkRecords as mockRecords, rations } from '@/lib/mock-data';
+import { animals as mockAnimals, milkRecords as mockRecords, rations as mockRations } from '@/lib/mock-data';
 import type { Animal, MilkRecord, Ration } from '@/lib/types';
 import { BarChart, DollarSign, ListFilter, PlusCircle, Search } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 
-const kpiData = [
-    { title: "Producción Promedio (Hato, 7d)", value: "22.5 L/día", icon: BarChart, description: "+1.2 L vs semana pasada" },
-    { title: "Costo Promedio de Ración", value: "$8,500/día", icon: DollarSign, description: "Basado en animales con dieta asignada" },
-];
+type AnimalRationAssignment = {
+    animalId: string;
+    rationId?: string;
+    amount?: number;
+};
 
 export default function ProductionPage() {
     const [milkRecords, setMilkRecords] = React.useState<MilkRecord[]>(mockRecords);
-    const [assignedRations, setAssignedRations] = React.useState<Animal[]>(animals);
+    const [animals, setAnimals] = React.useState<Animal[]>(mockAnimals);
+    const [rations, setRations] = React.useState<Ration[]>(mockRations);
+    
+    // State to manage ration assignments in the UI
+    const [assignedRations, setAssignedRations] = React.useState<AnimalRationAssignment[]>(
+        animals.map(a => ({ animalId: a.id, rationId: a.assignedRation, amount: a.rationAmount }))
+    );
+
+    const handleRationChange = (animalId: string, rationId: string) => {
+        setAssignedRations(prev => prev.map(ar => ar.animalId === animalId ? { ...ar, rationId } : ar));
+    };
+
+    const handleAmountChange = (animalId: string, amount: number) => {
+        setAssignedRations(prev => prev.map(ar => ar.animalId === animalId ? { ...ar, amount } : ar));
+    };
 
     const getSuggestedRation = (animal: Animal) => {
         return rations.find(ration => ration.suggestionRule(animal))?.id || '';
     };
+
+    const totalFeedCost = React.useMemo(() => {
+        return assignedRations.reduce((total, assignment) => {
+            if (!assignment.rationId || !assignment.amount || assignment.amount <= 0) {
+                return total;
+            }
+            const ration = rations.find(r => r.id === assignment.rationId);
+            if (!ration || !ration.costPerKg) {
+                return total;
+            }
+            return total + (assignment.amount * ration.costPerKg);
+        }, 0);
+    }, [assignedRations, rations]);
+
+
+    const kpiData = [
+        { title: "Producción Promedio (Hato, 7d)", value: "22.5 L/día", icon: BarChart, description: "+1.2 L vs semana pasada" },
+        { 
+            title: "Costo Total Diario de Alimentación", 
+            value: totalFeedCost.toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }), 
+            icon: DollarSign, 
+            description: "Calculado según las raciones asignadas" 
+        },
+    ];
 
     return (
         <div className="space-y-6">
@@ -147,6 +187,7 @@ export default function ProductionPage() {
                      <Card>
                         <CardHeader>
                             <CardTitle>Asignación de Raciones</CardTitle>
+                            <CardDescription>Defina la dieta para cada animal y vea el costo asociado.</CardDescription>
                         </CardHeader>
                         <CardContent>
                             <div className="rounded-lg border">
@@ -156,31 +197,58 @@ export default function ProductionPage() {
                                             <TableHead>Animal</TableHead>
                                             <TableHead>Categoría</TableHead>
                                             <TableHead>Ración Asignada</TableHead>
-                                            <TableHead className="text-right">Cantidad (kg)</TableHead>
+                                            <TableHead>Proveedor / Costo</TableHead>
+                                            <TableHead className="text-right">Cantidad (kg/día)</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
-                                        {assignedRations.map(animal => (
-                                            <TableRow key={animal.id}>
-                                                <TableCell>{animal.name} ({animal.id})</TableCell>
-                                                <TableCell>{animal.category}</TableCell>
-                                                <TableCell>
-                                                    <Select defaultValue={animal.assignedRation || getSuggestedRation(animal)}>
-                                                        <SelectTrigger className="max-w-xs">
-                                                            <SelectValue placeholder="Asignar ración..." />
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                            {rations.map(ration => (
-                                                                <SelectItem key={ration.id} value={ration.id}>{ration.name}</SelectItem>
-                                                            ))}
-                                                        </SelectContent>
-                                                    </Select>
-                                                </TableCell>
-                                                <TableCell className="text-right">
-                                                    <Input type="number" defaultValue={animal.rationAmount} className="w-24 ml-auto" placeholder="kg" />
-                                                </TableCell>
-                                            </TableRow>
-                                        ))}
+                                        {animals.map(animal => {
+                                            const assignment = assignedRations.find(a => a.animalId === animal.id);
+                                            const selectedRation = rations.find(r => r.id === (assignment?.rationId || getSuggestedRation(animal)));
+                                            
+                                            return (
+                                                <TableRow key={animal.id}>
+                                                    <TableCell className="font-medium">{animal.name} ({animal.id})</TableCell>
+                                                    <TableCell>
+                                                        <Badge variant="outline">{animal.category}</Badge>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <Select 
+                                                            value={selectedRation?.id} 
+                                                            onValueChange={(value) => handleRationChange(animal.id, value)}
+                                                        >
+                                                            <SelectTrigger className="max-w-xs">
+                                                                <SelectValue placeholder="Asignar ración..." />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                {rations.map(ration => (
+                                                                    <SelectItem key={ration.id} value={ration.id}>{ration.name}</SelectItem>
+                                                                ))}
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        {selectedRation ? (
+                                                            <div className="text-sm text-muted-foreground">
+                                                                <p>{selectedRation.supplier}</p>
+                                                                <p className="font-medium">{selectedRation.costPerKg.toLocaleString('es-CO', {style: 'currency', currency: 'COP'})}/kg</p>
+                                                            </div>
+                                                        ) : (
+                                                            <span className="text-xs text-muted-foreground italic">N/A</span>
+                                                        )}
+                                                    </TableCell>
+                                                    <TableCell className="text-right">
+                                                        <Input 
+                                                            type="number" 
+                                                            value={assignment?.amount || 0}
+                                                            onChange={(e) => handleAmountChange(animal.id, parseFloat(e.target.value) || 0)}
+                                                            className="w-28 ml-auto" 
+                                                            placeholder="kg/día" 
+                                                        />
+                                                    </TableCell>
+                                                </TableRow>
+                                            );
+                                        })}
                                     </TableBody>
                                 </Table>
                             </div>

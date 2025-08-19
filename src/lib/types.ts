@@ -77,6 +77,8 @@ export type Ration = {
   id: string;
   name: string;
   description: string;
+  costPerKg: number;
+  supplier: string;
   suggestionRule: (animal: Animal) => boolean;
 };
 
