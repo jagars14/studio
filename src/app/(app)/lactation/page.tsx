@@ -92,10 +92,6 @@ export default function LactationPage() {
                                             <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.8}/>
                                             <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
                                         </linearGradient>
-                                         <linearGradient id="colorProjection" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="5%" stopColor="hsl(var(--accent))" stopOpacity={0.2}/>
-                                            <stop offset="95%" stopColor="hsl(var(--accent))" stopOpacity={0}/>
-                                        </linearGradient>
                                     </defs>
                                     <CartesianGrid strokeDasharray="3 3" />
                                     <XAxis 
@@ -116,7 +112,7 @@ export default function LactationPage() {
                                             borderColor: 'hsl(var(--border))'
                                         }}
                                         labelFormatter={(label) => `DEL: ${label}`}
-                                        formatter={(value: number) => [`${value.toFixed(1)} L`, 'Producción']}
+                                        formatter={(value: number, name) => [`${value.toFixed(1)} L`, 'Producción']}
                                     />
                                     <Legend verticalAlign="top" height={36} />
                                     <Area type="monotone" dataKey="production" name="Producción Real" stroke="hsl(var(--primary))" fillOpacity={1} fill="url(#colorProduction)" />
