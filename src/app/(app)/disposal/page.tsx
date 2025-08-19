@@ -5,7 +5,7 @@ import * as React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { animals, disposalCausesData } from '@/lib/mock-data';
 import type { Animal } from '@/lib/types';
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend, Sector } from 'recharts';
 import { TrendingDown, Percent, Repeat, ChevronsRight } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
@@ -13,6 +13,35 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+
+const RADIAN = Math.PI / 180;
+const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index, payload }: any) => {
+  const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+  const x = cx + radius * Math.cos(-midAngle * RADIAN);
+  const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+  const sin = Math.sin(-RADIAN * midAngle);
+  const cos = Math.cos(-RADIAN * midAngle);
+  const sx = cx + (outerRadius + 10) * cos;
+  const sy = cy + (outerRadius + 10) * sin;
+  const mx = cx + (outerRadius + 30) * cos;
+  const my = cy + (outerRadius + 30) * sin;
+  const ex = mx + (cos >= 0 ? 1 : -1) * 22;
+  const ey = my;
+  const textAnchor = cos >= 0 ? 'start' : 'end';
+
+  return (
+    <g>
+      <path d={`M${sx},${sy}L${mx},${my}L${ex},${ey}`} stroke={payload.fill} fill="none" />
+      <circle cx={ex} cy={ey} r={2} fill={payload.fill} stroke="none" />
+      <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} textAnchor={textAnchor} fill="hsl(var(--foreground))" className="text-xs">{`${payload.cause}`}</text>
+      <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} dy={14} textAnchor={textAnchor} fill="hsl(var(--muted-foreground))" className="text-xs">
+        {`(${(percent * 100).toFixed(2)}%)`}
+      </text>
+    </g>
+  );
+};
+
 
 export default function DisposalPage() {
     const [disposalRate, setDisposalRate] = React.useState(15); // Tasa de descarte anual en %
@@ -80,7 +109,9 @@ export default function DisposalPage() {
                                     nameKey="cause"
                                     cx="50%"
                                     cy="50%"
-                                    outerRadius={90}
+                                    labelLine={false}
+                                    label={renderCustomizedLabel}
+                                    outerRadius={80}
                                     fill="#8884d8"
                                 >
                                     {disposalCausesData.map((entry, index) => (
@@ -93,9 +124,8 @@ export default function DisposalPage() {
                                         background: 'hsl(var(--background))',
                                         borderColor: 'hsl(var(--border))'
                                     }}
-                                    formatter={(value: number, name: string, props) => [`${value} animales`, `${(props.payload.percent * 100).toFixed(1)}%`]}
+                                    formatter={(value: number, name: string, props) => [`${value} animales`, name]}
                                 />
-                                <Legend wrapperStyle={{paddingTop: '20px'}}/>
                             </PieChart>
                         </ResponsiveContainer>
                     </CardContent>

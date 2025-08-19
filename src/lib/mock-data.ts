@@ -111,7 +111,7 @@ export const disposalCausesData = [
   { cause: 'Venta', count: 8, fill: 'hsl(var(--chart-3))' },
   { cause: 'Muerte', count: 2, fill: 'hsl(var(--chart-4))' },
   { cause: 'Edad', count: 4, fill: 'hsl(var(--chart-5))' },
-  { cause: 'Accidente', count: 1, fill: 'hsl(var(--chart-1))' },
+  { cause: 'Accidente', count: 1, fill: 'hsl(var(--chart-2))' },
 ];
 
 export const healthPlans: HealthPlan[] = [
