@@ -9,11 +9,14 @@ export type Animal = {
   fatherId: string | null;
   motherId: string | null;
   weight: number;
-  status: 'En Producción' | 'Seca' | 'Vendido' | 'Fallecido';
+  status: 'Activo' | 'Vendido' | 'Fallecido';
   category: 'Vaca' | 'Novilla' | 'Toro' | 'Ternero' | 'Ternera' | 'Novillo';
+  productionStatus?: 'En Producción' | 'Seca';
   lastCalvingDate?: string;
   heatDate?: string;
   pregnancyDate?: string;
+  assignedRation?: string;
+  rationAmount?: number;
 };
 
 export type Kpi = {
@@ -55,3 +58,19 @@ export type Farm = {
     department: string;
     city: string;
 }
+
+export type MilkRecord = {
+  id: string;
+  animalId: string;
+  animalName: string;
+  date: string;
+  session: 'AM' | 'PM' | 'Único';
+  quantity: number; // en litros
+};
+
+export type Ration = {
+  id: string;
+  name: string;
+  description: string;
+  suggestionRule: (animal: Animal) => boolean;
+};

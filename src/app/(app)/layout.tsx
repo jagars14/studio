@@ -11,10 +11,11 @@ import {
   SidebarInset,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { LayoutDashboard, CalendarHeart, BrainCircuit, Settings, Gitlab } from "lucide-react";
+import { LayoutDashboard, CalendarHeart, BrainCircuit, Settings, Milk } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/logo";
+import { CowIcon } from "@/components/icons/cow-icon";
 
 export const metadata: Metadata = {
   title: "BovinoPro Lite",
@@ -23,8 +24,9 @@ export const metadata: Metadata = {
 
 const navItems = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Panel" },
-  { href: "/animals", icon: Gitlab, label: "Animales" },
+  { href: "/animals", icon: CowIcon, label: "Animales" },
   { href: "/reproduction", icon: CalendarHeart, label: "Reproducción" },
+  { href: "/production", icon: Milk, label: "Producción" },
   { href: "/optimizer", icon: BrainCircuit, label: "Optimizador IA" },
   { href: "/settings", icon: Settings, label: "Configuración" },
 ];

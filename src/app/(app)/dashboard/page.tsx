@@ -8,7 +8,7 @@ import HerdEvolutionChart from "./_components/herd-evolution-chart";
 import HerdDistributionChart from "./_components/herd-distribution-chart";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, CalendarClock, AlertCircle, Users, TrendingUp, TrendingDown } from "lucide-react";
+import { ArrowRight, CalendarClock, AlertCircle, Users, TrendingUp, TrendingDown, Milk } from "lucide-react";
 import { format, startOfToday, addDays, isWithinInterval } from "date-fns";
 import { es } from "date-fns/locale";
 import { Badge } from "@/components/ui/badge";
@@ -66,6 +66,7 @@ export default function DashboardPage() {
   const kpiCards = [
     { title: 'Total de Animales', value: animals.length.toString(), change: '+5 desde el mes pasado', icon: Users, href: '/animals' },
     { title: 'Tasa de Natalidad (12m)', value: '88%', change: '+2%', icon: TrendingUp, href: '/reproduction' },
+    { title: 'Producción Promedio/Día', value: '22.5 L', change: '+1.2 L', icon: Milk, href: '/production'},
     { title: 'Tasa de Mortalidad (12m)', value: `${calculateMortalityRate().toFixed(1)}%`, change: '-0.5%', icon: TrendingDown, href: '/animals' },
   ];
 
