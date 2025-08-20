@@ -245,8 +245,8 @@ export default function ReproductiveCalculator() {
                                 <Image 
                                     src="/CCC Bovino.jpeg" 
                                     alt="Guía de Condición Corporal" 
-                                    layout="fill"
-                                    objectFit="contain"
+                                    fill
+                                    style={{objectFit: 'contain'}}
                                 />
                             </div>
                         </DialogContent>

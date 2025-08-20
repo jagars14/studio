@@ -31,16 +31,28 @@ import { AddAnimalForm } from "./_components/add-animal-form";
 import { EditAnimalForm } from "./_components/edit-animal-form";
 import type { Animal } from "@/lib/types";
 import { Logo } from "@/components/logo";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { useToast } from "@/hooks/use-toast";
 
 export default function AnimalsPage() {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [selectedAnimal, setSelectedAnimal] = useState<Animal | null>(null);
+  const { toast } = useToast();
 
   const handleEditClick = (animal: Animal) => {
     setSelectedAnimal(animal);
     setIsEditDialogOpen(true);
   };
+
+  const handleDelete = (animalId: string) => {
+    // Lógica para eliminar el animal
+    console.log(`Eliminar animal con ID: ${animalId}`);
+    toast({
+      title: "Animal Eliminado",
+      description: `El animal ha sido eliminado con éxito.`,
+    });
+  }
   
   // The filtering logic for 'needs_attention' has been moved to the dashboard popup.
   const filteredAnimals = animals.filter(a => a.status !== 'Vendido' && a.status !== 'Fallecido');
@@ -120,13 +132,13 @@ export default function AnimalsPage() {
                     </TableCell>
                     <TableCell>{animal.name}</TableCell>
                     <TableCell>
-                        <Badge variant={
-                            animal.productionStatus === 'En Producción' ? 'default' :
-                            animal.productionStatus === 'Seca' ? 'secondary' :
-                            'outline'
-                        }>
-                            {animal.productionStatus || animal.status}
-                        </Badge>
+                      <Badge variant={
+                          animal.productionStatus === 'En Producción' ? 'default' :
+                          animal.productionStatus === 'Seca' ? 'secondary' :
+                          'outline'
+                      }>
+                          {animal.productionStatus || animal.status}
+                      </Badge>
                     </TableCell>
                     <TableCell>{animal.sex}</TableCell>
                     <TableCell>{animal.breed}</TableCell>
@@ -149,10 +161,31 @@ export default function AnimalsPage() {
                             <FilePenLine className="mr-2 h-4 w-4" />
                             <span>Editar</span>
                           </DropdownMenuItem>
-                          <DropdownMenuItem className="text-destructive focus:text-destructive">
-                            <Trash2 className="mr-2 h-4 w-4" />
-                             <span>Eliminar</span>
-                          </DropdownMenuItem>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                               <DropdownMenuItem 
+                                className="text-destructive focus:text-destructive"
+                                onSelect={(e) => e.preventDefault()} // Previene que el menú se cierre
+                               >
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                <span>Eliminar</span>
+                              </DropdownMenuItem>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                <AlertDialogTitle>¿Está seguro?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Esta acción no se puede deshacer. Esto eliminará permanentemente al animal de sus registros.
+                                </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                <AlertDialogAction onClick={() => handleDelete(animal.id)}>
+                                  Continuar
+                                </AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
