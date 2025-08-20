@@ -130,7 +130,7 @@ export const healthPlans: HealthPlan[] = [
       { name: 'Desinfección de ombligo', daysFromBirth: 1 },
       { name: 'Primera Vacuna (Clostridial)', daysFromBirth: 30 },
       { name: 'Descorne', daysFromBirth: 45 },
-      { name: 'Primer Purgante', daysFromBirth: 60 },
+      { name: 'Primera Purga', daysFromBirth: 60 },
       { name: 'Destete', daysFromBirth: 90 },
       { name: 'Vacuna Reproductiva (IBR/DVB)', daysFromBirth: 180 },
     ],
