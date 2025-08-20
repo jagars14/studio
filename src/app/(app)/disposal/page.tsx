@@ -66,7 +66,7 @@ export default function DisposalPage() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-                <Card className="lg:col-span-2">
+                <Card className="lg:col-span-3">
                     <CardHeader>
                         <CardTitle className="font-headline">Causas de Descarte</CardTitle>
                         <CardDescription>Distribución de las salidas de animales.</CardDescription>
@@ -92,7 +92,7 @@ export default function DisposalPage() {
                         </ChartContainer>
                     </CardContent>
                 </Card>
-                <Card className="lg:col-span-3">
+                <Card className="lg:col-span-2">
                     <CardHeader>
                         <CardTitle className="font-headline">Calculadora de Reposición</CardTitle>
                         <CardDescription>Estime cuántas novillas necesita para mantener el tamaño de su hato.</CardDescription>
