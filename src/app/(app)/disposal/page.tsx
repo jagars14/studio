@@ -99,7 +99,7 @@ export default function DisposalPage() {
                         <CardTitle className="font-headline">Calculadora de Reposición</CardTitle>
                         <CardDescription>Estime cuántas novillas necesita para mantener el tamaño de su hato.</CardDescription>
                     </CardHeader>
-                    <CardContent className="flex flex-col md:flex-row items-center gap-4">
+                    <CardContent className="flex flex-col md:flex-row lg:flex-col xl:flex-row items-center gap-4">
                         <div className="space-y-2 flex-1 w-full">
                             <Label htmlFor="herd-size">Tamaño Actual del Hato</Label>
                             <Input id="herd-size" type="number" value={herdSize} onChange={e => setHerdSize(Number(e.target.value))} />
@@ -109,7 +109,7 @@ export default function DisposalPage() {
                             <Input id="disposal-rate" type="number" value={disposalRate} onChange={e => setDisposalRate(Number(e.target.value))} />
                         </div>
                          <div className="pt-6">
-                            <ChevronsRight className="h-8 w-8 text-muted-foreground hidden md:block" />
+                            <ChevronsRight className="h-8 w-8 text-muted-foreground hidden xl:block" />
                         </div>
                         <div className="text-center p-4 rounded-lg bg-secondary flex-1 w-full">
                             <p className="text-sm font-medium text-muted-foreground">Novillas Necesarias por Año</p>

@@ -87,14 +87,14 @@ export default function AnimalsPage() {
       
       <Card>
         <CardContent className="p-4">
-          <div className="flex items-center justify-between gap-4 mb-4">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-4">
             <div className="relative w-full max-w-sm">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input placeholder="Buscar por ID o nombre..." className="pl-8" />
             </div>
              <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="gap-1">
+                <Button variant="outline" size="sm" className="gap-1 w-full md:w-auto">
                   <ListFilter className="h-3.5 w-3.5" />
                   <span>Filtrar</span>
                 </Button>

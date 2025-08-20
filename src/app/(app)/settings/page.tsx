@@ -256,14 +256,14 @@ export default function SettingsPage() {
                         <Input id="plan-name" placeholder="Ej: Plan de Levante Estándar" value={newPlanName} onChange={e => setNewPlanName(e.target.value)} />
                     </div>
                     {newPlanEvents.map((event, index) => (
-                        <div key={index} className="flex items-end gap-2">
-                            <div className="grid gap-2 flex-1">
+                        <div key={index} className="flex flex-col md:flex-row items-end gap-2">
+                            <div className="grid gap-2 flex-1 w-full">
                                 <Label htmlFor={`event-name-${index}`}>Nombre del Evento</Label>
                                 <Input id={`event-name-${index}`} value={event.name} onChange={e => handlePlanEventChange(index, 'name', e.target.value)} placeholder="Ej: Primera Vacuna" />
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor={`event-days-${index}`}>Días Post-Nacimiento</Label>
-                                <Input id={`event-days-${index}`} type="number" value={event.daysFromBirth} onChange={e => handlePlanEventChange(index, 'daysFromBirth', e.target.value)} className="w-24" />
+                                <Input id={`event-days-${index}`} type="number" value={event.daysFromBirth} onChange={e => handlePlanEventChange(index, 'daysFromBirth', e.target.value)} className="w-full md:w-24" />
                             </div>
                             <Button variant="ghost" size="icon" onClick={() => removePlanEvent(index)} disabled={newPlanEvents.length <= 1}>
                                 <Trash2 className="h-4 w-4 text-destructive" />

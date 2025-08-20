@@ -126,7 +126,7 @@ export function EditAnimalForm({ animal, onFinished }: EditAnimalFormProps) {
             </FormItem>
           )}
         />
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormField
             control={form.control}
             name="sex"
@@ -174,7 +174,7 @@ export function EditAnimalForm({ animal, onFinished }: EditAnimalFormProps) {
             )}
           />
         </div>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormField
             control={form.control}
             name="birthDate"
@@ -203,7 +203,7 @@ export function EditAnimalForm({ animal, onFinished }: EditAnimalFormProps) {
           />
         </div>
         
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
            <FormField
             control={form.control}
             name="category"
@@ -307,7 +307,7 @@ export function EditAnimalForm({ animal, onFinished }: EditAnimalFormProps) {
           <>
             <Separator className="my-2" />
             <p className="text-sm font-medium text-muted-foreground">Información de Salida</p>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
                 name="exitDate"

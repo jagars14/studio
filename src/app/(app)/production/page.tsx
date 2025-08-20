@@ -187,20 +187,20 @@ export default function ProductionPage() {
             </div>
 
             <Tabs defaultValue="milk">
-                <TabsList className="grid w-full grid-cols-4">
+                <TabsList className="grid w-full grid-cols-2 md:grid-cols-4">
                     <TabsTrigger value="milk">Control de Leche</TabsTrigger>
-                    <TabsTrigger value="assignment">Asignación de Raciones</TabsTrigger>
-                    <TabsTrigger value="rations">Gestionar Raciones</TabsTrigger>
-                    <TabsTrigger value="efficiency">Análisis de Eficiencia</TabsTrigger>
+                    <TabsTrigger value="assignment">Asignación</TabsTrigger>
+                    <TabsTrigger value="rations">Raciones</TabsTrigger>
+                    <TabsTrigger value="efficiency">Eficiencia</TabsTrigger>
                 </TabsList>
                 <TabsContent value="milk">
                     <Card>
                         <CardHeader>
-                            <div className="flex items-center justify-between">
+                            <div className="flex flex-col md:flex-row items-center justify-between gap-2">
                                 <CardTitle>Registros de Producción Láctea</CardTitle>
                                  <Dialog>
                                     <DialogTrigger asChild>
-                                        <Button size="sm" className="gap-1">
+                                        <Button size="sm" className="gap-1 w-full md:w-auto">
                                             <PlusCircle className="h-3.5 w-3.5" />
                                             <span>Nuevo Registro</span>
                                         </Button>
@@ -277,7 +277,7 @@ export default function ProductionPage() {
                                             <TableRow>
                                                 <TableHead>Fecha</TableHead>
                                                 <TableHead>Animal</TableHead>
-                                                <TableHead>Sesión</TableHead>
+                                                <TableHead className="hidden md:table-cell">Sesión</TableHead>
                                                 <TableHead className="text-right w-[150px]">Cantidad (L)</TableHead>
                                                 <TableHead className="w-[80px] text-right">Acciones</TableHead>
                                             </TableRow>
@@ -286,8 +286,8 @@ export default function ProductionPage() {
                                             {filteredMilkRecords.map(record => (
                                                 <TableRow key={record.id}>
                                                     <TableCell>{format(createUTCDate(record.date), 'dd/MM/yyyy', { locale: es, timeZone: 'UTC' })}</TableCell>
-                                                    <TableCell>{record.animalName} ({record.animalId})</TableCell>
-                                                    <TableCell><Badge variant="secondary">{record.session}</Badge></TableCell>
+                                                    <TableCell className="font-medium">{record.animalName} <span className="text-xs text-muted-foreground">({record.animalId})</span></TableCell>
+                                                    <TableCell className="hidden md:table-cell"><Badge variant="secondary">{record.session}</Badge></TableCell>
                                                     <TableCell className="text-right">
                                                     <Input 
                                                         type="number"
@@ -347,9 +347,8 @@ export default function ProductionPage() {
                                     <TableHeader>
                                         <TableRow>
                                             <TableHead>Animal</TableHead>
-                                            <TableHead>Categoría</TableHead>
+                                            <TableHead className="hidden md:table-cell">Categoría</TableHead>
                                             <TableHead>Ración Asignada</TableHead>
-                                            <TableHead>Proveedor / Costo</TableHead>
                                             <TableHead className="w-[150px] text-right">Cantidad (kg/día)</TableHead>
                                         </TableRow>
                                     </TableHeader>
@@ -360,11 +359,11 @@ export default function ProductionPage() {
                                             
                                             return (
                                                 <TableRow key={animal.id}>
-                                                    <TableCell className="font-medium">{animal.name} ({animal.id})</TableCell>
-                                                    <TableCell>
+                                                    <TableCell className="font-medium">{animal.name} <span className="text-xs text-muted-foreground">({animal.id})</span></TableCell>
+                                                    <TableCell className="hidden md:table-cell">
                                                         <Badge variant="outline">{animal.category}</Badge>
                                                     </TableCell>
-                                                    <TableCell className="min-w-[200px]">
+                                                    <TableCell className="min-w-[150px]">
                                                         <Select 
                                                             value={selectedRation?.id} 
                                                             onValueChange={(value) => handleRationChange(animal.id, value)}
@@ -378,16 +377,6 @@ export default function ProductionPage() {
                                                                 ))}
                                                             </SelectContent>
                                                         </Select>
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        {selectedRation ? (
-                                                            <div className="text-sm text-muted-foreground">
-                                                                <p>{selectedRation.supplier}</p>
-                                                                <p className="font-medium">{selectedRation.costPerKg.toLocaleString('es-CO', {style: 'currency', currency: 'COP'})}/kg</p>
-                                                            </div>
-                                                        ) : (
-                                                            <span className="text-xs text-muted-foreground italic">N/A</span>
-                                                        )}
                                                     </TableCell>
                                                     <TableCell className="text-right">
                                                         <Input 
@@ -430,7 +419,7 @@ export default function ProductionPage() {
                                     <TableHeader>
                                         <TableRow>
                                             <TableHead>Nombre de la Ración</TableHead>
-                                            <TableHead>Proveedor</TableHead>
+                                            <TableHead className="hidden md:table-cell">Proveedor</TableHead>
                                             <TableHead className="w-[200px]">Costo por Kg (COP)</TableHead>
                                             <TableHead className="w-[50px]"></TableHead>
                                         </TableRow>
@@ -441,7 +430,7 @@ export default function ProductionPage() {
                                                 <TableCell>
                                                     <Input value={ration.name} onChange={e => handleRationDetailChange(ration.id, 'name', e.target.value)} />
                                                 </TableCell>
-                                                <TableCell>
+                                                <TableCell className="hidden md:table-cell">
                                                     <Input value={ration.supplier} onChange={e => handleRationDetailChange(ration.id, 'supplier', e.target.value)} />
                                                 </TableCell>
                                                 <TableCell>
