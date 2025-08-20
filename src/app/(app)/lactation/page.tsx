@@ -7,10 +7,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Label } from '@/components/ui/label';
 import { animals, milkRecords } from '@/lib/mock-data';
 import type { Animal } from '@/lib/types';
-import { analyzeLactation } from '@/lib/utils';
+import { analyzeLactation, createUTCDate } from '@/lib/utils';
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis, Legend } from 'recharts';
 import { TrendingUp, Milk, Percent, Target } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 
 export default function LactationPage() {
     const [selectedAnimalId, setSelectedAnimalId] = React.useState<string | undefined>(animals.find(a => a.category === 'Vaca' && a.productionStatus === 'En Producción')?.id);
@@ -86,7 +88,7 @@ export default function LactationPage() {
                         <CardHeader>
                             <CardTitle className="font-headline">Curva de Lactancia de {selectedAnimal.name}</CardTitle>
                              <CardDescription>
-                                Días en Leche (DEL) desde el último parto el {new Date(selectedAnimal.lastCalvingDate!).toLocaleDateString('es-ES', { timeZone: 'UTC' })}.
+                                Días en Leche (DEL) desde el último parto el {format(createUTCDate(selectedAnimal.lastCalvingDate!), 'dd MMMM yyyy', { locale: es, timeZone: 'UTC' })}.
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="h-[400px] w-full">

@@ -2,7 +2,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { animals } from "@/lib/mock-data";
-import { calculateAge, cn } from "@/lib/utils";
+import { calculateAge, cn, createUTCDate } from "@/lib/utils";
 import { CakeSlice, Dna, Weight, Heart, CalendarHeart, Flame, Baby, Milk } from "lucide-react";
 import { notFound } from "next/navigation";
 import Link from "next/link";
@@ -10,13 +10,15 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
 import { Logo } from "@/components/logo";
 import { Badge } from "@/components/ui/badge";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
+
 
 const formatDate = (dateString?: string) => {
     if (!dateString) return 'N/A';
     try {
-        const date = new Date(dateString);
-        // Using timeZone: 'UTC' to prevent hydration errors
-        return new Date(date.valueOf() + date.getTimezoneOffset() * 60000).toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
+        const date = createUTCDate(dateString);
+        return format(date, "d 'de' MMMM 'de' yyyy", { locale: es, timeZone: 'UTC' });
     } catch {
         return 'Fecha inválida';
     }
