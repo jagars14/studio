@@ -34,6 +34,8 @@ export default function ProductionPage() {
     const [animals, setAnimals] = React.useState<Animal[]>(mockAnimals);
     const [rations, setRations] = React.useState<Ration[]>(mockRations);
     const [isClient, setIsClient] = React.useState(false);
+    const [searchFilter, setSearchFilter] = React.useState('');
+    const [dateFilter, setDateFilter] = React.useState('');
 
     React.useEffect(() => {
         setIsClient(true);
@@ -42,6 +44,20 @@ export default function ProductionPage() {
     const [assignedRations, setAssignedRations] = React.useState<AnimalRationAssignment[]>(
         animals.map(a => ({ animalId: a.id, rationId: a.assignedRation, amount: a.rationAmount }))
     );
+    
+    const filteredMilkRecords = React.useMemo(() => {
+        return milkRecords.filter(record => {
+            const matchesSearch = searchFilter ? 
+                record.animalName.toLowerCase().includes(searchFilter.toLowerCase()) || 
+                record.animalId.toLowerCase().includes(searchFilter.toLowerCase()) 
+                : true;
+            
+            const matchesDate = dateFilter ? record.date === dateFilter : true;
+
+            return matchesSearch && matchesDate;
+        }).sort((a,b) => createUTCDate(b.date).getTime() - createUTCDate(a.date).getTime());
+    }, [milkRecords, searchFilter, dateFilter]);
+
 
     const handleRationChange = (animalId: string, rationId: string) => {
         setAssignedRations(prev => prev.map(ar => ar.animalId === animalId ? { ...ar, rationId } : ar));
@@ -233,15 +249,26 @@ export default function ProductionPage() {
                             </div>
                         </CardHeader>
                         <CardContent>
-                             <div className="flex items-center justify-between gap-4 mb-4">
+                             <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-4">
                                 <div className="relative w-full max-w-sm">
-                                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                                <Input placeholder="Buscar por animal..." className="pl-8" />
+                                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                                    <Input 
+                                        placeholder="Buscar por ID o nombre de animal..." 
+                                        className="pl-8"
+                                        value={searchFilter}
+                                        onChange={(e) => setSearchFilter(e.target.value)}
+                                    />
                                 </div>
-                                <Button variant="outline" size="sm" className="gap-1">
-                                    <ListFilter className="h-3.5 w-3.5" />
-                                    <span>Filtrar por fecha</span>
-                                </Button>
+                                <div className="flex items-center gap-2 w-full md:w-auto">
+                                    <Label htmlFor="date-filter" className="whitespace-nowrap">Filtrar por Fecha:</Label>
+                                    <Input 
+                                        id="date-filter"
+                                        type="date"
+                                        value={dateFilter}
+                                        onChange={(e) => setDateFilter(e.target.value)}
+                                        className="w-full md:w-auto"
+                                    />
+                                </div>
                             </div>
                              <div className="rounded-lg border">
                                 {isClient ? (
@@ -256,7 +283,7 @@ export default function ProductionPage() {
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
-                                            {milkRecords.map(record => (
+                                            {filteredMilkRecords.map(record => (
                                                 <TableRow key={record.id}>
                                                     <TableCell>{format(createUTCDate(record.date), 'dd/MM/yyyy', { locale: es, timeZone: 'UTC' })}</TableCell>
                                                     <TableCell>{record.animalName} ({record.animalId})</TableCell>
@@ -455,6 +482,8 @@ export default function ProductionPage() {
         </div>
     );
 }
+
+    
 
     
 
