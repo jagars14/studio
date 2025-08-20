@@ -112,4 +112,9 @@ export type AnimalHealthEvent = {
   animalName: string;
   eventName: string;
   date: Date;
+  eventType: string; // Generic event type for merging
+};
+
+export type NotificationEvent = (ReproductiveEvent | AnimalHealthEvent) & {
+  type: 'reproduction' | 'health';
 };

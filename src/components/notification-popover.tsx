@@ -3,18 +3,19 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
-import { Bell, AlertCircle, Settings, ChevronRight } from "lucide-react";
+import { Bell, AlertCircle, Settings, ChevronRight, HeartPulse, ShieldCheck } from "lucide-react";
 import { format, startOfToday, addDays, isWithinInterval } from "date-fns";
 import { es } from "date-fns/locale";
 import { Badge } from "@/components/ui/badge";
-import { generateReproductiveEvents } from "@/lib/utils";
+import { generateReproductiveEvents, generateHealthEvents } from "@/lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import type { Animal, ReproductiveEvent } from '@/lib/types';
+import type { Animal, ReproductiveEvent, AnimalHealthEvent, NotificationEvent } from '@/lib/types';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { animals as mockAnimals } from "@/lib/mock-data"; 
+import { animals as mockAnimals, healthPlans } from "@/lib/mock-data"; 
 import Link from 'next/link';
 import { Separator } from './ui/separator';
+import { cn } from '@/lib/utils';
 
 export default function NotificationPopover() {
   const [isClient, setIsClient] = useState(false);
@@ -29,12 +30,33 @@ export default function NotificationPopover() {
 
   const today = useMemo(() => isClient ? startOfToday() : new Date(), [isClient]);
 
-  const needsAttentionEvents = useMemo(() => {
+  const needsAttentionEvents: NotificationEvent[] = useMemo(() => {
     if (!isClient) return [];
     const nextDays = addDays(today, attentionDays);
-    return generateReproductiveEvents(animals, { includeBirthdays: false })
-      .filter(event => isWithinInterval(event.date, { start: today, end: nextDays }));
+    
+    const reproductiveEvents = generateReproductiveEvents(animals, { includeBirthdays: false })
+      .map(e => ({ ...e, type: 'reproduction' as const }));
+      
+    const healthEvents = animals.flatMap(animal => {
+        const plan = healthPlans.find(p => p.id === (animal.assignedHealthPlan || 'default-calf-plan'));
+        if (!plan) return [];
+        return generateHealthEvents(animal, plan);
+    }).map(e => ({ ...e, type: 'health' as const, eventType: e.eventName }));
+
+    const allEvents = [...reproductiveEvents, ...healthEvents];
+
+    return allEvents
+      .filter(event => isWithinInterval(event.date, { start: today, end: nextDays }))
+      .sort((a,b) => a.date.getTime() - b.date.getTime());
+
   }, [isClient, today, attentionDays, animals]);
+
+  const renderEventIcon = (type: 'reproduction' | 'health') => {
+    if (type === 'reproduction') {
+      return <HeartPulse className="h-4 w-4 text-pink-500" />;
+    }
+    return <ShieldCheck className="h-4 w-4 text-blue-500" />;
+  }
 
   if (!isClient) {
     return null; // Don't render on the server
@@ -66,14 +88,16 @@ export default function NotificationPopover() {
                  <div className="grid gap-2">
                     {needsAttentionEvents.length > 0 ? (
                         <div className="space-y-2">
-                            {needsAttentionEvents.slice(0, 5).map((event: ReproductiveEvent) => (
+                            {needsAttentionEvents.slice(0, 5).map((event: NotificationEvent) => (
                                 <Link href={`/animals/${event.animalId}`} key={event.id} className="flex items-center justify-between p-2 rounded-md hover:bg-secondary group -mx-2">
                                     <div className="flex items-center gap-3">
+                                        {renderEventIcon(event.type)}
                                         <div className="flex flex-col">
                                              <Badge
                                                 variant={
-                                                    event.eventType === 'Próximo Celo' ? 'secondary' :
-                                                    event.eventType === 'Fecha Probable de Parto' ? 'default' :
+                                                    event.type === 'reproduction' && event.eventType === 'Próximo Celo' ? 'secondary' :
+                                                    event.type === 'reproduction' && event.eventType === 'Fecha Probable de Parto' ? 'default' :
+                                                    event.type === 'health' ? 'destructive' :
                                                     'outline'
                                                 }
                                                 className="mb-1"

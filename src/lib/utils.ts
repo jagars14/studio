@@ -1,4 +1,5 @@
 
+
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 import { differenceInYears, differenceInMonths, differenceInDays, addDays as dfnsAddDays } from 'date-fns';
@@ -184,6 +185,7 @@ export function generateHealthEvents(animal: Animal, plan: HealthPlan): AnimalHe
         animalId: animal.id,
         animalName: animal.name,
         eventName: event.name,
+        eventType: event.name, // Added for consistency
         date: eventDate,
     }
   }).filter((event): event is AnimalHealthEvent => event !== null);
