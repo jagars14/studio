@@ -5,43 +5,14 @@ import * as React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { animals, disposalCausesData } from '@/lib/mock-data';
 import type { Animal } from '@/lib/types';
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend, Sector } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, Cell } from 'recharts';
 import { TrendingDown, Percent, Repeat, ChevronsRight } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-
-const RADIAN = Math.PI / 180;
-const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index, payload }: any) => {
-  const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
-  const x = cx + radius * Math.cos(-midAngle * RADIAN);
-  const y = cy + radius * Math.sin(-midAngle * RADIAN);
-
-  const sin = Math.sin(-RADIAN * midAngle);
-  const cos = Math.cos(-RADIAN * midAngle);
-  const sx = cx + (outerRadius + 10) * cos;
-  const sy = cy + (outerRadius + 10) * sin;
-  const mx = cx + (outerRadius + 30) * cos;
-  const my = cy + (outerRadius + 30) * sin;
-  const ex = mx + (cos >= 0 ? 1 : -1) * 22;
-  const ey = my;
-  const textAnchor = cos >= 0 ? 'start' : 'end';
-
-  return (
-    <g>
-      <path d={`M${sx},${sy}L${mx},${my}L${ex},${ey}`} stroke={payload.fill} fill="none" />
-      <circle cx={ex} cy={ey} r={2} fill={payload.fill} stroke="none" />
-      <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} textAnchor={textAnchor} fill="hsl(var(--foreground))" className="text-xs">{`${payload.cause}`}</text>
-      <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} dy={14} textAnchor={textAnchor} fill="hsl(var(--muted-foreground))" className="text-xs">
-        {`(${(percent * 100).toFixed(2)}%)`}
-      </text>
-    </g>
-  );
-};
-
+import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
 
 export default function DisposalPage() {
     const [disposalRate, setDisposalRate] = React.useState(15); // Tasa de descarte anual en %
@@ -101,33 +72,24 @@ export default function DisposalPage() {
                         <CardDescription>Distribución de las salidas de animales.</CardDescription>
                     </CardHeader>
                     <CardContent className="h-[350px]">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <PieChart>
-                                <Pie
-                                    data={disposalCausesData}
-                                    dataKey="count"
-                                    nameKey="cause"
-                                    cx="50%"
-                                    cy="50%"
-                                    labelLine={false}
-                                    label={renderCustomizedLabel}
-                                    outerRadius={80}
-                                    fill="#8884d8"
-                                >
-                                    {disposalCausesData.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={entry.fill} className="focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2" />
-                                    ))}
-                                </Pie>
-                                <Tooltip 
-                                    contentStyle={{
-                                        borderRadius: 'var(--radius)',
-                                        background: 'hsl(var(--background))',
-                                        borderColor: 'hsl(var(--border))'
-                                    }}
-                                    formatter={(value: number, name: string, props) => [`${value} animales`, name]}
-                                />
-                            </PieChart>
-                        </ResponsiveContainer>
+                        <ChartContainer config={{}} className="h-full w-full">
+                            <ResponsiveContainer>
+                                <BarChart data={disposalCausesData} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
+                                    <CartesianGrid vertical={false} />
+                                    <XAxis dataKey="cause" tickLine={false} axisLine={false} tickMargin={8} angle={-45} textAnchor="end" height={60} interval={0} />
+                                    <YAxis />
+                                    <Tooltip
+                                        cursor={{ fill: 'hsl(var(--muted))' }}
+                                        content={<ChartTooltipContent />}
+                                    />
+                                    <Bar dataKey="count" name="Animales" radius={[4, 4, 0, 0]}>
+                                        {disposalCausesData.map((entry) => (
+                                            <Cell key={entry.cause} fill={entry.fill} />
+                                        ))}
+                                    </Bar>
+                                </BarChart>
+                            </ResponsiveContainer>
+                        </ChartContainer>
                     </CardContent>
                 </Card>
                 <Card className="lg:col-span-3">

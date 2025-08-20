@@ -114,12 +114,12 @@ export const rations: Ration[] = [
 ];
 
 export const disposalCausesData = [
-  { cause: 'Baja producción', count: 5, fill: 'var(--color-produccion)' },
-  { cause: 'Infertilidad', count: 3, fill: 'var(--color-infertilidad)' },
-  { cause: 'Venta', count: 8, fill: 'var(--color-venta)' },
-  { cause: 'Muerte', count: 2, fill: 'var(--color-muerte)' },
-  { cause: 'Edad', count: 4, fill: 'var(--color-edad)' },
-  { cause: 'Accidente', count: 1, fill: 'var(--color-accidente)' },
+  { cause: 'Baja producción', count: 5, fill: 'hsl(var(--chart-1))' },
+  { cause: 'Infertilidad', count: 3, fill: 'hsl(var(--chart-2))' },
+  { cause: 'Venta', count: 8, fill: 'hsl(var(--chart-3))' },
+  { cause: 'Muerte', count: 2, fill: 'hsl(var(--chart-4))' },
+  { cause: 'Edad', count: 4, fill: 'hsl(var(--chart-5))' },
+  { cause: 'Accidente', count: 1, fill: 'hsl(var(--chart-1))' },
 ];
 
 export const healthPlans: HealthPlan[] = [
