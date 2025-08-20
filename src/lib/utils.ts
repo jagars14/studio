@@ -36,9 +36,11 @@ const GESTATION_DAYS = 283; // Días de Gestación
 const DRY_OFF_DAYS = 60; // Días para secado
 
 // Helper para crear fechas en UTC y evitar errores de hidratación
-const createUTCDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+export const createUTCDate = (dateString: string) => {
+    // This format 'YYYY-MM-DD' is interpreted as UTC by default by new Date()
+    // Adding 'T00:00:00' ensures it's treated as midnight UTC
+    const date = new Date(`${dateString}T00:00:00Z`);
+    return date;
 };
 
 const addUTCDays = (date: Date, days: number) => {

@@ -13,6 +13,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
+import { createUTCDate } from '@/lib/utils';
+import { format } from 'date-fns';
 
 export default function DisposalPage() {
     const [disposalRate, setDisposalRate] = React.useState(15); // Tasa de descarte anual en %
@@ -140,7 +142,7 @@ export default function DisposalPage() {
                                         <TableRow key={animal.id}>
                                             <TableCell className="font-medium">{animal.id}</TableCell>
                                             <TableCell>{animal.name}</TableCell>
-                                            <TableCell>{animal.exitDate ? new Date(animal.exitDate).toLocaleDateString('es-ES') : 'N/A'}</TableCell>
+                                            <TableCell>{animal.exitDate ? format(createUTCDate(animal.exitDate), 'dd/MM/yyyy') : 'N/A'}</TableCell>
                                             <TableCell><Badge variant="outline">{animal.exitCause}</Badge></TableCell>
                                             <TableCell><Badge variant={animal.status === 'Vendido' ? 'default' : 'destructive'}>{animal.status}</Badge></TableCell>
                                             <TableCell className="text-right">{animal.salePrice ? animal.salePrice.toLocaleString('es-CO') : 'N/A'}</TableCell>

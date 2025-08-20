@@ -18,6 +18,7 @@ import { useToast } from '@/hooks/use-toast';
 import EfficiencyChart from './_components/efficiency-chart';
 import { format, subDays } from 'date-fns';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { createUTCDate } from '@/lib/utils';
 
 export type AnimalRationAssignment = {
     animalId: string;
@@ -249,7 +250,7 @@ export default function ProductionPage() {
                                     <TableBody>
                                         {milkRecords.map(record => (
                                             <TableRow key={record.id}>
-                                                <TableCell>{format(new Date(record.date), 'dd/MM/yyyy')}</TableCell>
+                                                <TableCell>{format(createUTCDate(record.date), 'dd/MM/yyyy')}</TableCell>
                                                 <TableCell>{record.animalName} ({record.animalId})</TableCell>
                                                 <TableCell><Badge variant="secondary">{record.session}</Badge></TableCell>
                                                 <TableCell className="text-right">

@@ -4,20 +4,17 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import type { Animal } from "@/lib/types";
-import { calculateAge } from "@/lib/utils";
+import { calculateAge, createUTCDate } from "@/lib/utils";
 import { CakeSlice, Flame, Baby, CalendarHeart } from "lucide-react";
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 
-interface AnimalSummaryCardProps {
-  animal: Animal;
-}
 
 const formatDate = (dateString?: string) => {
     if (!dateString) return 'N/A';
     try {
-        const date = new Date(dateString);
-        // Adjust for timezone issues
-        const utcDate = new Date(date.valueOf() + date.getTimezoneOffset() * 60000);
-        return utcDate.toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' });
+        const utcDate = createUTCDate(dateString);
+        return format(utcDate, "d 'de' MMMM 'de' yyyy", { locale: es });
     } catch {
         return 'Fecha inválida';
     }

@@ -2,7 +2,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { animals } from "@/lib/mock-data";
-import { calculateAge } from "@/lib/utils";
+import { calculateAge, cn } from "@/lib/utils";
 import { CakeSlice, Dna, Weight, Heart, CalendarHeart, Flame, Baby, Milk } from "lucide-react";
 import { notFound } from "next/navigation";
 import Link from "next/link";
@@ -10,6 +10,17 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
 import { Logo } from "@/components/logo";
 import { Badge } from "@/components/ui/badge";
+
+const formatDate = (dateString?: string) => {
+    if (!dateString) return 'N/A';
+    try {
+        const date = new Date(dateString);
+        const utcDate = new Date(date.valueOf() + date.getTimezoneOffset() * 60000);
+        return utcDate.toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' });
+    } catch {
+        return 'Fecha inválida';
+    }
+}
 
 export default function AnimalProfilePage({ params }: { params: { animalId: string } }) {
   const animal = animals.find(a => a.id === params.animalId);
@@ -58,7 +69,7 @@ export default function AnimalProfilePage({ params }: { params: { animalId: stri
               <CakeSlice className="h-5 w-5 text-accent" />
               <div>
                 <p className="font-semibold">Nacimiento</p>
-                <p className="text-muted-foreground">{new Date(animal.birthDate).toLocaleDateString('es-ES')}</p>
+                <p className="text-muted-foreground">{formatDate(animal.birthDate)}</p>
               </div>
             </div>
             <div className="flex items-center gap-2 rounded-lg bg-secondary/50 p-3">
@@ -100,7 +111,7 @@ export default function AnimalProfilePage({ params }: { params: { animalId: stri
                   <Icon className="h-5 w-5 text-accent" />
                   <div>
                     <p className="font-semibold">{label}</p>
-                    <p className="text-muted-foreground">{value ? new Date(value).toLocaleDateString('es-ES') : 'N/A'}</p>
+                    <p className="text-muted-foreground">{value ? formatDate(value) : 'N/A'}</p>
                   </div>
                 </div>
               ))}
