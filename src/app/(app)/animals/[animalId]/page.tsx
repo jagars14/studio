@@ -15,8 +15,8 @@ const formatDate = (dateString?: string) => {
     if (!dateString) return 'N/A';
     try {
         const date = new Date(dateString);
-        const utcDate = new Date(date.valueOf() + date.getTimezoneOffset() * 60000);
-        return utcDate.toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' });
+        // Using timeZone: 'UTC' to prevent hydration errors
+        return new Date(date.valueOf() + date.getTimezoneOffset() * 60000).toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
     } catch {
         return 'Fecha inválida';
     }
