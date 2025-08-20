@@ -102,6 +102,7 @@ export default function AnimalsPage() {
                 <TableRow>
                   <TableHead className="w-[100px]">ID</TableHead>
                   <TableHead>Nombre</TableHead>
+                  <TableHead>Estado</TableHead>
                   <TableHead>Sexo</TableHead>
                   <TableHead>Raza</TableHead>
                   <TableHead>Categoría</TableHead>
@@ -118,6 +119,15 @@ export default function AnimalsPage() {
                       </Link>
                     </TableCell>
                     <TableCell>{animal.name}</TableCell>
+                    <TableCell>
+                        <Badge variant={
+                            animal.productionStatus === 'En Producción' ? 'default' :
+                            animal.productionStatus === 'Seca' ? 'secondary' :
+                            'outline'
+                        }>
+                            {animal.productionStatus || animal.status}
+                        </Badge>
+                    </TableCell>
                     <TableCell>{animal.sex}</TableCell>
                     <TableCell>{animal.breed}</TableCell>
                     <TableCell>
