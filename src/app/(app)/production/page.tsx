@@ -20,6 +20,7 @@ import { format, subDays } from 'date-fns';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { createUTCDate } from '@/lib/utils';
 import { es } from 'date-fns/locale';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export type AnimalRationAssignment = {
     animalId: string;
@@ -32,6 +33,11 @@ export default function ProductionPage() {
     const [milkRecords, setMilkRecords] = React.useState<MilkRecord[]>(mockRecords);
     const [animals, setAnimals] = React.useState<Animal[]>(mockAnimals);
     const [rations, setRations] = React.useState<Ration[]>(mockRations);
+    const [isClient, setIsClient] = React.useState(false);
+
+    React.useEffect(() => {
+        setIsClient(true);
+    }, []);
     
     const [assignedRations, setAssignedRations] = React.useState<AnimalRationAssignment[]>(
         animals.map(a => ({ animalId: a.id, rationId: a.assignedRation, amount: a.rationAmount }))
@@ -238,55 +244,63 @@ export default function ProductionPage() {
                                 </Button>
                             </div>
                              <div className="rounded-lg border">
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow>
-                                            <TableHead>Fecha</TableHead>
-                                            <TableHead>Animal</TableHead>
-                                            <TableHead>Sesión</TableHead>
-                                            <TableHead className="text-right w-[150px]">Cantidad (L)</TableHead>
-                                            <TableHead className="w-[80px] text-right">Acciones</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {milkRecords.map(record => (
-                                            <TableRow key={record.id}>
-                                                <TableCell>{format(createUTCDate(record.date), 'dd/MM/yyyy', { locale: es, timeZone: 'UTC' })}</TableCell>
-                                                <TableCell>{record.animalName} ({record.animalId})</TableCell>
-                                                <TableCell><Badge variant="secondary">{record.session}</Badge></TableCell>
-                                                <TableCell className="text-right">
-                                                   <Input 
-                                                     type="number"
-                                                     value={record.quantity}
-                                                     onChange={(e) => handleMilkRecordChange(record.id, parseFloat(e.target.value) || 0)}
-                                                     className="w-24 ml-auto text-right"
-                                                   />
-                                                </TableCell>
-                                                <TableCell className="text-right">
-                                                    <AlertDialog>
-                                                        <AlertDialogTrigger asChild>
-                                                            <Button variant="ghost" size="icon">
-                                                                <Trash2 className="h-4 w-4 text-destructive" />
-                                                            </Button>
-                                                        </AlertDialogTrigger>
-                                                        <AlertDialogContent>
-                                                            <AlertDialogHeader>
-                                                                <AlertDialogTitle>¿Está seguro?</AlertDialogTitle>
-                                                                <AlertDialogDescription>
-                                                                    Esta acción eliminará permanentemente el registro de producción. No se puede deshacer.
-                                                                </AlertDialogDescription>
-                                                            </AlertDialogHeader>
-                                                            <AlertDialogFooter>
-                                                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                                                <AlertDialogAction onClick={() => handleRemoveMilkRecord(record.id)}>Continuar</AlertDialogAction>
-                                                            </AlertDialogFooter>
-                                                        </AlertDialogContent>
-                                                    </AlertDialog>
-                                                </TableCell>
+                                {isClient ? (
+                                    <Table>
+                                        <TableHeader>
+                                            <TableRow>
+                                                <TableHead>Fecha</TableHead>
+                                                <TableHead>Animal</TableHead>
+                                                <TableHead>Sesión</TableHead>
+                                                <TableHead className="text-right w-[150px]">Cantidad (L)</TableHead>
+                                                <TableHead className="w-[80px] text-right">Acciones</TableHead>
                                             </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {milkRecords.map(record => (
+                                                <TableRow key={record.id}>
+                                                    <TableCell>{format(createUTCDate(record.date), 'dd/MM/yyyy', { locale: es, timeZone: 'UTC' })}</TableCell>
+                                                    <TableCell>{record.animalName} ({record.animalId})</TableCell>
+                                                    <TableCell><Badge variant="secondary">{record.session}</Badge></TableCell>
+                                                    <TableCell className="text-right">
+                                                    <Input 
+                                                        type="number"
+                                                        value={record.quantity}
+                                                        onChange={(e) => handleMilkRecordChange(record.id, parseFloat(e.target.value) || 0)}
+                                                        className="w-24 ml-auto text-right"
+                                                    />
+                                                    </TableCell>
+                                                    <TableCell className="text-right">
+                                                        <AlertDialog>
+                                                            <AlertDialogTrigger asChild>
+                                                                <Button variant="ghost" size="icon">
+                                                                    <Trash2 className="h-4 w-4 text-destructive" />
+                                                                </Button>
+                                                            </AlertDialogTrigger>
+                                                            <AlertDialogContent>
+                                                                <AlertDialogHeader>
+                                                                    <AlertDialogTitle>¿Está seguro?</AlertDialogTitle>
+                                                                    <AlertDialogDescription>
+                                                                        Esta acción eliminará permanentemente el registro de producción. No se puede deshacer.
+                                                                    </AlertDialogDescription>
+                                                                </AlertDialogHeader>
+                                                                <AlertDialogFooter>
+                                                                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                                                    <AlertDialogAction onClick={() => handleRemoveMilkRecord(record.id)}>Continuar</AlertDialogAction>
+                                                                </AlertDialogFooter>
+                                                            </AlertDialogContent>
+                                                        </AlertDialog>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                ) : (
+                                    <div className="space-y-2 p-4">
+                                        <Skeleton className="h-10 w-full" />
+                                        <Skeleton className="h-10 w-full" />
+                                        <Skeleton className="h-10 w-full" />
+                                    </div>
+                                )}
                             </div>
                              <div className="flex justify-end mt-4">
                                 <Button onClick={() => handleSaveChanges('milk')}>Guardar Cambios</Button>
@@ -441,5 +455,7 @@ export default function ProductionPage() {
         </div>
     );
 }
+
+    
 
     
