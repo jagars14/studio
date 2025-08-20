@@ -22,6 +22,7 @@ export type Animal = {
   salePrice?: number;
   exitNotes?: string;
   assignedHealthPlan?: string;
+  lot?: string;
 };
 
 export type Kpi = {
@@ -102,7 +103,7 @@ export type HealthPlanEvent = {
 
 export type HealthPlan = {
   id: string;
-  name: string;
+  name:string;
   events: HealthPlanEvent[];
 };
 
@@ -117,4 +118,28 @@ export type AnimalHealthEvent = {
 
 export type NotificationEvent = (ReproductiveEvent | AnimalHealthEvent) & {
   type: 'reproduction' | 'health';
+};
+
+// Pasture Management Types
+export type Paddock = {
+  id: string;
+  name: string;
+  area: number; // in hectares
+  forageType: 'Kikuyo' | 'Estrella' | 'Brachiaria' | 'Rye Grass' | 'Alfalfa';
+  lastEntryDate?: string;
+  lastExitDate?: string;
+};
+
+export type GrazingRecord = {
+  id: string;
+  paddockId: string;
+  lotId: string; 
+  entryDate: string;
+  exitDate?: string;
+  aforo?: number; // kg de Materia Seca / Ha
+};
+
+export type Lot = {
+  id: string;
+  name: string;
 };

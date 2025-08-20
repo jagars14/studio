@@ -1,5 +1,5 @@
 
-import type { Animal, Kpi, ReproductiveEvent, MilkRecord, Ration, HealthPlan } from '@/lib/types';
+import type { Animal, Kpi, ReproductiveEvent, MilkRecord, Ration, HealthPlan, Paddock, GrazingRecord, Lot } from '@/lib/types';
 import { Users, TrendingUp, TrendingDown, AlertCircle } from 'lucide-react';
 import { addDays, subMonths, format, subDays } from 'date-fns';
 
@@ -35,16 +35,15 @@ export const kpis: Omit<Kpi, 'href'>[] = [
 ];
 
 export const animals: Animal[] = [
-  { id: '101', name: 'Daisy', breed: 'Holstein', sex: 'Hembra', birthDate: '2021-05-15', fatherId: 'B01', motherId: 'C02', weight: 650, status: 'Activo', category: 'Vaca', productionStatus: 'En Producción', lastCalvingDate: '2023-10-01', assignedRation: 'vaca-produccion', rationAmount: 15 },
-  { id: '102', name: 'Bessie', breed: 'Angus', sex: 'Hembra', birthDate: '2022-01-20', fatherId: 'B03', motherId: 'C04', weight: 580, status: 'Activo', category: 'Novilla', heatDate: '2024-05-10', assignedRation: 'levante-novillas', rationAmount: 8, assignedHealthPlan: 'default-calf-plan' },
-  { id: '103', name: 'Ferdinand', breed: 'Hereford', sex: 'Macho', birthDate: '2020-11-10', fatherId: null, motherId: 'C05', weight: 900, status: 'Activo', category: 'Toro', assignedRation: 'mantenimiento-toro', rationAmount: 12 },
-  { id: '104', name: 'Annabelle', breed: 'Jersey', sex: 'Hembra', birthDate: '2023-03-01', fatherId: 'B01', motherId: '101', weight: 150, status: 'Activo', category: 'Ternera', assignedRation: 'levante-novillas', rationAmount: 4, assignedHealthPlan: 'default-calf-plan' },
-  { id: '105', name: 'Angus Jr.', breed: 'Angus', sex: 'Macho', birthDate: '2023-02-14', fatherId: 'B03', motherId: '102', weight: 180, status: 'Activo', category: 'Ternero' },
-  { id: '106', name: 'Brutus', breed: 'Brahman', sex: 'Macho', birthDate: '2021-08-22', fatherId: null, motherId: null, weight: 820, status: 'Activo', category: 'Novillo' },
-  { id: '107', name: 'Clara', breed: 'Gyr', sex: 'Hembra', birthDate: '2020-07-11', fatherId: null, motherId: null, weight: 550, status: 'Activo', category: 'Vaca', productionStatus: 'Seca', pregnancyDate: '2024-01-20', assignedRation: 'dieta-secado', rationAmount: 10 },
-  { id: '108', name: 'Rosie', breed: 'Holstein', sex: 'Hembra', birthDate: '2019-02-18', fatherId: 'B01', motherId: 'C01', weight: 680, status: 'Vendido', category: 'Vaca', exitDate: '2024-04-15', exitCause: 'Venta', salePrice: 2500000 },
-  { id: '109', name: 'Old Man', breed: 'Brahman', sex: 'Macho', birthDate: '2015-01-01', fatherId: 'N/A', motherId: 'N/A', weight: 850, status: 'Fallecido', category: 'Toro', exitDate: '2024-03-20', exitCause: 'Edad' },
-
+  { id: '101', name: 'Daisy', breed: 'Holstein', sex: 'Hembra', birthDate: '2021-05-15', fatherId: 'B01', motherId: 'C02', weight: 650, status: 'Activo', category: 'Vaca', productionStatus: 'En Producción', lastCalvingDate: '2023-10-01', assignedRation: 'vaca-produccion', rationAmount: 15, lot: 'Lote 1' },
+  { id: '102', name: 'Bessie', breed: 'Angus', sex: 'Hembra', birthDate: '2022-01-20', fatherId: 'B03', motherId: 'C04', weight: 580, status: 'Activo', category: 'Novilla', heatDate: '2024-05-10', assignedRation: 'levante-novillas', rationAmount: 8, assignedHealthPlan: 'default-calf-plan', lot: 'Lote 2' },
+  { id: '103', name: 'Ferdinand', breed: 'Hereford', sex: 'Macho', birthDate: '2020-11-10', fatherId: null, motherId: 'C05', weight: 900, status: 'Activo', category: 'Toro', assignedRation: 'mantenimiento-toro', rationAmount: 12, lot: 'Reproductores' },
+  { id: '104', name: 'Annabelle', breed: 'Jersey', sex: 'Hembra', birthDate: '2023-03-01', fatherId: 'B01', motherId: '101', weight: 150, status: 'Activo', category: 'Ternera', assignedRation: 'levante-novillas', rationAmount: 4, assignedHealthPlan: 'default-calf-plan', lot: 'Lote 3 (Crianza)' },
+  { id: '105', name: 'Angus Jr.', breed: 'Angus', sex: 'Macho', birthDate: '2023-02-14', fatherId: 'B03', motherId: '102', weight: 180, status: 'Activo', category: 'Ternero', lot: 'Lote 3 (Crianza)' },
+  { id: '106', name: 'Brutus', breed: 'Brahman', sex: 'Macho', birthDate: '2021-08-22', fatherId: null, motherId: null, weight: 820, status: 'Activo', category: 'Novillo', lot: 'Lote Engorde' },
+  { id: '107', name: 'Clara', breed: 'Gyr', sex: 'Hembra', birthDate: '2020-07-11', fatherId: null, motherId: null, weight: 550, status: 'Activo', category: 'Vaca', productionStatus: 'Seca', pregnancyDate: '2024-01-20', assignedRation: 'dieta-secado', rationAmount: 10, lot: 'Lote 1 (Secas)' },
+  { id: '108', name: 'Rosie', breed: 'Holstein', sex: 'Hembra', birthDate: '2019-02-18', fatherId: 'B01', motherId: 'C01', weight: 680, status: 'Vendido', category: 'Vaca', exitDate: '2024-04-15', exitCause: 'Venta', salePrice: 2500000, lot: 'Lote 1' },
+  { id: '109', name: 'Old Man', breed: 'Brahman', sex: 'Macho', birthDate: '2015-01-01', fatherId: 'N/A', motherId: 'N/A', weight: 850, status: 'Fallecido', category: 'Toro', exitDate: '2024-03-20', exitCause: 'Edad', lot: 'Reproductores' },
 ];
 
 export const herdEvolutionData = [
@@ -135,4 +134,26 @@ export const healthPlans: HealthPlan[] = [
       { name: 'Vacuna Reproductiva (IBR/DVB)', daysFromBirth: 180 },
     ],
   },
+];
+
+export const lots: Lot[] = [
+  { id: 'lote-1', name: 'Lote 1 (Alta Producción)' },
+  { id: 'lote-2', name: 'Lote 2 (Novillas de Vientre)' },
+  { id: 'lote-3', name: 'Lote 3 (Crianza)' },
+  { id: 'lote-secas', name: 'Lote de Secas' },
+  { id: 'lote-engorde', name: 'Lote Engorde' },
+  { id: 'reproductores', name: 'Reproductores' },
+];
+
+export const paddocks: Paddock[] = [
+    { id: 'pot-01', name: 'La Loma', area: 5, forageType: 'Kikuyo', lastExitDate: format(subDays(new Date(), 5), 'yyyy-MM-dd') },
+    { id: 'pot-02', name: 'El Rincón', area: 4.5, forageType: 'Rye Grass', lastExitDate: format(subDays(new Date(), 45), 'yyyy-MM-dd') },
+    { id: 'pot-03', name: 'El Plano', area: 6, forageType: 'Brachiaria', lastEntryDate: format(subDays(new Date(), 2), 'yyyy-MM-dd') },
+    { id: 'pot-04', name: 'La Cuchilla', area: 3, forageType: 'Kikuyo', lastExitDate: format(subDays(new Date(), 15), 'yyyy-MM-dd') },
+];
+
+export const grazingRecords: GrazingRecord[] = [
+    { id: 'gr-01', paddockId: 'pot-03', lotId: 'lote-1', entryDate: format(subDays(new Date(), 2), 'yyyy-MM-dd'), aforo: 2500 },
+    { id: 'gr-02', paddockId: 'pot-01', lotId: 'lote-1', entryDate: format(subDays(new Date(), 10), 'yyyy-MM-dd'), exitDate: format(subDays(new Date(), 5), 'yyyy-MM-dd'), aforo: 2800 },
+    { id: 'gr-03', paddockId: 'pot-04', lotId: 'lote-2', entryDate: format(subDays(new Date(), 20), 'yyyy-MM-dd'), exitDate: format(subDays(new Date(), 15), 'yyyy-MM-dd') },
 ];

@@ -10,23 +10,45 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
-import { animals as mockAnimals, milkRecords as mockRecords, rations as mockRations } from '@/lib/mock-data';
-import type { Animal, MilkRecord, Ration } from '@/lib/types';
-import { BarChart, DollarSign, ListFilter, PlusCircle, Search, Trash2, Gauge, Edit } from 'lucide-react';
+import { animals as mockAnimals, milkRecords as mockRecords, rations as mockRations, paddocks, lots, grazingRecords } from '@/lib/mock-data';
+import type { Animal, MilkRecord, Ration, Paddock, GrazingRecord, Lot } from '@/lib/types';
+import { BarChart, DollarSign, ListFilter, PlusCircle, Search, Trash2, Gauge, Edit, Info, Leaf, Clock, Sun, Moon } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import EfficiencyChart from './_components/efficiency-chart';
-import { format, subDays } from 'date-fns';
+import { format, subDays, differenceInDays } from 'date-fns';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { createUTCDate } from '@/lib/utils';
+import { createUTCDate, cn } from '@/lib/utils';
 import { es } from 'date-fns/locale';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 
 export type AnimalRationAssignment = {
     animalId: string;
     rationId?: string;
     amount?: number;
 };
+
+const getPaddockStatus = (paddock: Paddock, records: GrazingRecord[]) => {
+    const lastRecord = records
+        .filter(r => r.paddockId === paddock.id)
+        .sort((a,b) => new Date(b.entryDate).getTime() - new Date(a.entryDate).getTime())[0];
+
+    if (lastRecord && !lastRecord.exitDate) {
+        return { label: 'En Ocupación', color: 'bg-green-500' };
+    }
+    
+    if (lastRecord && lastRecord.exitDate) {
+        const restDays = differenceInDays(new Date(), createUTCDate(lastRecord.exitDate));
+        if (restDays >= 30 && restDays <= 45) {
+             return { label: 'Punto Óptimo', color: 'bg-yellow-500' };
+        }
+        return { label: `En Descanso (${restDays}d)`, color: 'bg-blue-500' };
+    }
+
+    return { label: 'En Descanso', color: 'bg-blue-500' };
+};
+
 
 export default function ProductionPage() {
     const { toast } = useToast();
@@ -171,6 +193,20 @@ export default function ProductionPage() {
         <div className="space-y-6">
             <h1 className="text-3xl font-headline font-bold">Control de Producción y Alimentación</h1>
 
+            <Card>
+                <CardHeader>
+                    <CardTitle>Análisis de Eficiencia Alimenticia</CardTitle>
+                    <CardDescription>Compare la producción de leche con el consumo de alimento por animal en una fecha específica.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <EfficiencyChart 
+                        animals={animals}
+                        milkRecords={milkRecords}
+                        assignedRations={assignedRations}
+                    />
+                </CardContent>
+            </Card>
+
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {kpiData.map(kpi => (
                     <Card key={kpi.title}>
@@ -187,11 +223,11 @@ export default function ProductionPage() {
             </div>
 
             <Tabs defaultValue="milk">
-                <TabsList className="grid w-full grid-cols-2 md:grid-cols-4">
+                <TabsList className="grid w-full grid-cols-4">
                     <TabsTrigger value="milk">Control de Leche</TabsTrigger>
                     <TabsTrigger value="assignment">Asignación</TabsTrigger>
                     <TabsTrigger value="rations">Raciones</TabsTrigger>
-                    <TabsTrigger value="efficiency">Eficiencia</TabsTrigger>
+                    <TabsTrigger value="pasture">Manejo de Praderas</TabsTrigger>
                 </TabsList>
                 <TabsContent value="milk">
                     <Card>
@@ -452,28 +488,106 @@ export default function ProductionPage() {
                         </CardContent>
                     </Card>
                 </TabsContent>
-                <TabsContent value="efficiency">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Análisis de Eficiencia Alimenticia</CardTitle>
-                            <CardDescription>Compare la producción de leche con el consumo de alimento por animal en una fecha específica.</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <EfficiencyChart 
-                                animals={animals}
-                                milkRecords={milkRecords}
-                                assignedRations={assignedRations}
-                            />
-                        </CardContent>
-                    </Card>
+                 <TabsContent value="pasture">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div className="lg:col-span-2 space-y-6">
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>Catastro y Estado de Praderas</CardTitle>
+                                    <CardDescription>Vista general del estado de sus potreros.</CardDescription>
+                                </CardHeader>
+                                <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {paddocks.map(paddock => {
+                                        const status = getPaddockStatus(paddock, grazingRecords);
+                                        return (
+                                            <Card key={paddock.id}>
+                                                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                                                    <CardTitle className="text-base font-medium">{paddock.name}</CardTitle>
+                                                    <Leaf className="h-4 w-4 text-muted-foreground" />
+                                                </CardHeader>
+                                                <CardContent>
+                                                    <div className="flex items-center gap-2 text-sm">
+                                                        <span className={cn("h-2 w-2 rounded-full", status.color)}></span>
+                                                        <span>{status.label}</span>
+                                                    </div>
+                                                    <p className="text-xs text-muted-foreground mt-2">{paddock.area} Ha • {paddock.forageType}</p>
+                                                </CardContent>
+                                            </Card>
+                                        );
+                                    })}
+                                </CardContent>
+                            </Card>
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>Historial de Rotación</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <Table>
+                                        <TableHeader>
+                                            <TableRow>
+                                                <TableHead>Potrero</TableHead>
+                                                <TableHead>Lote</TableHead>
+                                                <TableHead>Entrada</TableHead>
+                                                <TableHead>Salida</TableHead>
+                                                <TableHead className="text-right">Días Ocup.</TableHead>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {grazingRecords.map(rec => (
+                                                <TableRow key={rec.id}>
+                                                    <TableCell>{paddocks.find(p => p.id === rec.paddockId)?.name}</TableCell>
+                                                     <TableCell>{lots.find(l => l.id === rec.lotId)?.name}</TableCell>
+                                                    <TableCell>{format(createUTCDate(rec.entryDate), 'dd/MM/yy')}</TableCell>
+                                                    <TableCell>{rec.exitDate ? format(createUTCDate(rec.exitDate), 'dd/MM/yy') : 'En Ocupación'}</TableCell>
+                                                    <TableCell className="text-right">{rec.exitDate ? differenceInDays(createUTCDate(rec.exitDate), createUTCDate(rec.entryDate)) : '-'}</TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </CardContent>
+                            </Card>
+                        </div>
+                        <div className="space-y-6">
+                             <Card>
+                                <CardHeader>
+                                    <CardTitle>Registrar Rotación</CardTitle>
+                                    <CardDescription>Registre la entrada o salida de un lote.</CardDescription>
+                                </CardHeader>
+                                <CardContent className="space-y-4">
+                                     <div className="space-y-2">
+                                        <Label htmlFor="paddock-select">Potrero</Label>
+                                        <Select><SelectTrigger><SelectValue placeholder="Seleccionar potrero..." /></SelectTrigger><SelectContent>{paddocks.map(p => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}</SelectContent></Select>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="lot-select">Lote</Label>
+                                        <Select><SelectTrigger><SelectValue placeholder="Seleccionar lote..." /></SelectTrigger><SelectContent>{lots.map(l => <SelectItem key={l.id} value={l.id}>{l.name}</SelectItem>)}</SelectContent></Select>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="entry-date">Fecha de Entrada</Label>
+                                        <Input id="entry-date" type="date" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="aforo">Aforo (kg MS/Ha) (Opcional)</Label>
+                                        <Input id="aforo" type="number" placeholder="Ej: 2500" />
+                                    </div>
+                                    <Button className="w-full">Registrar Entrada</Button>
+                                    <Button variant="outline" className="w-full">Registrar Salida</Button>
+                                </CardContent>
+                            </Card>
+                            <Alert>
+                                <Info className="h-4 w-4" />
+                                <AlertTitle>Recomendaciones Inteligentes</AlertTitle>
+                                <AlertDescription>
+                                    <ul className="list-disc list-inside space-y-2 mt-2">
+                                        <li>Alerta: El Potrero 'El Rincón' lleva 45 días de descanso. Ha llegado a su punto óptimo para el pastoreo.</li>
+                                        <li>El Lote 1, al pastorear en 'La Loma', mantuvo su producción con 15% menos de concentrado.</li>
+                                    </ul>
+                                </AlertDescription>
+                            </Alert>
+                        </div>
+                    </div>
                 </TabsContent>
             </Tabs>
         </div>
     );
 }
-
-    
-
-    
-
-    
