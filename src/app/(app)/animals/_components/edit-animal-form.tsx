@@ -69,8 +69,8 @@ export function EditAnimalForm({ animal, onFinished }: EditAnimalFormProps) {
       pregnancyDate: formatDateForInput(animal.pregnancyDate),
       exitDate: formatDateForInput(animal.exitDate),
       exitCause: animal.exitCause,
-      salePrice: animal.salePrice,
-      exitNotes: animal.exitNotes,
+      salePrice: animal.salePrice || 0,
+      exitNotes: animal.exitNotes || '',
     },
   });
 

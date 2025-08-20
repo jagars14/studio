@@ -51,6 +51,9 @@ export function AddAnimalForm({ onFinished }: AddAnimalFormProps) {
       lastCalvingDate: '',
       heatDate: '',
       pregnancyDate: '',
+      exitDate: '',
+      salePrice: 0,
+      exitNotes: '',
     },
   });
 
