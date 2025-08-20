@@ -16,6 +16,7 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Loader2, PlusCircle, Trash2, X } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
+import DataImporter from './_components/data-importer';
 
 export default function SettingsPage() {
   const { toast } = useToast();
@@ -184,6 +185,8 @@ export default function SettingsPage() {
     <div className="space-y-6">
       <h1 className="text-3xl font-headline font-bold">Configuración</h1>
       
+      <DataImporter />
+
       <Card>
         <CardHeader>
           <CardTitle>Detalles de la Finca</CardTitle>
@@ -286,3 +289,5 @@ export default function SettingsPage() {
     </div>
   );
 }
+
+    
