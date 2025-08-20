@@ -12,11 +12,12 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Label } from '@/components/ui/label';
 import { animals as mockAnimals, milkRecords as mockRecords, rations as mockRations } from '@/lib/mock-data';
 import type { Animal, MilkRecord, Ration } from '@/lib/types';
-import { BarChart, DollarSign, ListFilter, PlusCircle, Search, Trash2, Gauge } from 'lucide-react';
+import { BarChart, DollarSign, ListFilter, PlusCircle, Search, Trash2, Gauge, Edit } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import EfficiencyChart from './_components/efficiency-chart';
 import { format, subDays } from 'date-fns';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 
 export type AnimalRationAssignment = {
     animalId: string;
@@ -69,6 +70,28 @@ export default function ProductionPage() {
             return;
         }
         setRations(prev => prev.filter(r => r.id !== rationId));
+    }
+    
+    const handleMilkRecordChange = (recordId: string, newQuantity: number) => {
+        setMilkRecords(prev => 
+            prev.map(r => r.id === recordId ? { ...r, quantity: newQuantity } : r)
+        );
+    };
+
+    const handleRemoveMilkRecord = (recordId: string) => {
+        setMilkRecords(prev => prev.filter(r => r.id !== recordId));
+        toast({
+            title: "Registro Eliminado",
+            description: "El registro de producción ha sido eliminado.",
+        });
+    };
+    
+    const handleSaveChanges = (type: 'milk' | 'rations' | 'assignments') => {
+        // Here you would typically send the data to your backend/database
+        toast({
+            title: "Cambios Guardados (Simulación)",
+            description: `Los cambios en ${type === 'milk' ? 'producción láctea' : type === 'rations' ? 'raciones' : 'asignaciones'} han sido guardados con éxito.`,
+        });
     }
 
     const getSuggestedRation = (animal: Animal) => {
@@ -166,9 +189,9 @@ export default function ProductionPage() {
                                         {/* Formulario de registro iría aquí */}
                                         <form className="space-y-4">
                                             <div className="space-y-2">
-                                                <Label htmlFor="animal-select">Animal</Label>
+                                                <Label htmlFor="animal-select-new">Animal</Label>
                                                 <Select>
-                                                    <SelectTrigger><SelectValue placeholder="Seleccione un animal" /></SelectTrigger>
+                                                    <SelectTrigger id="animal-select-new"><SelectValue placeholder="Seleccione un animal" /></SelectTrigger>
                                                     <SelectContent>
                                                         {animals.filter(a=>a.sex === 'Hembra').map(a => <SelectItem key={a.id} value={a.id}>{a.name} ({a.id})</SelectItem>)}
                                                     </SelectContent>
@@ -176,7 +199,7 @@ export default function ProductionPage() {
                                             </div>
                                              <div className="space-y-2">
                                                 <Label htmlFor="record-date">Fecha</Label>
-                                                <Input id="record-date" type="date" />
+                                                <Input id="record-date" type="date" defaultValue={format(new Date(), 'yyyy-MM-dd')} />
                                             </div>
                                             <div className="grid grid-cols-2 gap-4">
                                                 <div className="space-y-2">
@@ -219,20 +242,52 @@ export default function ProductionPage() {
                                             <TableHead>Fecha</TableHead>
                                             <TableHead>Animal</TableHead>
                                             <TableHead>Sesión</TableHead>
-                                            <TableHead className="text-right">Cantidad (L)</TableHead>
+                                            <TableHead className="text-right w-[150px]">Cantidad (L)</TableHead>
+                                            <TableHead className="w-[80px] text-right">Acciones</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
                                         {milkRecords.map(record => (
                                             <TableRow key={record.id}>
-                                                <TableCell>{record.date}</TableCell>
+                                                <TableCell>{format(new Date(record.date), 'dd/MM/yyyy')}</TableCell>
                                                 <TableCell>{record.animalName} ({record.animalId})</TableCell>
                                                 <TableCell><Badge variant="secondary">{record.session}</Badge></TableCell>
-                                                <TableCell className="text-right font-medium">{record.quantity}</TableCell>
+                                                <TableCell className="text-right">
+                                                   <Input 
+                                                     type="number"
+                                                     value={record.quantity}
+                                                     onChange={(e) => handleMilkRecordChange(record.id, parseFloat(e.target.value) || 0)}
+                                                     className="w-24 ml-auto text-right"
+                                                   />
+                                                </TableCell>
+                                                <TableCell className="text-right">
+                                                    <AlertDialog>
+                                                        <AlertDialogTrigger asChild>
+                                                            <Button variant="ghost" size="icon">
+                                                                <Trash2 className="h-4 w-4 text-destructive" />
+                                                            </Button>
+                                                        </AlertDialogTrigger>
+                                                        <AlertDialogContent>
+                                                            <AlertDialogHeader>
+                                                                <AlertDialogTitle>¿Está seguro?</AlertDialogTitle>
+                                                                <AlertDialogDescription>
+                                                                    Esta acción eliminará permanentemente el registro de producción. No se puede deshacer.
+                                                                </AlertDialogDescription>
+                                                            </AlertDialogHeader>
+                                                            <AlertDialogFooter>
+                                                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                                                <AlertDialogAction onClick={() => handleRemoveMilkRecord(record.id)}>Continuar</AlertDialogAction>
+                                                            </AlertDialogFooter>
+                                                        </AlertDialogContent>
+                                                    </AlertDialog>
+                                                </TableCell>
                                             </TableRow>
                                         ))}
                                     </TableBody>
                                 </Table>
+                            </div>
+                             <div className="flex justify-end mt-4">
+                                <Button onClick={() => handleSaveChanges('milk')}>Guardar Cambios</Button>
                             </div>
                         </CardContent>
                     </Card>
@@ -307,7 +362,7 @@ export default function ProductionPage() {
                                 </Table>
                             </div>
                              <div className="flex justify-end mt-4">
-                                <Button>Guardar Cambios de Alimentación</Button>
+                                <Button onClick={() => handleSaveChanges('assignments')}>Guardar Cambios de Alimentación</Button>
                             </div>
                         </CardContent>
                     </Card>
@@ -360,7 +415,7 @@ export default function ProductionPage() {
                                 </Table>
                              </div>
                              <div className="flex justify-end mt-4">
-                                <Button>Guardar Cambios de Raciones</Button>
+                                <Button onClick={() => handleSaveChanges('rations')}>Guardar Cambios de Raciones</Button>
                             </div>
                         </CardContent>
                     </Card>
