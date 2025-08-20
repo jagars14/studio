@@ -37,10 +37,9 @@ const DRY_OFF_DAYS = 60; // Días para secado
 
 // Helper para crear fechas en UTC y evitar errores de hidratación
 export const createUTCDate = (dateString: string) => {
-    // This format 'YYYY-MM-DD' is interpreted as UTC by default by new Date()
-    // but adding time and Z ensures it's universally treated as UTC.
-    const date = new Date(`${dateString}T00:00:00Z`);
-    return new Date(date.valueOf() + date.getTimezoneOffset() * 60000);
+    // Appending 'T00:00:00Z' forces the date to be parsed as UTC.
+    // This is the most reliable way to prevent timezone issues between server and client.
+    return new Date(`${dateString}T00:00:00Z`);
 };
 
 const addUTCDays = (date: Date, days: number) => {
