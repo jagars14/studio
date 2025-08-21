@@ -43,6 +43,46 @@ export default function DataImporter() {
   const [fileName, setFileName] = useState<string | null>(null);
   const { toast } = useToast();
 
+  const handleDownloadTemplate = () => {
+    if (!dataType) {
+        toast({
+            variant: 'destructive',
+            title: 'Seleccione un tipo de dato',
+            description: 'Primero debe elegir qué tipo de datos desea importar.',
+        });
+        return;
+    }
+
+    let headers: string[];
+    let filename: string;
+
+    switch(dataType) {
+        case 'animals':
+            headers = animalFields;
+            filename = 'plantilla_animales.csv';
+            break;
+        case 'milk':
+            headers = milkFields;
+            filename = 'plantilla_leche.csv';
+            break;
+        case 'reproduction':
+            headers = reproFields;
+            filename = 'plantilla_reproduccion.csv';
+            break;
+        default:
+            return;
+    }
+
+    const csvContent = "data:text/csv;charset=utf-8," + headers.join(',');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", filename);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const handleNextStep = () => {
     if (step === 1 && !dataType) {
       toast({ variant: 'destructive', title: 'Error', description: 'Por favor, seleccione un tipo de dato para importar.' });
@@ -100,9 +140,9 @@ export default function DataImporter() {
                 <div>
                     <h3 className="font-semibold mb-2">1. Descargue la Plantilla</h3>
                     <p className="text-sm text-muted-foreground mb-4">Use nuestro formato para evitar errores en la importación.</p>
-                    <Button variant="secondary">
+                    <Button variant="secondary" onClick={handleDownloadTemplate}>
                         <Download className="mr-2 h-4 w-4" />
-                        Descargar Plantilla .xlsx
+                        Descargar Plantilla .csv
                     </Button>
                 </div>
                  <div>
