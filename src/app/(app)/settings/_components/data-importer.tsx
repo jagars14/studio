@@ -115,23 +115,47 @@ export default function DataImporter() {
       case 1:
         return (
           <RadioGroup value={dataType || ''} onValueChange={(value) => setDataType(value as DataType)}>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Label htmlFor="animals" className="p-4 border rounded-lg cursor-pointer hover:bg-muted has-[:checked]:bg-primary has-[:checked]:text-primary-foreground has-[:checked]:border-primary">
-                <RadioGroupItem value="animals" id="animals" className="sr-only" />
-                <h3 className="font-bold">Inventario de Animales</h3>
-                <p className="text-sm">Cargue su lista completa de animales.</p>
-              </Label>
-              <Label htmlFor="milk" className="p-4 border rounded-lg cursor-pointer hover:bg-muted has-[:checked]:bg-primary has-[:checked]:text-primary-foreground has-[:checked]:border-primary">
-                <RadioGroupItem value="milk" id="milk" className="sr-only" />
-                <h3 className="font-bold">Historial de Pesaje de Leche</h3>
-                <p className="text-sm">Importe registros de producción históricos.</p>
-              </Label>
-              <Label htmlFor="reproduction" className="p-4 border rounded-lg cursor-pointer hover:bg-muted has-[:checked]:bg-primary has-[:checked]:text-primary-foreground has-[:checked]:border-primary">
-                <RadioGroupItem value="reproduction" id="reproduction" className="sr-only" />
-                <h3 className="font-bold">Eventos Reproductivos</h3>
-                <p className="text-sm">Cargue partos, celos o servicios pasados.</p>
-              </Label>
-            </div>
+             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div 
+                  className={cn(
+                    "p-4 border rounded-lg cursor-pointer hover:bg-muted",
+                    dataType === 'animals' && "bg-primary text-primary-foreground border-primary"
+                  )}
+                  onClick={() => setDataType('animals')}
+                >
+                  <RadioGroupItem value="animals" id="animals" className="sr-only" />
+                  <Label htmlFor="animals" className="cursor-pointer">
+                    <h3 className="font-bold">Inventario de Animales</h3>
+                    <p className="text-sm">Cargue su lista completa de animales.</p>
+                  </Label>
+                </div>
+                <div 
+                  className={cn(
+                    "p-4 border rounded-lg cursor-pointer hover:bg-muted",
+                    dataType === 'milk' && "bg-primary text-primary-foreground border-primary"
+                  )}
+                  onClick={() => setDataType('milk')}
+                >
+                  <RadioGroupItem value="milk" id="milk" className="sr-only" />
+                  <Label htmlFor="milk" className="cursor-pointer">
+                    <h3 className="font-bold">Historial de Pesaje de Leche</h3>
+                    <p className="text-sm">Importe registros de producción históricos.</p>
+                  </Label>
+                </div>
+                <div
+                  className={cn(
+                    "p-4 border rounded-lg cursor-pointer hover:bg-muted",
+                    dataType === 'reproduction' && "bg-primary text-primary-foreground border-primary"
+                  )}
+                  onClick={() => setDataType('reproduction')}
+                >
+                  <RadioGroupItem value="reproduction" id="reproduction" className="sr-only" />
+                  <Label htmlFor="reproduction" className="cursor-pointer">
+                    <h3 className="font-bold">Eventos Reproductivos</h3>
+                    <p className="text-sm">Cargue partos, celos o servicios pasados.</p>
+                  </Label>
+                </div>
+              </div>
           </RadioGroup>
         );
       case 2:
