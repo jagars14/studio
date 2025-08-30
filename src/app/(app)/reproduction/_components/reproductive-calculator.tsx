@@ -243,7 +243,7 @@ export default function ReproductiveCalculator() {
                             </DialogHeader>
                             <div className="relative w-full h-[60vh]">
                                 <Image 
-                                    src="/Bovino Pro Logo 2.png"
+                                    src="/CCC Bovino.jpeg"
                                     alt="Guía de Condición Corporal" 
                                     fill
                                     style={{objectFit: 'contain'}}
