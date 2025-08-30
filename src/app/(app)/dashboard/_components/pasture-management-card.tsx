@@ -13,6 +13,7 @@ import { PlusCircle, Edit, Trash2, MapPin, Leaf, MoreVertical } from "lucide-rea
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from '@/components/ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { cn } from '@/lib/utils';
 
 // Type definition for a pasture
 type Pasture = {
@@ -198,9 +199,9 @@ export default function PastureManagementCard() {
                         </DropdownMenuItem>
                         <AlertDialog>
                             <AlertDialogTrigger asChild>
-                                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                                    <Trash2 className="mr-2 h-4 w-4 text-destructive" />
-                                    <span className="text-destructive">Eliminar</span>
+                                <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-destructive focus:text-destructive">
+                                    <Trash2 className="mr-2 h-4 w-4" />
+                                    <span>Eliminar</span>
                                 </DropdownMenuItem>
                             </AlertDialogTrigger>
                             <AlertDialogContent>
