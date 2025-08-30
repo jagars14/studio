@@ -1,7 +1,7 @@
 // The first import MUST be the genkit configuration to initialize the environment.
 import '@/ai/genkit.ts';
 
-import {runFlow} from '@genkit-ai/flow';
+import {runFlow} from '@genkit-ai/core';
 import {NextResponse} from 'next/server';
 import {suggestMatingHealthcareFlow} from '@/ai/flows/suggest-mating-healthcare';
 import {SuggestMatingHealthcareInputSchema} from '@/ai/types';
