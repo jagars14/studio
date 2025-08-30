@@ -17,6 +17,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Loader2, PlusCircle, Trash2, X } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import DataImporter from './_components/data-importer';
+import PastureManagement from './_components/pasture-management';
 
 export default function SettingsPage() {
   const { toast } = useToast();
@@ -187,6 +188,8 @@ export default function SettingsPage() {
       
       <DataImporter />
 
+      <PastureManagement />
+
       <Card>
         <CardHeader>
           <CardTitle>Detalles de la Finca</CardTitle>
@@ -289,5 +292,3 @@ export default function SettingsPage() {
     </div>
   );
 }
-
-    

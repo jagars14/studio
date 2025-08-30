@@ -14,7 +14,6 @@ import { es } from "date-fns/locale";
 import { Badge } from "@/components/ui/badge";
 import { generateReproductiveEvents } from "@/lib/utils";
 import type { Animal } from '@/lib/types';
-import PastureManagementCard from './_components/pasture-management-card';
 
 export default function DashboardPage() {
   const [isClient, setIsClient] = useState(false);
@@ -136,10 +135,7 @@ export default function DashboardPage() {
       </div>
 
        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2">
-            <PastureManagementCard />
-          </div>
-          <Card>
+          <Card className="lg:col-span-3">
               <CardHeader>
                 <CardTitle className="font-headline">Distribución del Hato</CardTitle>
               </CardHeader>
