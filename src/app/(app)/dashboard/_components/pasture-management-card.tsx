@@ -41,6 +41,11 @@ function PastureForm({ pasture, onSave, onCancel }: { pasture?: Pasture | null, 
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!name || area <= 0 || !grassType) {
+        // Simple validation
+        alert('Por favor complete todos los campos requeridos.');
+        return;
+    }
     onSave({ id: pasture?.id, name, area, status, grassType });
   };
 
@@ -72,7 +77,7 @@ function PastureForm({ pasture, onSave, onCancel }: { pasture?: Pasture | null, 
       </div>
        <div className="space-y-2">
         <Label htmlFor="pasture-grass">Tipo de Pasto</Label>
-        <Input id="pasture-grass" value={grassType} onChange={(e) => setGrassType(e.target.value)} required />
+        <Input id="pasture-grass" value={grassType} onChange={(e) => setGrassType(e.target.value)} required placeholder="Ej: Kikuyo"/>
       </div>
       <DialogFooter>
         <Button type="button" variant="ghost" onClick={onCancel}>Cancelar</Button>
@@ -162,7 +167,10 @@ export default function PastureManagementCard() {
                 <PastureForm 
                   pasture={editingPasture}
                   onSave={handleSave}
-                  onCancel={() => setIsFormOpen(false)}
+                  onCancel={() => {
+                    setIsFormOpen(false);
+                    setEditingPasture(null);
+                  }}
                 />
             </DialogContent>
         </Dialog>
@@ -188,8 +196,9 @@ export default function PastureManagementCard() {
                 
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                         <Button variant="ghost" size="icon">
+                         <Button variant="ghost" size="icon" className="h-8 w-8">
                             <MoreVertical className="h-4 w-4" />
+                            <span className="sr-only">Opciones para {pasture.name}</span>
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
@@ -226,8 +235,8 @@ export default function PastureManagementCard() {
             ))}
           </ul>
         ) : (
-          <div className="text-center py-8">
-            <p className="text-muted-foreground">No hay praderas registradas.</p>
+          <div className="text-center py-8 text-muted-foreground border-2 border-dashed rounded-lg">
+            <p>No hay praderas registradas.</p>
             <Button variant="link" onClick={handleAddClick} className="mt-2">Añada su primer potrero</Button>
           </div>
         )}
