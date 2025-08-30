@@ -1,5 +1,5 @@
 // The first import MUST be the genkit configuration to initialize the environment.
-import '@/ai/genkit';
+import '@/ai/genkit.ts';
 
 import {runFlow} from '@genkit-ai/flow';
 import {NextResponse} from 'next/server';

@@ -1,6 +1,6 @@
 import {configureGenkit} from '@genkit-ai/core';
 import {googleAI} from '@genkit-ai/googleai';
-import {genkitEval, GenkitMetric} from '@genkit-ai/evaluator';
+import {genkitEval} from '@genkit-ai/evaluator';
 
 // This file configures the Genkit framework.
 // It is imported by the API route to ensure the environment is initialized.
