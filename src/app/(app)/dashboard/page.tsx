@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { animals as mockAnimals } from "@/lib/mock-data"; 
 import HerdEvolutionChart from "./_components/herd-evolution-chart";
 import HerdDistributionChart from "./_components/herd-distribution-chart";
@@ -14,7 +14,7 @@ import { es } from "date-fns/locale";
 import { Badge } from "@/components/ui/badge";
 import { generateReproductiveEvents } from "@/lib/utils";
 import type { Animal } from '@/lib/types';
-import MilkProductionChart from './_components/milk-production-chart';
+import PastureManagementCard from './_components/pasture-management-card';
 
 export default function DashboardPage() {
   const [isClient, setIsClient] = useState(false);
@@ -80,8 +80,8 @@ export default function DashboardPage() {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <Card className="lg:col-span-2">
             <CardHeader>
               <CardTitle className="font-headline">Evolución del Hato (12 meses)</CardTitle>
             </CardHeader>
@@ -89,70 +89,66 @@ export default function DashboardPage() {
               <HerdEvolutionChart />
             </CardContent>
           </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle className="font-headline">Distribución del Hato</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <HerdDistributionChart />
-            </CardContent>
+           <Card className="flex flex-col">
+              <CardHeader>
+                  <CardTitle className="font-headline flex items-center gap-2">
+                      <CalendarClock className="h-6 w-6" />
+                      <span>Próximos Eventos del Mes</span>
+                  </CardTitle>
+              </CardHeader>
+              <CardContent className="flex-1">
+                  {upcomingEvents.length > 0 ? (
+                      <ul className="space-y-4">
+                          {upcomingEvents.map((event) => (
+                              <li key={event.id} className="flex items-center gap-4">
+                              <div className="flex flex-col items-center justify-center rounded-md bg-muted p-2 text-center w-14">
+                                  <span className="text-sm font-bold text-muted-foreground capitalize">{format(event.date, 'MMM', { locale: es })}</span>
+                                  <span className="text-xl font-bold">{format(event.date, 'dd', { locale: es })}</span>
+                              </div>
+                              <div>
+                                  <p className="font-semibold">{event.animalName} <span className="text-xs text-muted-foreground">({event.animalId})</span></p>
+                                  <Badge
+                                  variant={
+                                      event.eventType === 'Próximo Celo' ? 'secondary' :
+                                      event.eventType === 'Fecha Probable de Parto' ? 'default' :
+                                      'outline'
+                                  }
+                                  >
+                                  {event.eventType}
+                                  </Badge>
+                              </div>
+                              </li>
+                          ))}
+                      </ul>
+                  ) : (
+                      <p className="text-muted-foreground text-sm">No hay eventos próximos para lo que resta del mes.</p>
+                  )}
+              </CardContent>
+              <div className="p-4 mt-auto border-t">
+                  <Button asChild variant="outline" className="w-full">
+                      <Link href="/reproduction">
+                          Ver Calendario Completo
+                          <ArrowRight className="ml-2 h-4 w-4" />
+                      </Link>
+                  </Button>
+              </div>
           </Card>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="font-headline">Producción de Leche por Animal</CardTitle>
-          <CardDescription>Producción total registrada para un día específico. Use los filtros para explorar los datos.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <MilkProductionChart />
-        </CardContent>
-      </Card>
+       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
+            <PastureManagementCard />
+          </div>
+          <Card>
+              <CardHeader>
+                <CardTitle className="font-headline">Distribución del Hato</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <HerdDistributionChart />
+              </CardContent>
+          </Card>
+       </div>
 
-       <Card className="flex flex-col">
-            <CardHeader>
-                <CardTitle className="font-headline flex items-center gap-2">
-                    <CalendarClock className="h-6 w-6" />
-                    <span>Próximos Eventos del Mes</span>
-                </CardTitle>
-            </CardHeader>
-            <CardContent className="flex-1">
-                 {upcomingEvents.length > 0 ? (
-                    <ul className="space-y-4">
-                        {upcomingEvents.map((event) => (
-                            <li key={event.id} className="flex items-center gap-4">
-                            <div className="flex flex-col items-center justify-center rounded-md bg-muted p-2 text-center w-14">
-                                <span className="text-sm font-bold text-muted-foreground capitalize">{format(event.date, 'MMM', { locale: es })}</span>
-                                <span className="text-xl font-bold">{format(event.date, 'dd', { locale: es })}</span>
-                            </div>
-                            <div>
-                                <p className="font-semibold">{event.animalName} <span className="text-xs text-muted-foreground">({event.animalId})</span></p>
-                                <Badge
-                                variant={
-                                    event.eventType === 'Próximo Celo' ? 'secondary' :
-                                    event.eventType === 'Fecha Probable de Parto' ? 'default' :
-                                    'outline'
-                                }
-                                >
-                                {event.eventType}
-                                </Badge>
-                            </div>
-                            </li>
-                        ))}
-                    </ul>
-                 ) : (
-                    <p className="text-muted-foreground text-sm">No hay eventos próximos para lo que resta del mes.</p>
-                 )}
-            </CardContent>
-            <div className="p-4 mt-auto border-t">
-                <Button asChild variant="outline" className="w-full">
-                    <Link href="/reproduction">
-                        Ver Calendario Completo
-                        <ArrowRight className="ml-2 h-4 w-4" />
-                    </Link>
-                </Button>
-            </div>
-        </Card>
     </div>
   );
 }
