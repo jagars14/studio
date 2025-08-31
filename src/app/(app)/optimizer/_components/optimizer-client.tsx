@@ -4,10 +4,7 @@ import {useState, useEffect} from 'react';
 import {useForm} from 'react-hook-form';
 import {zodResolver} from '@hookform/resolvers/zod';
 import type {z} from 'zod';
-import {
-  SuggestMatingHealthcareInputSchema,
-  SuggestMatingHealthcareOutputSchema,
-} from '@/ai/types'; // Corrected import path
+import {SuggestMatingHealthcareInputSchema} from '@/lib/schemas';
 import {Button} from '@/components/ui/button';
 import {
   Card,
@@ -20,7 +17,6 @@ import {
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -29,16 +25,11 @@ import {
 import {Input} from '@/components/ui/input';
 import {Textarea} from '@/components/ui/textarea';
 import {
-  BrainCircuit,
-  HeartPulse,
   Sparkles,
   Loader2,
-  ClipboardCheck,
   MapPin,
-  Dna,
-  CalendarDays,
-  Syringe,
-  AlertTriangle,
+  BrainCircuit,
+  MessageSquareQuote,
 } from 'lucide-react';
 import {useToast} from '@/hooks/use-toast';
 import Link from 'next/link';
@@ -46,17 +37,16 @@ import {auth, db} from '@/lib/firebase';
 import {collection, query, where, getDocs} from 'firebase/firestore';
 import type {Farm} from '@/lib/types';
 import {useAuthState} from 'react-firebase-hooks/auth';
-import {Separator} from '@/components/ui/separator';
 
 type FormValues = z.infer<typeof SuggestMatingHealthcareInputSchema>;
-type OutputResult = z.infer<typeof SuggestMatingHealthcareOutputSchema>;
+
+const API_PROXY_URL = '/api/send-webhook';
 
 export default function OptimizerClient() {
-  const [result, setResult] = useState<OutputResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [expertResponse, setExpertResponse] = useState<string | null>(null);
   const {toast} = useToast();
   const [user, loadingAuth] = useAuthState(auth);
-  // Extend Farm with optional new fields for a smoother transition
   const [farm, setFarm] = useState<
     Farm & {altitude?: number; productionSystem?: string; geneticGoals?: string}
   | null
@@ -113,40 +103,59 @@ export default function OptimizerClient() {
       form.setValue('city', farm.city);
       form.setValue('department', farm.department);
       form.setValue('altitude', farm.altitude || 1500);
-      form.setValue(
-        'productionSystem',
-        farm.productionSystem || 'Pastoreo Rotacional con suplementación'
-      );
-      form.setValue(
-        'geneticGoals',
-        farm.geneticGoals || 'Aumentar sólidos en leche y mejorar salud de ubre'
-      );
     }
   }, [farm, form]);
 
   async function onSubmit(values: FormValues) {
     setIsLoading(true);
-    setResult(null);
+    setExpertResponse(null);
+
+    const payload = {
+      animalId: values.animalId,
+      breed: values.breed,
+      birthDate: values.birthDate,
+      parturitions: values.parturitions,
+      daysInMilk: values.daysInMilk,
+      milkProduction: values.milkProduction,
+      bodyCondition: values.bodyCondition,
+      healthHistory: values.healthHistory,
+      reproductiveHistory: values.reproductiveHistory,
+      city: values.city,
+      department: values.department,
+      altitude: values.altitude,
+    };
+
     try {
-      const response = await fetch('/api/generate-suggestions', {
+      const response = await fetch(API_PROXY_URL, {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(values),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.details || 'Failed to fetch suggestions');
+        throw new Error('La respuesta del servidor no fue exitosa.');
       }
-
-      const suggestions: OutputResult = await response.json();
-      setResult(suggestions);
-    } catch (error: any) {
-      console.error('AI Suggestion failed:', error);
+      
+      const responseData = await response.json();
+      
+      if (responseData && responseData.output) {
+        setExpertResponse(responseData.output);
+        toast({
+          title: 'Respuesta Recibida',
+          description: 'El experto ha enviado una recomendación.',
+        });
+      } else {
+         throw new Error("La respuesta no contenía el formato esperado.");
+      }
+      
+    } catch (error) {
+      console.error('Failed to send data via proxy:', error);
       toast({
         variant: 'destructive',
-        title: 'Error',
-        description: `Could not generate AI suggestions: ${error.message}`,
+        title: 'Error en la Consulta',
+        description: 'No se pudo obtener una respuesta del experto. Por favor, intente de nuevo.',
       });
     } finally {
       setIsLoading(false);
@@ -164,13 +173,13 @@ export default function OptimizerClient() {
           <div className="flex items-center gap-2">
             <Sparkles className="h-6 w-6 text-primary" />
             <CardTitle className="font-headline text-2xl">
-              Optimizador de Hato con IA
+              Asistente Experto
             </CardTitle>
           </div>
           <CardDescription className="flex items-center gap-2 pt-2">
             <MapPin className="h-4 w-4" />
             <span>
-              Generando sugerencias para la finca en{' '}
+              Enviando consulta desde la finca en{' '}
               <strong>{farmLocation}</strong>.{' '}
               <Link href="/settings" className="ml-1 text-primary hover:underline">
                 Cambiar
@@ -180,10 +189,7 @@ export default function OptimizerClient() {
         </CardHeader>
         <CardContent>
           <CardDescription>
-            Ingrese el perfil integral de un animal para recibir un plan de
-            acción detallado. La IA actúa como un consultor experto, analizando
-            datos reproductivos, de salud y productivos en el contexto de su
-finca.
+            Ingrese el perfil integral de un animal para enviar sus datos a un experto y recibir recomendaciones personalizadas.
           </CardDescription>
         </CardContent>
       </Card>
@@ -194,11 +200,11 @@ finca.
             <CardHeader>
               <CardTitle>Perfil del Animal</CardTitle>
               <CardDescription>
-                Proporcione información detallada y precisa para obtener los
-                mejores resultados.
+                Proporcione la información detallada para la consulta.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
+              {/* Form fields remain the same */}
               <div className="grid md:grid-cols-3 gap-4">
                 <FormField
                   control={form.control}
@@ -362,12 +368,12 @@ finca.
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Generando Plan de Acción...
+                    Consultando al Experto...
                   </>
                 ) : (
                   <>
                     <BrainCircuit className="mr-2 h-4 w-4" />
-                    Generar Plan de Acción
+                    Consulta al Experto
                   </>
                 )}
               </Button>
@@ -375,105 +381,26 @@ finca.
           </Card>
         </form>
       </Form>
-
+      
       {isLoading && (
-        <div className="flex justify-center items-center pt-8">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          <p className="ml-4 text-muted-foreground">
-            Analizando datos y consultando al experto...
-          </p>
-        </div>
+         <div className="flex justify-center items-center pt-8">
+            <Loader2 className="h-8 w-8 animate-spin text-primary"/>
+             <p className="ml-4 text-muted-foreground">Esperando respuesta del experto...</p>
+         </div>
       )}
 
-      {result && (
-        <div className="pt-8 space-y-8">
-            <h2 className="text-2xl font-headline text-center">Plan de Acción Sugerido para ID: {form.getValues('animalId')}</h2>
-            <div className="grid md:grid-cols-2 gap-8">
-            <Card className="border-primary/50">
-              <CardHeader>
-                <div className="flex items-center gap-2">
-                  <HeartPulse className="h-6 w-6 text-primary" />
-                  <CardTitle className="font-headline">
-                    Estrategia de Apareamiento
-                  </CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <h3 className="font-semibold flex items-center gap-2">
-                    <CalendarDays className="h-4 w-4" /> Ventana Óptima de Servicio
-                  </h3>
-                  <p className="text-sm text-card-foreground pl-6">
-                    <strong>
-                      Días {result.matingStrategy.optimalServiceWindow.startDay} - {result.matingStrategy.optimalServiceWindow.endDay} post-parto.
-                    </strong>
-                  </p>
-                  <p className="text-xs text-muted-foreground pl-6">{result.matingStrategy.optimalServiceWindow.justification}</p>
-                </div>
-                <Separator/>
-                <div>
-                  <h3 className="font-semibold flex items-center gap-2">
-                    <Syringe className="h-4 w-4" /> Protocolo Pre-servicio
-                  </h3>
-                  <ul className="list-disc pl-10 text-sm space-y-1 mt-1">
-                    {result.matingStrategy.preServiceProtocol.map((rec, i) => (
-                      <li key={i}>{rec}</li>
-                    ))}
-                  </ul>
-                </div>
-                 <Separator/>
-                <div>
-                  <h3 className="font-semibold flex items-center gap-2">
-                    <Dna className="h-4 w-4" /> Recomendaciones Genéticas
-                  </h3>
-                   <p className="text-xs text-muted-foreground pl-6 mb-2">Objetivo Principal: {result.matingStrategy.geneticRecommendations.primaryGoal}</p>
-                  <ul className="list-disc pl-10 text-sm space-y-1">
-                    {result.matingStrategy.geneticRecommendations.suggestedSireTraits.map(
-                      (rec, i) => (
-                        <li key={i}>{rec}</li>
-                      )
-                    )}
-                  </ul>
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="border-accent/50">
-              <CardHeader>
-                <div className="flex items-center gap-2">
-                  <ClipboardCheck className="h-6 w-6 text-accent" />
-                  <CardTitle className="font-headline">
-                    Plan Sanitario y Nutricional
-                  </CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <h3 className="font-semibold">Calendario Preventivo (6 Meses)</h3>
-                  <div className="space-y-2 mt-1">
-                    {result.healthAndNutritionPlan.preventiveSchedule.map((item, i) => (
-                      <div key={i} className="text-sm">
-                        <strong className="block">{item.month}</strong>
-                        <ul className="list-disc pl-6">
-                          {item.actions.map((action, j) => <li key={j}>{action}</li>)}
-                        </ul>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                 <Separator/>
-                 <div>
-                    <h3 className="font-semibold flex items-center gap-2"><AlertTriangle className="h-4 w-4 text-amber-500"/> Riesgos Regionales y Manejo</h3>
-                    <p className="text-sm text-muted-foreground">{result.healthAndNutritionPlan.regionalRisksAndManagement}</p>
-                 </div>
-                 <Separator/>
-                 <div>
-                    <h3 className="font-semibold">Manejo Nutricional</h3>
-                    <p className="text-sm text-muted-foreground">{result.healthAndNutritionPlan.nutritionalManagement}</p>
-                 </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+      {expertResponse && (
+        <Card className="mt-8 border-primary bg-primary/5">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <MessageSquareQuote className="h-6 w-6 text-primary"/>
+              Respuesta del Experto
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-card-foreground whitespace-pre-line">{expertResponse}</p>
+          </CardContent>
+        </Card>
       )}
     </div>
   );
