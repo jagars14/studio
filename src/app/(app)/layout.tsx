@@ -11,9 +11,8 @@ import {
   SidebarInset,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { LayoutDashboard, CalendarHeart, BrainCircuit, Settings, Milk, LineChart, ArchiveRestore, ShieldCheck } from "lucide-react";
+import { LayoutDashboard, CalendarHeart, BrainCircuit, Settings, Milk, LineChart, ArchiveRestore, ShieldCheck, FileText, Briefcase } from "lucide-react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/logo";
 import { CowIcon } from "@/components/icons/cow-icon";
 import NotificationPopover from "@/components/notification-popover";
@@ -31,7 +30,9 @@ const navItems = [
   { href: "/lactation", icon: LineChart, label: "Lactancia" },
   { href: "/disposal", icon: ArchiveRestore, label: "Descarte" },
   { href: "/health", icon: ShieldCheck, label: "Sanidad" },
-  { href: "/optimizer", icon: BrainCircuit, label: "Optimizador IA" },
+  { href: "/reports", icon: FileText, label: "Informes" },
+  { href: "/business-intelligence", icon: Briefcase, label: "Inteligencia de Negocio" },
+  { href: "/optimizer", icon: BrainCircuit, label: "Asistente Experto" },
   { href: "/settings", icon: Settings, label: "Configuración" },
 ];
 

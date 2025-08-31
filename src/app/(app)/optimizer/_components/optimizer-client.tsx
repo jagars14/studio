@@ -30,6 +30,7 @@ import {
   MapPin,
   BrainCircuit,
   MessageSquareQuote,
+  WifiOff,
 } from 'lucide-react';
 import {useToast} from '@/hooks/use-toast';
 import Link from 'next/link';
@@ -37,6 +38,8 @@ import {auth, db} from '@/lib/firebase';
 import {collection, query, where, getDocs} from 'firebase/firestore';
 import type {Farm} from '@/lib/types';
 import {useAuthState} from 'react-firebase-hooks/auth';
+import { useOnlineStatus } from '@/hooks/use-online-status';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 type FormValues = z.infer<typeof SuggestMatingHealthcareInputSchema>;
 
@@ -51,6 +54,7 @@ export default function OptimizerClient() {
     Farm & {altitude?: number; productionSystem?: string; geneticGoals?: string}
   | null
   >(null);
+  const isOnline = useOnlineStatus();
 
   useEffect(() => {
     async function fetchFarmData() {
@@ -107,6 +111,15 @@ export default function OptimizerClient() {
   }, [farm, form]);
 
   async function onSubmit(values: FormValues) {
+    if (!isOnline) {
+        toast({
+            variant: 'destructive',
+            title: 'Sin Conexión',
+            description: 'No se puede enviar la consulta. Por favor, revise su conexión a internet.',
+        });
+        return;
+    }
+
     setIsLoading(true);
     setExpertResponse(null);
 
@@ -166,8 +179,35 @@ export default function OptimizerClient() {
     ? `${farm.city}, ${farm.department}`
     : 'Ubicación no configurada';
 
+  const SubmitButton = () => (
+     <Button type="submit" disabled={isLoading || !farm || loadingAuth || !isOnline} size="lg">
+        {isLoading ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Consultando al Experto...
+          </>
+        ) : (
+          <>
+            <BrainCircuit className="mr-2 h-4 w-4" />
+            Consulta al Experto
+          </>
+        )}
+      </Button>
+  );
+
   return (
     <div className="space-y-6">
+      {!isOnline && (
+         <div className="bg-destructive/10 border-l-4 border-destructive text-destructive-foreground p-4" role="alert">
+            <div className="flex">
+                <div className="py-1"><WifiOff className="h-5 w-5 mr-3"/></div>
+                <div>
+                    <p className="font-bold">Modo Sin Conexión</p>
+                    <p className="text-sm">La aplicación tiene funcionalidad limitada. El asistente experto no está disponible.</p>
+                </div>
+            </div>
+        </div>
+      )}
       <Card>
         <CardHeader>
           <div className="flex items-center gap-2">
@@ -364,19 +404,20 @@ export default function OptimizerClient() {
               </div>
             </CardContent>
             <CardFooter>
-              <Button type="submit" disabled={isLoading || !farm || loadingAuth} size="lg">
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Consultando al Experto...
-                  </>
-                ) : (
-                  <>
-                    <BrainCircuit className="mr-2 h-4 w-4" />
-                    Consulta al Experto
-                  </>
-                )}
-              </Button>
+                 <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <div tabIndex={0}> 
+                                <SubmitButton/>
+                            </div>
+                        </TooltipTrigger>
+                        {!isOnline && (
+                             <TooltipContent>
+                                <p>Esta función requiere conexión a internet.</p>
+                            </TooltipContent>
+                        )}
+                    </Tooltip>
+                </TooltipProvider>
             </CardFooter>
           </Card>
         </form>
